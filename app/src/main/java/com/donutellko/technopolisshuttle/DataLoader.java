@@ -148,7 +148,7 @@ class TimeTable {
 			if (j < to.length) {
 				switch (from[i].compareTo(to[j])) {
 					case -1:
-						lines.add(new Line(from[i], false, true));
+						lines.add(new Line(from[i], true, false));
 						i++;
 						break;
 					case 0:
