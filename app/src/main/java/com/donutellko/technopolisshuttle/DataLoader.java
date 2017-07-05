@@ -134,11 +134,11 @@ public class DataLoader {
 }
 
 class TimeTable {
-	public List<Line> lines_3;
+	public List<Line> lines;
 	public Time[] from, to;
 
 	public TimeTable(Time[] from, Time[] to) {
-		lines_3 = new ArrayList<Line>();
+		lines = new ArrayList<Line>();
 		this.from = from;
 		this.to = to;
 
@@ -148,27 +148,27 @@ class TimeTable {
 			if (j < to.length) {
 				switch (from[i].compareTo(to[j])) {
 					case -1:
-						lines_3.add(new Line(from[i], false, true));
+						lines.add(new Line(from[i], false, true));
 						i++;
 						break;
 					case 0:
-						lines_3.add(new Line(from[i], true, true));
+						lines.add(new Line(from[i], true, true));
 						i++;
 						j++;
 						break;
 					case 1:
-						lines_3.add(new Line(to[j], true, false));
+						lines.add(new Line(to[j], true, false));
 						j++;
 						break;
 				}
 			} else {
-				lines_3.add(new Line(from[i], true, false));
+				lines.add(new Line(from[i], true, false));
 				i++;
 			}
 		}
 
 		while (j < to.length) {
-			lines_3.add(new Line(to[j], false, true));
+			lines.add(new Line(to[j], false, true));
 			j++;
 		}
 
@@ -176,15 +176,15 @@ class TimeTable {
 	}
 
 	public TimeTable(Line[] lines) {
-		this.lines_3= new ArrayList<Line>(lines.length);
+		this.lines = new ArrayList<Line>(lines.length);
 		for (Line l : lines)
-			this.lines_3.add(l);
+			this.lines.add(l);
 	}
 
 	@Override
 	public String toString() {
 		String s = "";
-		for (Line l : lines_3)
+		for (Line l : lines)
 			s += "\n" + l;
 		return s;
 	}
