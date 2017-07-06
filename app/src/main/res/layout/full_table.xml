@@ -16,13 +16,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TableLayout
-                android:id="@+id/table"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:isScrollContainer="true">
-
-            </TableLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

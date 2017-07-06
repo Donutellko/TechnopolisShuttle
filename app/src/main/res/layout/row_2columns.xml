@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/from"
+            android:id="@+id/t_from"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="14:35"
@@ -26,7 +26,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/to"
+            android:id="@+id/t_to"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="15:20"

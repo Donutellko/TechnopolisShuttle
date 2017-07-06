@@ -17,12 +17,12 @@
             android:layout_weight="1"
         />
 
-        <ImageView
-            android:id="@+id/from"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srcCompat="@android:drawable/ic_input_add"
-            android:layout_weight="1" />
+    <ImageView
+        android:id="@+id/from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
         <ImageView
             android:id="@+id/to"

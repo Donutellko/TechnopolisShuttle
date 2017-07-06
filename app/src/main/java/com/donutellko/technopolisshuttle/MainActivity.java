@@ -20,7 +20,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -100,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         TableLayout table = shortView.findViewById(R.id.table);
         table.removeAllViews();
+        table.addView(layoutInflater.inflate(R.layout.short_table_head, null));
 
         if (timeTable == null) timeTable = dataLoader.getFullDefaultInfo(); // объект с расписанием
 
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             friday_view.setChecked(true);
         }
 
-        List<Time> closest = new ArrayList<>(3);
+        List<Date> closest = new ArrayList<>(3);
         for (TimeTable.Line line : timeTable.lines) {
             if ((toTechnopolis == line.to || toTechnopolis != line.from) && !line.isBefore(today)) closest.add(line.time);
             if (closest.size() >= COUNT_TO_SHOW_ON_SHORT) break;
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             empty_row.addView(empty_text);
             table.addView(empty_row);
         } else
-            for (Time t : closest) {
+            for (Date t : closest) {
                 table.addView(makeTimeLeftRow(t, today));
             }
 
@@ -135,19 +135,76 @@ public class MainActivity extends AppCompatActivity {
 
         if (timeTable == null) timeTable = dataLoader.getFullDefaultInfo(); // объект с данными о времени
 
-        TableLayout table = fullView.findViewById(R.id.table); // находим таблицу на созданном view
-        contentView.addView(layoutInflater.inflate(R.layout.table_head_layout, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
-
-        for (TimeTable.Line l : timeTable.lines)
-            table.addView(makeThreeColumnsRow(l)); // суём инфу в таблицу
+        ((LinearLayout) fullView.findViewById(R.id.content)).addView(
+                //makeThreeColumnsTable(timeTable)
+                makeTwoColumnsTable(timeTable)
+                );
     }
 
     public void makeMapView() {
         contentView.removeAllViews(); // очищаем от созданных ранее объектов
     }
 
+    public TableLayout makeThreeColumnsTable(TimeTable timeTable) {
+        TableLayout table = new TableLayout(this); //fullView.findViewById(R.id.table); // находим таблицу на созданном view
+        contentView.addView(layoutInflater.inflate(R.layout.table_head_layout, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+
+        for (TimeTable.Line l : timeTable.lines)
+            table.addView(makeThreeColumnsRow(l)); // суём инфу в таблицу
+        return table;
+    }
+
+    public TableLayout makeTwoColumnsTable(TimeTable timeTable) {
+        TableLayout table = new TableLayout(this); //fullView.findViewById(R.id.table); // находим таблицу на созданном view
+        contentView.addView(layoutInflater.inflate(R.layout.table_head_layout, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+
+        table.addView(layoutInflater.inflate(R.layout.full_table_head, null));
+
+        int max = timeTable.from.length;
+        if (timeTable.to.length > max) max = timeTable.to.length;
+        for (int i = 0; i < max; i++) {
+            table.addView(makeTwoColumnsRow(
+                    (i < timeTable.from.length ? timeTable.from[i] : null),
+                    (i < timeTable.to  .length ? timeTable.to  [i] : null))); // суём инфу в таблицу
+        }
+        return table;
+    }
+
+    public View makeTwoColumnsRow(Date t1, Date t2) {
+        View row = layoutInflater.inflate(R.layout.row_2columns, null);
+        Date now = Calendar.getInstance().getTime();
+
+        TextView tFrom = (TextView) row.findViewById(R.id.t_from);
+        TextView tTo   = (TextView) row.findViewById(R.id.t_to  );
+
+        if (t1 == null) tFrom.setText("");
+        else {
+            tFrom.setText(t1.getHours() + ":" + (t1.getMinutes() <= 9 ? "0" : "") + t1.getMinutes()); //TODO: format
+            if (firstIsBefore(t1, now))
+                tFrom.setTextColor(Color.LTGRAY);
+        }
+
+        if (t2 == null) tTo.setText("");
+        else {
+            tTo.setText(t2.getHours() + ":" + (t2.getMinutes() <= 9 ? "0" : "") + t2.getMinutes()); //TODO: format
+            if (firstIsBefore(t2, now))
+                tTo  .setTextColor(Color.LTGRAY);
+        }
+
+        return row;
+    }
+
+    public boolean firstIsBefore(Date d1, Date d2) {
+        if (d1.getHours() < d2.getHours())
+            return true;
+        if (d1.getHours() == d2.getHours() && d1.getMinutes() < d2.getMinutes())
+            return true;
+        return false;
+    }
+
     public View makeThreeColumnsRow(TimeTable.Line line) {
         View row = layoutInflater.inflate(R.layout.row_layout, null);
+        Calendar calendar = Calendar.getInstance();
 
         TextView text = (TextView) row.findViewById(R.id.time);
         ImageView imFrom = (ImageView) row.findViewById(R.id.from);
@@ -157,13 +214,13 @@ public class MainActivity extends AppCompatActivity {
         imFrom.setVisibility(line.from ? View.VISIBLE : View.INVISIBLE);
         imTo.setVisibility(line.to ? View.VISIBLE : View.INVISIBLE);
 
-        if (line.isBefore(Calendar.getInstance().getTime()))
+        if (line.isBefore(calendar.getTime()))
             text.setTextColor(Color.LTGRAY);
 
         return row;
     }
 
-    public View makeTimeLeftRow(Time t, Date today) {
+    public View makeTimeLeftRow(Date t, Date today) {
         int leftH = t.getHours() - today.getHours();
         int leftM = t.getMinutes() - today.getMinutes();
 
@@ -175,10 +232,10 @@ public class MainActivity extends AppCompatActivity {
                 leftH--;
                 leftM += 60;
             }
-            timeLeft = "(осталось";
+            timeLeft = ""; //"(осталось";
             if (leftH != 0) timeLeft += " " + leftH + " час";
             if (leftM != 0) timeLeft += " " + leftM + " мин";
-            timeLeft += ")";
+            //timeLeft += ")";
         }
 
         View row = layoutInflater.inflate(R.layout.short_row, null);
