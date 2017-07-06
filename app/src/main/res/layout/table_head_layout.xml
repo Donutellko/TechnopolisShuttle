@@ -14,6 +14,7 @@
         android:text="Время"
         android:textAlignment="center"
         android:textSize="20sp"
+        android:layout_margin="3dp"
         />
 
     <TextView
@@ -23,7 +24,9 @@
         android:layout_weight="1"
         android:text="От метро"
         android:textAlignment="center"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:layout_margin="3dp"
+        />
 
     <TextView
         android:id="@+id/textView3"
@@ -32,6 +35,8 @@
         android:layout_weight="1"
         android:text="К метро"
         android:textAlignment="center"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:layout_margin="3dp"
+        />
 
 </LinearLayout>

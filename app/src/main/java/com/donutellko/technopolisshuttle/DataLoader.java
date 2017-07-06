@@ -199,13 +199,18 @@ class TimeTable {
 			this.to = to;
 		}
 
-		//public boolean isBefore(Time current) {
-		//	return current.compareTo(time) < 0;
-		//}
+		public boolean isBefore(Time current) {
+			int curH = current.getHours(), schedH = time.getHours(),
+					curM = current.getMinutes(), schedM = time.getMinutes();
+
+			if (curH > schedH) return true;
+			else if (curH < schedH) return false;
+			return curM > schedM;
+		}
 
 		public boolean isBefore(Date current) {
 			int curH = current.getHours(), schedH = time.getHours(),
-			curM = current.getMinutes(), schedM = time.getMinutes();
+					curM = current.getMinutes(), schedM = time.getMinutes();
 
 			if (curH > schedH) return true;
 			else if (curH < schedH) return false;
@@ -217,4 +222,5 @@ class TimeTable {
 			return time + " " + (from ? "+" : "-") + " " + (to ? "+" : "-");
 		}
 	}
+
 }
