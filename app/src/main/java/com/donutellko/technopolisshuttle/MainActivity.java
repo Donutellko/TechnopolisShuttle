@@ -28,7 +28,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int COUNT_TO_SHOW_ON_SHORT = 3;
+    private static final int COUNT_TO_SHOW_ON_SHORT = 5;
     private DataLoader dataLoader = new DataLoader();
     private TimeTable timeTable;
     private LayoutInflater layoutInflater;
@@ -60,32 +60,32 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.navigation_short:
-                            makeShortScheduleView();
-                            return true;
-                        case R.id.navigation_full:
-                            makeFullScheduleView();
-                            return true;
-                        case R.id.navigation_map:
-                            makeMapView();
-                            return true;
-                    }
-                    return false;
-                }
-            };
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_short:
+                    makeShortScheduleView();
+                    return true;
+                case R.id.navigation_full:
+                    makeFullScheduleView();
+                    return true;
+                case R.id.navigation_map:
+                    makeMapView();
+                    return true;
+            }
+            return false;
+        }
+    };
 
     private RadioGroup.OnCheckedChangeListener mOnRadioGroupChangedListener
             = new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                    Log.i("radiobutton", "нажата радиокнопка");
-                    toTechnopolis = ((RadioButton) findViewById(R.id.rb_to)).isActivated();
-                    makeShortScheduleView();
-                }
-            };
+        @Override
+        public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+            Log.i("radiobutton", "нажата радиокнопка");
+            toTechnopolis = ((RadioButton) findViewById(R.id.rb_to)).isActivated();
+            makeShortScheduleView();
+        }
+    };
 
     private void makeShortScheduleView() {
         contentView.removeAllViews(); // очищаем от добавленных ранее отображений
@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         TableLayout table = shortView.findViewById(R.id.table);
+        table.removeAllViews();
 
         if (timeTable == null) timeTable = dataLoader.getFullDefaultInfo(); // объект с расписанием
 
@@ -145,17 +146,12 @@ public class MainActivity extends AppCompatActivity {
         contentView.removeAllViews(); // очищаем от созданных ранее объектов
     }
 
-    public TableRow makeThreeColumnsRow(TimeTable.Line line) {
-        TableRow tr = new TableRow(this);
+    public View makeThreeColumnsRow(TimeTable.Line line) {
         View row = layoutInflater.inflate(R.layout.row_layout, null);
 
         TextView text = (TextView) row.findViewById(R.id.time);
         ImageView imFrom = (ImageView) row.findViewById(R.id.from);
         ImageView imTo = (ImageView) row.findViewById(R.id.to);
-
-        row.findViewById(R.id.time).setMinimumWidth((int) (width / 3.0)); // костыли
-        row.findViewById(R.id.from).setMinimumWidth((int) (width / 3.0)); // костылики
-        row.findViewById(R.id.to).setMinimumWidth((int) (width / 3.0)); // костылёчки
 
         text.setText(line.time.getHours() + ":" + (line.time.getMinutes() <= 9 ? "0" : "") + line.time.getMinutes()); //TODO: format
         imFrom.setVisibility(line.from ? View.VISIBLE : View.INVISIBLE);
@@ -164,11 +160,10 @@ public class MainActivity extends AppCompatActivity {
         if (line.isBefore(Calendar.getInstance().getTime()))
             text.setTextColor(Color.LTGRAY);
 
-        tr.addView(row);
-        return tr;
+        return row;
     }
 
-    public TableRow makeTimeLeftRow(Time t, Date today) {
+    public View makeTimeLeftRow(Time t, Date today) {
         int leftH = t.getHours() - today.getHours();
         int leftM = t.getMinutes() - today.getMinutes();
 
@@ -190,8 +185,6 @@ public class MainActivity extends AppCompatActivity {
         ((TextView) row.findViewById(R.id.time)).setText(t.getHours() + ":" + (t.getMinutes() <= 9 ? "0" : "") + t.getMinutes());
         ((TextView) row.findViewById(R.id.timeleft)).setText(timeLeft );
 
-        TableRow tr = new TableRow(getApplicationContext());
-        tr.addView(row);
-        return tr;
+        return row;
     }
 }
