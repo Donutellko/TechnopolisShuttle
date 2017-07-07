@@ -14,6 +14,47 @@ import java.util.List;
 // Получает данные из памяти и базы данных
 public class DataLoader {
 
+	public class STime {
+		int hour, min;
+
+		public STime (int hour, int min) {
+			this.hour = hour;
+			this.min = min;
+		}
+		public STime (Date d) {
+			hour = d.getHours();
+			min = d.getMinutes();
+		}
+		public STime (java.sql.Time t) {
+			hour = t.getHours();
+			min = t.getMinutes();
+		}
+
+		public boolean isBefore(STime t) {
+			if (hour < t.hour) return true;
+			if (hour == t.hour && min < t.min)
+				return true;
+			return false;
+		}
+
+		public STime getDifference (STime t) {
+			int dh = t.hour - hour;
+			int dm = t.min - min;
+			if (dm < 0 && dh > 0) {
+				dh--;
+				dm += 60;
+			}
+			return new STime(dh, dm);
+		}
+
+		public ArrayList<STime> getListAfter (STime[] arr) {
+			ArrayList<STime> list = new ArrayList<STime>();
+			for (STime t : arr)
+				if (this.isBefore(t)) list.add(t);
+			return list;
+		}
+	}
+
 	@SuppressWarnings("deprecation")
 	Time[] defaultTimeFrom = new Time[]{
 			new Time(7, 45, 0),

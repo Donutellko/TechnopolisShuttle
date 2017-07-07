@@ -3,7 +3,6 @@ package com.donutellko.technopolisshuttle;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -16,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -39,10 +39,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
 	private static final int COUNT_TO_SHOW_ON_SHORT = 5;
+	private static final boolean USE_THREE_COLUMNS_FULL_SCHEDULE = false;
+	private boolean toTechnopolis = true;
+	private boolean showPast = true;
 	private DataLoader dataLoader = new DataLoader();
 	private TimeTable timeTable;
 	private LayoutInflater layoutInflater;
-	private boolean toTechnopolis = true;
 	LinearLayout contentView; // Область контента (всё кроме нижней панели)
 	private View shortView, fullView, mapView;
 	Calendar curtime = Calendar.getInstance();
@@ -68,67 +70,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		navigation.setSelectedItemId(R.id.navigation_short);
 	}
 
-	@Override
-	public void onMapReady(GoogleMap map) {
-		LatLng technopolis = new LatLng(59.818026, 30.327783);
-		LatLng underground = new LatLng(59.854728, 30.320958);
-
-		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			// TODO: Consider calling
-			//    ActivityCompat#requestPermissions
-			// here to request the missing permissions, and then overriding
-			//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-			//                                          int[] grantResults)
-			// to handle the case where the user grants the permission. See the documentation
-			// for ActivityCompat#requestPermissions for more details.
-			return;
-		}
-
-		map.setMyLocationEnabled(true);
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(underground, 13));
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(technopolis, 13));
-
-		map.addMarker(new MarkerOptions()
-				.title(     "м. Московская")
-				.snippet("ст.м. Московская")
-				.position(underground));
-
-
-		map.addMarker(new MarkerOptions()
-				.title("TECHNOPOLIS")
-				.snippet("Технополис.")
-				.position(technopolis));
-	}
-
-	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-			= new BottomNavigationView.OnNavigationItemSelectedListener() {
-		@Override
-		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-			switch (item.getItemId()) {
-				case R.id.navigation_short:
-					makeShortScheduleView();
-					return true;
-				case R.id.navigation_full:
-					makeFullScheduleView();
-					return true;
-				case R.id.navigation_map:
-					makeMapView();
-					return true;
-			}
-			return false;
-		}
-	};
-
-	private RadioGroup.OnCheckedChangeListener mOnRadioGroupChangedListener
-			= new RadioGroup.OnCheckedChangeListener() {
-		@Override
-		public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-			Log.i("radiobutton", "нажата радиокнопка");
-			toTechnopolis = ((RadioButton) findViewById(R.id.rb_to)).isActivated();
-			makeShortScheduleView();
-		}
-	};
-
 	private void makeShortScheduleView() {
 		contentView.removeAllViews(); // очищаем от добавленных ранее отображений
 		Date now = curtime.getTime(); // определяем текущее время
@@ -147,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		if (timeTable == null) timeTable = dataLoader.getFullDefaultInfo(); // объект с расписанием
 
 		if (curtime.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) { // особое расписание по пятницам
-			CheckBox friday_view = contentView.findViewById(R.id.friday); // TODO: универсализировать для любых наборов дней недели
+			CheckBox friday_view = shortView.findViewById(R.id.friday); // TODO: универсализировать для любых наборов дней недели
 			friday_view.setChecked(true);
 		}
 
@@ -173,17 +114,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	}
 
 	private void makeFullScheduleView() {
+		if (fullView == null) {
+			fullView = layoutInflater.inflate(R.layout.full_layout, null); // Создаём view с таблицей
+			CheckBox checkBox = fullView.findViewById(R.id.view_past);
+			checkBox.setOnCheckedChangeListener(mOnShowPastChangedListener);
+			checkBox.setChecked(showPast);
+		}
+
 		contentView.removeAllViews(); // очищаем от созданных ранее объектов
-		fullView = layoutInflater.inflate(R.layout.full_layout, null); // Создаём view с таблицей
 		contentView.addView(fullView); // добавляем созданный view в область контента
 
 		if (timeTable == null)
 			timeTable = dataLoader.getFullDefaultInfo(); // объект с данными о времени
 
-		((LinearLayout) fullView.findViewById(R.id.content)).addView(
-				//makeThreeColumnsTable(timeTable)
-				makeTwoColumnsTable(timeTable)
+
+		LinearLayout content = fullView.findViewById(R.id.content);
+		content.removeAllViews();
+		content.addView(layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+		content.addView(
+				USE_THREE_COLUMNS_FULL_SCHEDULE ?
+					makeThreeColumnsTable(timeTable) : makeTwoColumnsTable(timeTable)
 		);
+
 	}
 
 	public void makeMapView() {
@@ -199,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 	public TableLayout makeThreeColumnsTable(TimeTable timeTable) {
 		TableLayout table = new TableLayout(this); //fullView.findViewById(R.id.table); // находим таблицу на созданном view
-		contentView.addView(layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+		contentView.addView(layoutInflater.inflate(R.layout.full_3col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
 
 		for (TimeTable.Line l : timeTable.lines)
 			table.addView(makeThreeColumnsRow(l)); // суём инфу в таблицу
@@ -207,17 +159,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	}
 
 	public TableLayout makeTwoColumnsTable(TimeTable timeTable) {
-		TableLayout table = new TableLayout(this); //fullView.findViewById(R.id.table); // находим таблицу на созданном view
-		contentView.addView(layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+		Date now = curtime.getTime();
+		TableLayout table = new TableLayout(this);  // находим таблицу на созданном view
 
-		table.addView(layoutInflater.inflate(R.layout.full_3col_head, null));
+		List<Date>
+				from = new ArrayList<Date>(),
+				to   = new ArrayList<Date>();
 
-		int max = timeTable.from.length;
-		if (timeTable.to.length > max) max = timeTable.to.length;
-		for (int i = 0; i < max; i++) {
-			table.addView(makeTwoColumnsRow(
-					(i < timeTable.from.length ? timeTable.from[i] : null),
-					(i < timeTable.to.length ? timeTable.to[i] : null))); // суём инфу в таблицу
+		if (showPast) {
+			int max = timeTable.from.length;
+			if (timeTable.to.length > max) max = timeTable.to.length;
+			for (int i = 0; i < max; i++) {
+				table.addView(makeTwoColumnsRow(
+						(i < timeTable.from.length ? timeTable.from[i] : null),
+						(i < timeTable.to  .length ? timeTable.to  [i] : null))); // суём инфу в таблицу
+			}
+		} else {
+			for (Date d : timeTable.from)
+				if (d.getHours() > now.getHours() || (d.getHours() == now.getHours() && d.getMinutes() > now.getMinutes()))
+					from.add(d);
+
+			for (Date d : timeTable.to)
+				if (d.getHours() > now.getHours() || (d.getHours() == now.getHours() && d.getMinutes() > now.getMinutes()))
+					to.add(d);
+
+			for (int i = 0; i < Math.max(from.size(), to.size()); i++)
+				table.addView(makeTwoColumnsRow(
+						(i < from.size() ? from.get(i) : null),
+						(i < to.size() ? to.get(i) : null))); // суём инфу в таблицу
 		}
 		return table;
 	}
@@ -296,4 +265,85 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 		return row;
 	}
+
+
+
+
+
+
+
+	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+			= new BottomNavigationView.OnNavigationItemSelectedListener() {
+		@Override
+		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+			Log.i("listener", "bootomnavigation changed");
+			switch (item.getItemId()) {
+				case R.id.navigation_short:
+					makeShortScheduleView();
+					return true;
+				case R.id.navigation_full:
+					makeFullScheduleView();
+					return true;
+				case R.id.navigation_map:
+					makeMapView();
+					return true;
+			}
+			return false;
+		}
+	};
+
+	private RadioGroup.OnCheckedChangeListener mOnRadioGroupChangedListener
+			= new RadioGroup.OnCheckedChangeListener() {
+		@Override
+		public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+			Log.i("listener", "toTechnopolis changed");
+			Log.i("radiobutton", "нажата радиокнопка");
+			toTechnopolis = ((RadioButton) findViewById(R.id.rb_to)).isActivated();
+			makeShortScheduleView();
+		}
+	};
+
+	private CheckBox.OnCheckedChangeListener mOnShowPastChangedListener
+			= new CheckBox.OnCheckedChangeListener() {
+		@Override
+		public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+			Log.i("listener", "showPast changed");
+			showPast = compoundButton.isChecked();
+			makeFullScheduleView();
+		}
+	};
+
+
+	@Override
+	public void onMapReady(GoogleMap map) {
+		LatLng technopolis = new LatLng(59.818026, 30.327783);
+		LatLng underground = new LatLng(59.854728, 30.320958);
+
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			// TODO: Consider calling
+			//    ActivityCompat#requestPermissions
+			// here to request the missing permissions, and then overriding
+			//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+			//                                          int[] grantResults)
+			// to handle the case where the user grants the permission. See the documentation
+			// for ActivityCompat#requestPermissions for more details.
+			return;
+		}
+
+		map.setMyLocationEnabled(true);
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(underground, 13));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(technopolis, 13));
+
+		map.addMarker(new MarkerOptions()
+				.title(     "м. Московская")
+				.snippet("ст.м. Московская")
+				.position(underground));
+
+
+		map.addMarker(new MarkerOptions()
+				.title("TECHNOPOLIS")
+				.snippet("Технополис.")
+				.position(technopolis));
+	}
+
 }
