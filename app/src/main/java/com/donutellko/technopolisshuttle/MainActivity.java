@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void makeShortScheduleView() {
         contentView.removeAllViews(); // очищаем от добавленных ранее отображений
-        Date today = curtime.getTime(); // определяем текущее время
+        Date now = curtime.getTime(); // определяем текущее время
 
         if (shortView == null) {
             shortView = layoutInflater.inflate(R.layout.short_layout, null);
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         TableLayout table = shortView.findViewById(R.id.table);
         table.removeAllViews();
-        table.addView(layoutInflater.inflate(R.layout.short_table_head, null));
+        table.addView(layoutInflater.inflate(R.layout.short_head, null));
 
         if (timeTable == null) timeTable = dataLoader.getFullDefaultInfo(); // объект с расписанием
 
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         List<Date> closest = new ArrayList<>(3);
         for (TimeTable.Line line : timeTable.lines) {
-            if ((toTechnopolis == line.to || toTechnopolis != line.from) && !line.isBefore(today)) closest.add(line.time);
+            if ((toTechnopolis == line.to || toTechnopolis != line.from) && !line.isBefore(now)) closest.add(line.time);
             if (closest.size() >= COUNT_TO_SHOW_ON_SHORT) break;
         }
 
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             table.addView(empty_row);
         } else
             for (Date t : closest) {
-                table.addView(makeTimeLeftRow(t, today));
+                table.addView(makeTimeLeftRow(t, now));
             }
 
         contentView.addView(shortView);
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void makeFullScheduleView() {
         contentView.removeAllViews(); // очищаем от созданных ранее объектов
-        fullView = layoutInflater.inflate(R.layout.full_table, null); // Создаём view с таблицей
+        fullView = layoutInflater.inflate(R.layout.full_layout, null); // Создаём view с таблицей
         contentView.addView(fullView); // добавляем созданный view в область контента
 
         if (timeTable == null) timeTable = dataLoader.getFullDefaultInfo(); // объект с данными о времени
@@ -143,11 +143,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void makeMapView() {
         contentView.removeAllViews(); // очищаем от созданных ранее объектов
+
+
     }
 
     public TableLayout makeThreeColumnsTable(TimeTable timeTable) {
         TableLayout table = new TableLayout(this); //fullView.findViewById(R.id.table); // находим таблицу на созданном view
-        contentView.addView(layoutInflater.inflate(R.layout.table_head_layout, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+        contentView.addView(layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
 
         for (TimeTable.Line l : timeTable.lines)
             table.addView(makeThreeColumnsRow(l)); // суём инфу в таблицу
@@ -156,9 +158,9 @@ public class MainActivity extends AppCompatActivity {
 
     public TableLayout makeTwoColumnsTable(TimeTable timeTable) {
         TableLayout table = new TableLayout(this); //fullView.findViewById(R.id.table); // находим таблицу на созданном view
-        contentView.addView(layoutInflater.inflate(R.layout.table_head_layout, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+        contentView.addView(layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
 
-        table.addView(layoutInflater.inflate(R.layout.full_table_head, null));
+        table.addView(layoutInflater.inflate(R.layout.full_3col_head, null));
 
         int max = timeTable.from.length;
         if (timeTable.to.length > max) max = timeTable.to.length;
@@ -171,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public View makeTwoColumnsRow(Date t1, Date t2) {
-        View row = layoutInflater.inflate(R.layout.row_2columns, null);
+        View row = layoutInflater.inflate(R.layout.full_2col_row, null);
         Date now = Calendar.getInstance().getTime();
 
         TextView tFrom = (TextView) row.findViewById(R.id.t_from);
@@ -203,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public View makeThreeColumnsRow(TimeTable.Line line) {
-        View row = layoutInflater.inflate(R.layout.row_layout, null);
+        View row = layoutInflater.inflate(R.layout.full_3col_row, null);
         Calendar calendar = Calendar.getInstance();
 
         TextView text = (TextView) row.findViewById(R.id.time);
