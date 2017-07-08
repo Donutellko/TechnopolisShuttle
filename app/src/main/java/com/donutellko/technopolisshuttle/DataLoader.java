@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.donutellko.technopolisshuttle.DataLoader.STime;
+import com.donutellko.technopolisshuttle.TimeTable.ScheduleElement;
 
 /**
  * Created by Donut on 04.07.2017.
@@ -76,6 +77,106 @@ public class DataLoader {
 	}
 
 	public TimeTable getFullDefaultInfo() {
+		ScheduleElement[] defaultTimeFrom = new ScheduleElement[] {
+				new ScheduleElement(7, 45, 31),
+
+				new ScheduleElement(8, 00, 31),
+				new ScheduleElement(8, 10, 31),
+				new ScheduleElement(8, 20, 31),
+				new ScheduleElement(8, 30, 31),
+				new ScheduleElement(8, 35, 31),
+				new ScheduleElement(8, 40, 31),
+				new ScheduleElement(8, 50, 31),
+
+				new ScheduleElement(9, 00, 31),
+				new ScheduleElement(9, 10, 31),
+				new ScheduleElement(9, 15, 31),
+				new ScheduleElement(9, 20, 31),
+				new ScheduleElement(9, 30, 31),
+				new ScheduleElement(9, 40, 31),
+				new ScheduleElement(9, 50, 31),
+				new ScheduleElement(9, 55, 31),
+
+				new ScheduleElement(10, 00, 31),
+				new ScheduleElement(10, 10, 31),
+				new ScheduleElement(10, 20, 31),
+				new ScheduleElement(10, 30, 31),
+				new ScheduleElement(10, 35, 31),
+				new ScheduleElement(10, 40, 31),
+				new ScheduleElement(10, 50, 31),
+
+				new ScheduleElement(11, 00, 31),
+				new ScheduleElement(11, 10, 31),
+				new ScheduleElement(11, 20, 31),
+				new ScheduleElement(11, 30, 31),
+				new ScheduleElement(11, 50, 31),
+
+				new ScheduleElement(12, 10, 31),
+				new ScheduleElement(12, 30, 31),
+
+				new ScheduleElement(13, 10, 31),
+				new ScheduleElement(13, 50, 31),
+
+				new ScheduleElement(14, 30, 31),
+
+				new ScheduleElement(15, 10, 31),
+				new ScheduleElement(15, 30, 31),
+
+				new ScheduleElement(16, 10, 31),
+				new ScheduleElement(16, 50, 31),
+
+				new ScheduleElement(17, 20, 31),
+		};
+
+		ScheduleElement[] defaultTimeTo = new ScheduleElement[]{
+				new ScheduleElement(9, 30, 31),
+
+				new ScheduleElement(10, 10, 31),
+				new ScheduleElement(10, 50, 31),
+
+				new ScheduleElement(11, 30, 31),
+
+				new ScheduleElement(12, 10, 31),
+				new ScheduleElement(12, 50, 31),
+
+				new ScheduleElement(13, 30, 31),
+
+				new ScheduleElement(14, 10, 31),
+				new ScheduleElement(14, 50, 31),
+
+				new ScheduleElement(15, 10, 31),
+				new ScheduleElement(15, 30, 31),
+				new ScheduleElement(15, 50, 31),
+
+				new ScheduleElement(16, 00, 31),
+				new ScheduleElement(16, 30, 31),
+				new ScheduleElement(16, 50, 31),
+
+				new ScheduleElement(17, 00, 31),
+				new ScheduleElement(17, 10, 31),
+				new ScheduleElement(17, 30, 31),
+				new ScheduleElement(17, 40, 31),
+				new ScheduleElement(17, 50, 31),
+
+				new ScheduleElement(18, 00, 31),
+				new ScheduleElement(18, 10, 31),
+				new ScheduleElement(18, 20, 31),
+				new ScheduleElement(18, 30, 31),
+				new ScheduleElement(18, 40, 31),
+				new ScheduleElement(18, 50, 31),
+
+				new ScheduleElement(19, 10, 31),
+				new ScheduleElement(19, 20, 31),
+				new ScheduleElement(19, 30, 31),
+				new ScheduleElement(19, 40, 31),
+				new ScheduleElement(19, 50, 31),
+
+				new ScheduleElement(20, 10, 31),
+				new ScheduleElement(20, 45, 31),
+
+				new ScheduleElement(21, 20, 31),
+
+		};
 		return new TimeTable(defaultTimeFrom, defaultTimeTo);
 	}
 
@@ -84,204 +185,67 @@ public class DataLoader {
 		return getFullDefaultInfo();
 	}
 
-	public TimeTable getFullDBInfo() {
-		//TODO
-		return getFullDefaultInfo();
+	public TimeTable getFullJsonInfo() {
+		String json = getJson();
+		ScheduleElement[][] fromAndTo = null;
+		//= new Gson().fromJson()
+
+		TimeTable t = new TimeTable(fromAndTo[0], fromAndTo[1]);
+		return t;
 	}
 
-	STime[] defaultTimeFrom = new STime[] {
-			new STime(7, 45),
+	public String getJson() {
+		// TODO
+		return getDefaultJson();
+	}
 
-			new STime(8, 00),
-			new STime(8, 10),
-			new STime(8, 20),
-			new STime(8, 30),
-			new STime(8, 35),
-			new STime(8, 40),
-			new STime(8, 50),
+	private String getDefaultJson() {
+		String s = "[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":15},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":15},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}]						[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]";
+		return s;
+	}
 
-			new STime(9, 00),
-			new STime(9, 10),
-			new STime(9, 15),
-			new STime(9, 20),
-			new STime(9, 30),
-			new STime(9, 40),
-			new STime(9, 50),
-			new STime(9, 55),
 
-			new STime(10, 00),
-			new STime(10, 10),
-			new STime(10, 20),
-			new STime(10, 30),
-			new STime(10, 35),
-			new STime(10, 40),
-			new STime(10, 50),
-
-			new STime(11, 00),
-			new STime(11, 10),
-			new STime(11, 20),
-			new STime(11, 30),
-			new STime(11, 50),
-
-			new STime(12, 10),
-			new STime(12, 30),
-
-			new STime(13, 10),
-			new STime(13, 50),
-
-			new STime(14, 30),
-
-			new STime(15, 10),
-			new STime(15, 30),
-
-			new STime(16, 10),
-			new STime(16, 50),
-
-			new STime(17, 20),
-	};
-
-	STime[] defaultTimeTo = new STime[]{
-			new STime(9, 30),
-
-			new STime(10, 10),
-			new STime(10, 50),
-
-			new STime(11, 30),
-
-			new STime(12, 10),
-			new STime(12, 50),
-
-			new STime(13, 30),
-
-			new STime(14, 10),
-			new STime(14, 50),
-
-			new STime(15, 10),
-			new STime(15, 30),
-			new STime(15, 50),
-
-			new STime(16, 00),
-			new STime(16, 30),
-			new STime(16, 50),
-
-			new STime(17, 00),
-			new STime(17, 10),
-			new STime(17, 30),
-			new STime(17, 40),
-			new STime(17, 50),
-
-			new STime(18, 00),
-			new STime(18, 10),
-			new STime(18, 20),
-			new STime(18, 30),
-			new STime(18, 40),
-			new STime(18, 50),
-
-			new STime(19, 10),
-			new STime(19, 20),
-			new STime(19, 30),
-			new STime(19, 40),
-			new STime(19, 50),
-
-			new STime(20, 10),
-			new STime(20, 45),
-
-			new STime(21, 20),
-
-	};
 }
 
 class TimeTable {
-	public List<Line> lines;
-	public STime[] from, to;
+	public ScheduleElement[] from, to;
 
-	public TimeTable(STime[] from, STime[] to) {
-		lines = new ArrayList<Line>();
+	public TimeTable(ScheduleElement[] from, ScheduleElement[] to) {
 		this.from = from;
 		this.to = to;
-
-		Log.i("lol", "создаём таблицу");
-		int i = 0, j = 0;
-		while (i < from.length) {
-			if (j < to.length) {
-				switch (from[i].compareTo(to[j])) {
-					case -1:
-						lines.add(new Line(from[i], true, false));
-						i++;
-						break;
-					case 0:
-						lines.add(new Line(from[i], true, true));
-						i++;
-						j++;
-						break;
-					case 1:
-						lines.add(new Line(to[j], true, false));
-						j++;
-						break;
-				}
-			} else {
-				lines.add(new Line(from[i], true, false));
-				i++;
-			}
-		}
-
-		while (j < to.length) {
-			lines.add(new Line(to[j], false, true));
-			j++;
-		}
-
-		Log.i("lol", this.toString());
 	}
 
-	public List<STime> getTimeAfter (STime now, boolean To) {
-		Log.i("lolaofaosdjfsdfoajsf", to.length + " " + from.length + " " + To);
-		STime[] cur = To ? to : from;
-		List<STime> result = new ArrayList<>();
+	public TimeTable(List<ScheduleElement> from, List<ScheduleElement> to) {
+		this.from = (ScheduleElement[]) from.toArray();
+		this.to = (ScheduleElement[]) to.toArray();
+	}
 
-		for (STime t : cur)
-			if (now.isBefore(t))
+	public List<ScheduleElement> getTimeAfter (STime now, boolean To) {
+		List<ScheduleElement> result = new ArrayList<>();
+		for (ScheduleElement t : (To ? to : from))
+			if (now.isBefore(t.time))
 				result.add(t);
 
 		return result;
 	}
 
-	public TimeTable(Line[] lines) {
-		this.lines = new ArrayList<Line>(lines.length);
-		for (Line l : lines)
-			this.lines.add(l);
-	}
-
-	@Override
-	public String toString() {
-		String s = "";
-		for (Line l : lines)
-			s += "\n" + l;
-		return s;
-	}
-
-	class Line {
+	static class ScheduleElement {
 		public STime time;
-		public boolean from, to;
+		public int mask;
 
-		public Line(STime time, boolean from, boolean to) {
+		public ScheduleElement(STime time, int mask) {
 			this.time = time;
-			this.from = from;
-			this.to = to;
+			this.mask = mask;
 		}
 
-		public boolean isBefore(STime current) {
-			int curH = current.hour, schedH = time.hour,
-					curM = current.min, schedM = time.min;
-
-			if (curH > schedH) return true;
-			else if (curH < schedH) return false;
-			return curM > schedM;
+		public ScheduleElement(int hour, int min, int mask) {
+			this.time = new STime(hour, min);
+			this.mask = mask;
 		}
 
-		@Override
-		public String toString() {
-			return time + " " + (from ? "+" : "-") + " " + (to ? "+" : "-");
+		public boolean worksAt(int weekday) { // номер дня недели, начиная с нуля
+			int m = 1 << weekday;
+			return ((mask & m) != 0);
 		}
 	}
-
 }

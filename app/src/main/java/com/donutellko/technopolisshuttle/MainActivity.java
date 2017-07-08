@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 		ToggleButton from_tumbler = (ToggleButton) shortView.findViewById(R.id.toggle_from);
-		List<STime> after = timeTable.getTimeAfter(now, from_tumbler.isChecked());
+		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, from_tumbler.isChecked());
 
 		for (int i = 0; i < Math.min(after.size(), COUNT_TO_SHOW_ON_SHORT); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
@@ -138,8 +138,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		}
 	}
 
-	public View getTimeLeftRow(DataLoader.STime t, STime now) {
-		STime left = now.getDifference(t);
+	public View getTimeLeftRow(TimeTable.ScheduleElement t, STime now) {
+		STime left = now.getDifference(t.time);
 
 		String timeLeft = "";
 		if (left.isZero())
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		}
 
 		View row = layoutInflater.inflate(R.layout.short_row, null);
-		((TextView) row.findViewById(R.id.time)).setText(t.hour + ":" + (t.min <= 9 ? "0" : "") + t.min);
+		((TextView) row.findViewById(R.id.time)).setText(t.time.hour + ":" + (t.time.min <= 9 ? "0" : "") + t.time.min);
 		((TextView) row.findViewById(R.id.timeleft)).setText(timeLeft);
 
 		return row;
@@ -175,22 +175,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		LinearLayout content = fullView.findViewById(R.id.content);
 		content.removeAllViews();
 		content.addView(layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
-		content.addView(
-				USE_THREE_COLUMNS_FULL_SCHEDULE ?
-					makeThreeColumnsTable(timeTable) : makeTwoColumnsTable(timeTable)
-		);
-
+		content.addView(makeTwoColumnsTable(timeTable));
 	}
 
-
-	public TableLayout makeThreeColumnsTable(TimeTable timeTable) {
-		TableLayout table = new TableLayout(this); //fullView.findViewById(R.id.table); // находим таблицу на созданном view
-		contentView.addView(layoutInflater.inflate(R.layout.full_3col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
-
-		for (TimeTable.Line l : timeTable.lines)
-			table.addView(makeThreeColumnsRow(l)); // суём инфу в таблицу
-		return table;
-	}
 
 	public TableLayout makeTwoColumnsTable(TimeTable timeTable) {
 		STime now = new STime(Calendar.getInstance().getTime());
@@ -257,24 +244,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		return false;
 	}
 
-	public View makeThreeColumnsRow(TimeTable.Line line) {
-		View row = layoutInflater.inflate(R.layout.full_3col_row, null);
-		Calendar calendar = Calendar.getInstance();
-
-		TextView text = (TextView) row.findViewById(R.id.time);
-		ImageView imFrom = (ImageView) row.findViewById(R.id.from);
-		ImageView imTo = (ImageView) row.findViewById(R.id.to);
-
-		text.setText(line.time.hour + ":" + (line.time.min <= 9 ? "0" : "") + line.time.min); //TODO: format
-		imFrom.setVisibility(line.from ? View.VISIBLE : View.INVISIBLE);
-		imTo.setVisibility(line.to ? View.VISIBLE : View.INVISIBLE);
-
-		if (line.isBefore(new STime(calendar.getTime())))
-			text.setTextColor(Color.LTGRAY);
-
-		return row;
-	}
-
 	public void makeMapView() {
 		contentView.removeAllViews(); // очищаем от созданных ранее объектов
 		if (mapView == null) mapView = layoutInflater.inflate(R.layout.map_layout, null);
@@ -289,11 +258,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		contentView.removeAllViews();
 		contentView.addView(view);
 	}
-
-
-
-
-
 
 
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
