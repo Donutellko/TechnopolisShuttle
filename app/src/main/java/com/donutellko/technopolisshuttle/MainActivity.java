@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 		if (timeTable == null) {
 			Log.i("timeTable", "loading");
-			timeTable = dataLoader.getFullDefaultInfo(); // объект с расписанием
+			timeTable = dataLoader.getFullJsonInfo(); // объект с расписанием
 		}
 
 		TableLayout table = shortView.findViewById(R.id.table);
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 		ToggleButton from_tumbler = (ToggleButton) shortView.findViewById(R.id.toggle_from);
-		List<STime> after = timeTable.getTimeAfter(now, from_tumbler.isChecked());
+		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, from_tumbler.isChecked());
 
 		for (int i = 0; i < Math.min(after.size(), COUNT_TO_SHOW_ON_SHORT); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
@@ -138,8 +138,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		}
 	}
 
-	public View getTimeLeftRow(DataLoader.STime t, STime now) {
-		STime left = now.getDifference(t);
+	public View getTimeLeftRow(TimeTable.ScheduleElement t, STime now) {
+		STime left = now.getDifference(t.time);
 
 		String timeLeft = "";
 		if (left.isZero())
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		}
 
 		View row = layoutInflater.inflate(R.layout.short_row, null);
-		((TextView) row.findViewById(R.id.time)).setText(t.hour + ":" + (t.min <= 9 ? "0" : "") + t.min);
+		((TextView) row.findViewById(R.id.time)).setText(t.time.hour + ":" + (t.time.min <= 9 ? "0" : "") + t.time.min);
 		((TextView) row.findViewById(R.id.timeleft)).setText(timeLeft);
 
 		return row;
@@ -169,36 +169,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		contentView.addView(fullView); // добавляем созданный view в область контента
 
 		if (timeTable == null)
-			timeTable = dataLoader.getFullDefaultInfo(); // объект с данными о времени
+			timeTable = dataLoader.getFullJsonInfo(); // объект с данными о времени
 
 
 		LinearLayout content = fullView.findViewById(R.id.content);
 		content.removeAllViews();
 		content.addView(layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
-		content.addView(
-				USE_THREE_COLUMNS_FULL_SCHEDULE ?
-					makeThreeColumnsTable(timeTable) : makeTwoColumnsTable(timeTable)
-		);
-
+		content.addView(makeTwoColumnsTable(timeTable));
 	}
 
-
-	public TableLayout makeThreeColumnsTable(TimeTable timeTable) {
-		TableLayout table = new TableLayout(this); //fullView.findViewById(R.id.table); // находим таблицу на созданном view
-		contentView.addView(layoutInflater.inflate(R.layout.full_3col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
-
-		for (TimeTable.Line l : timeTable.lines)
-			table.addView(makeThreeColumnsRow(l)); // суём инфу в таблицу
-		return table;
-	}
 
 	public TableLayout makeTwoColumnsTable(TimeTable timeTable) {
 		STime now = new STime(Calendar.getInstance().getTime());
 		TableLayout table = new TableLayout(this);  // находим таблицу на созданном view
 
-		List<STime>
-				from = new ArrayList<DataLoader.STime>(),
-				to   = new ArrayList<DataLoader.STime>();
+		List<TimeTable.ScheduleElement>
+				from = new ArrayList<>(),
+				to   = new ArrayList<>();
 
 		if (showPast) {
 			int max = timeTable.from.length;
@@ -209,12 +196,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 						(i < timeTable.to  .length ? timeTable.to  [i] : null))); // суём инфу в таблицу
 			}
 		} else {
-			for (STime d : timeTable.from)
-				if (d.hour > now.hour || (d.hour == now.hour && d.min > now.min))
+			for (TimeTable.ScheduleElement d : timeTable.from)
+				if (d.time.hour > now.hour || (d.time.hour == now.hour && d.time.min > now.min))
 					from.add(d);
 
-			for (STime d : timeTable.to)
-				if (d.hour > now.hour || (d.hour == now.hour && d.min > now.min))
+			for (TimeTable.ScheduleElement d : timeTable.to)
+				if (d.time.hour > now.hour || (d.time.hour == now.hour && d.time.min > now.min))
 					to.add(d);
 
 			for (int i = 0; i < Math.max(from.size(), to.size()); i++)
@@ -225,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		return table;
 	}
 
-	public View makeTwoColumnsRow(DataLoader.STime t1, DataLoader.STime t2) {
+	public View makeTwoColumnsRow(TimeTable.ScheduleElement t1, TimeTable.ScheduleElement t2) {
 		View row = layoutInflater.inflate(R.layout.full_2col_row, null);
 		STime now = new DataLoader.STime(Calendar.getInstance().getTime());
 
@@ -234,15 +221,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 		if (t1 == null) tFrom.setText("");
 		else {
-			tFrom.setText(t1.hour + ":" + (t1.min <= 9 ? "0" : "") + t1.min); //TODO: format
-			if (firstIsBefore(t1, now))
+			tFrom.setText(t1.time.hour + ":" + (t1.time.min <= 9 ? "0" : "") + t1.time.min); //TODO: format
+			if (firstIsBefore(t1.time, now))
 				tFrom.setTextColor(Color.LTGRAY);
 		}
 
 		if (t2 == null) tTo.setText("");
 		else {
-			tTo.setText(t2.hour + ":" + (t2.min <= 9 ? "0" : "") + t2.min); //TODO: format
-			if (firstIsBefore(t2, now))
+			tTo.setText(t2.time.hour + ":" + (t2.time.min <= 9 ? "0" : "") + t2.time.min); //TODO: format
+			if (firstIsBefore(t2.time, now))
 				tTo.setTextColor(Color.LTGRAY);
 		}
 
@@ -255,24 +242,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		if (d1.hour == d2.hour && d1.min < d2.min)
 			return true;
 		return false;
-	}
-
-	public View makeThreeColumnsRow(TimeTable.Line line) {
-		View row = layoutInflater.inflate(R.layout.full_3col_row, null);
-		Calendar calendar = Calendar.getInstance();
-
-		TextView text = (TextView) row.findViewById(R.id.time);
-		ImageView imFrom = (ImageView) row.findViewById(R.id.from);
-		ImageView imTo = (ImageView) row.findViewById(R.id.to);
-
-		text.setText(line.time.hour + ":" + (line.time.min <= 9 ? "0" : "") + line.time.min); //TODO: format
-		imFrom.setVisibility(line.from ? View.VISIBLE : View.INVISIBLE);
-		imTo.setVisibility(line.to ? View.VISIBLE : View.INVISIBLE);
-
-		if (line.isBefore(new STime(calendar.getTime())))
-			text.setTextColor(Color.LTGRAY);
-
-		return row;
 	}
 
 	public void makeMapView() {
@@ -289,11 +258,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		contentView.removeAllViews();
 		contentView.addView(view);
 	}
-
-
-
-
-
 
 
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
