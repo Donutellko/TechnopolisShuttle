@@ -73,6 +73,7 @@ public class DataLoader {
 			return 1;
 		}
 
+		@Override
 		public String toString() {
 			return hour + ":" + min;
 		}

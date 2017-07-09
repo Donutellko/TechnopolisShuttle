@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -31,7 +32,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -39,12 +42,15 @@ import java.util.Calendar;
 import com.donutellko.technopolisshuttle.DataLoader.STime;
 
 import java.util.List;
+import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
 	//CONSTANTS
 	private static final int COUNT_TO_SHOW_ON_SHORT = 5;
-	private static final boolean USE_THREE_COLUMNS_FULL_SCHEDULE = false;
+	private State currentState = State.SHORT_VIEW;
+
+	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
 
 	// CheckBox values
 	private boolean showPast = true;
@@ -75,11 +81,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		navigation.setSelectedItemId(R.id.navigation_short);
 
 		curtime = Calendar.getInstance();
+
+		CountDownTimer timer = new CountDownTimer(Long.MAX_VALUE, 1000) {
+			@Override
+			public void onTick(long millisUntilFinished) {
+				switch (currentState) {
+					case SHORT_VIEW: updateShortViewTable(); break;
+					case FULL_VIEW: makeFullScheduleView(); break;
+				}
+			}
+			@Override
+			public void onFinish() {
+				this.start();
+			}
+		};
+		timer.start();
 	}
 
 	private void makeShortScheduleView() {
-		curtime = Calendar.getInstance();
-		STime now = new STime(curtime.getTime());
+		currentState = State.SHORT_VIEW;
 
 		contentView.removeAllViews(); // очищаем от добавленных ранее отображений
 		if (shortView == null) {
@@ -93,8 +113,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 			timeTable = dataLoader.getFullJsonInfo(); // объект с расписанием
 		}
 
-		TableLayout table = shortView.findViewById(R.id.table);
-
 		if (toggleButtonToTechnopolis == null) {
 			toggleButtonToTechnopolis = shortView.findViewById(R.id.toggle_to);
 			toggleButtonToTechnopolis.setOnClickListener(toggleToTechnopolis);
@@ -105,21 +123,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 			toggleButtonToUnderground.setOnClickListener(toggleToUnderground);
 		}
 
-		table.removeAllViews();
-		table.addView(layoutInflater.inflate(R.layout.short_head, null));
-
-
 		Spinner weekdays = shortView.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.weekdays, android.R.layout.simple_spinner_item); // Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Apply the adapter to the spinner
 		weekdays.setAdapter(adapter);
-		int we = curtime.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY;
-		weekdays.setSelection(we);
+		weekdays.setSelection(getWeekdayNumber());
 
+		updateShortViewTable();
+	}
 
-
-
+	public void updateShortViewTable () {
 		ToggleButton from_tumbler = (ToggleButton) shortView.findViewById(R.id.toggle_from);
+		STime now = getCurrentTime();
+		Log.i("getCurrentTime()", now.toString());
+
+		TableLayout table = shortView.findViewById(R.id.table);
+
+		table.removeAllViews();
+		table.addView(layoutInflater.inflate(R.layout.short_head, null));
+
 		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, from_tumbler.isChecked());
 
 		for (int i = 0; i < Math.min(after.size(), COUNT_TO_SHOW_ON_SHORT); i++)
@@ -158,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 	private void makeFullScheduleView() {
+		currentState = State.FULL_VIEW;
 		if (fullView == null) {
 			fullView = layoutInflater.inflate(R.layout.full_layout, null); // Создаём view с таблицей
 			CheckBox checkBox = fullView.findViewById(R.id.view_past);
@@ -180,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 	public TableLayout makeTwoColumnsTable(TimeTable timeTable) {
-		STime now = new STime(Calendar.getInstance().getTime());
+		STime now = getCurrentTime();
 		TableLayout table = new TableLayout(this);  // находим таблицу на созданном view
 
 		List<TimeTable.ScheduleElement>
@@ -212,9 +235,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		return table;
 	}
 
+	private STime getCurrentTime() {
+		curtime = Calendar.getInstance();
+		return new STime(curtime.getTime());
+	}
+
+	private int getWeekdayNumber() {
+		if (curtime == null) curtime = Calendar.getInstance();
+		return curtime.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY;
+	}
+
 	public View makeTwoColumnsRow(TimeTable.ScheduleElement t1, TimeTable.ScheduleElement t2) {
 		View row = layoutInflater.inflate(R.layout.full_2col_row, null);
-		STime now = new DataLoader.STime(Calendar.getInstance().getTime());
+		STime now = getCurrentTime();
 
 		TextView tFrom = (TextView) row.findViewById(R.id.t_from);
 		TextView tTo = (TextView) row.findViewById(R.id.t_to);
@@ -245,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	}
 
 	public void makeMapView() {
+		currentState = State.MAP_VIEW;
 		contentView.removeAllViews(); // очищаем от созданных ранее объектов
 		if (mapView == null) mapView = layoutInflater.inflate(R.layout.map_layout, null);
 
@@ -286,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		public void onClick(View view) {
 			Log.i("listener", "toggle To clicked");
 			toggleButtonToUnderground.setChecked(!toggleButtonToTechnopolis.isChecked());
-			makeShortScheduleView();
+			updateShortViewTable();
 		}
 	};
 
@@ -296,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		public void onClick(View view) {
 			Log.i("listener", "toggle From clicked");
 			toggleButtonToTechnopolis.setChecked(!toggleButtonToUnderground.isChecked());
-			makeShortScheduleView();
+			updateShortViewTable();
 		}
 	};
 
@@ -310,11 +344,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		}
 	};
 
-
 	@Override
 	public void onMapReady(GoogleMap map) {
 		LatLng technopolis = new LatLng(59.818026, 30.327783);
 		LatLng underground = new LatLng(59.854728, 30.320958);
+
+		LatLngBounds all = new LatLngBounds(
+				new LatLng(59.8, 30.32), new LatLng(59.87, 30.33));
+
+		map.moveCamera(CameraUpdateFactory.newLatLngBounds(all, 0));
 
 		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 			// TODO: Consider calling
@@ -328,19 +366,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		}
 
 		map.setMyLocationEnabled(true);
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(underground, 13));
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(technopolis, 13));
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(underground, 13));
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(technopolis, 13));
 
 		map.addMarker(new MarkerOptions()
 				.title(     "м. Московская")
-				.snippet("ст.м. Московская")
+				.snippet("Московский проспект, 189")
 				.position(underground));
 
 
 		map.addMarker(new MarkerOptions()
 				.title("TECHNOPOLIS")
-				.snippet("Технополис.")
+				.snippet("Пулковское шоссе, 40к4")
+				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 				.position(technopolis));
 	}
-
 }
