@@ -5,23 +5,20 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -37,21 +34,20 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import com.donutellko.technopolisshuttle.DataLoader.STime;
 
 import java.util.List;
-import java.util.Timer;
+
+import com.donutellko.technopolisshuttle.DataLoader.SettingsObject;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
 	//CONSTANTS
-	private static final int COUNT_TO_SHOW_ON_SHORT = 5;
-	private State currentState = State.SHORT_VIEW;
-
-	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
-
+	private static int countToShowOnShort = 5; // defaults
+	private State currentState = State.SHORT_VIEW; //default
 	// CheckBox values
 	private boolean showPast = true;
 
@@ -64,7 +60,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	private View shortView, fullView, mapView;
 	LinearLayout contentView; // Область контента (всё кроме нав. панели)
 	ToggleButton toggleButtonToTechnopolis, toggleButtonToUnderground;
+	BottomNavigationView navigation;
 
+	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +72,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		layoutInflater = getLayoutInflater();
 
 		contentView = (LinearLayout) findViewById(R.id.content);
-		makeShortScheduleView();
 
-		BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+		navigation = (BottomNavigationView) findViewById(R.id.navigation);
 		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-		navigation.setSelectedItemId(R.id.navigation_short);
+
+		SettingsObject sett = new SettingsObject();
+		if (sett.loadPreferences(getApplicationContext())) {
+			currentState = sett.currentState;
+			countToShowOnShort = sett.countToShowOnShort;
+			showPast = sett.showPast;
+			Log.i("settings", currentState + " " + countToShowOnShort);
+		} else {
+			Log.i("settings", "Preferences не загружены");
+		}
+		loadView(currentState);
 
 		curtime = Calendar.getInstance();
 
@@ -87,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 			public void onTick(long millisUntilFinished) {
 				switch (currentState) {
 					case SHORT_VIEW: updateShortViewTable(); break;
-					case FULL_VIEW: makeFullScheduleView(); break;
+					case FULL_VIEW: updateFullScheduleView(); break;
 				}
 			}
 			@Override
@@ -98,7 +105,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		timer.start();
 	}
 
+
+	private void loadView(State currentState) {
+		Log.i("loadView()", currentState.name());
+		switch (currentState) {
+			case SHORT_VIEW:
+				//makeShortScheduleView();
+				navigation.setSelectedItemId(R.id.navigation_short);
+				break;
+			case FULL_VIEW:
+				//makeFullScheduleView();
+				navigation.setSelectedItemId(R.id.navigation_full);
+				break;
+			case MAP_VIEW:
+				//makeMapView();
+				navigation.setSelectedItemId(R.id.navigation_map);
+				break;
+		}
+	}
+
 	private void makeShortScheduleView() {
+		Log.i("loading", "makeShortScheduleView()");
 		currentState = State.SHORT_VIEW;
 
 		contentView.removeAllViews(); // очищаем от добавленных ранее отображений
@@ -144,20 +171,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, from_tumbler.isChecked());
 
-		for (int i = 0; i < Math.min(after.size(), COUNT_TO_SHOW_ON_SHORT); i++)
+		for (int i = 0; i < Math.min(after.size(), countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
 
-		if (after.size() == 0) {
-			TableRow empty_row = new TableRow(getApplicationContext());
-			TextView empty_text = new TextView(getApplicationContext());
-			empty_text.setText("Cегодня автобусов в этом направлении больше нет.");
-			empty_text.setTextColor(Color.DKGRAY);
-			empty_text.setPadding(5, 5, 5, 5);
-			empty_row.addView(empty_text);
+		TableRow ending = new TableRow(getApplicationContext());
+		TextView ending_text = new TextView(getApplicationContext());
 
+		Display display = getWindowManager().getDefaultDisplay();
+		int width = display.getWidth();  // deprecated
+
+		ending_text.setTextColor(Color.DKGRAY);
+		ending.setPadding(15, 15, 15, 15);
+		ending_text.setMinimumWidth(width);
+		//ending.setGravity(View.TEXT_ALIGNMENT_CENTER);
+		ending_text.setGravity(View.TEXT_ALIGNMENT_GRAVITY);
+
+		ending.addView(ending_text);
+		if (after.size() == 0) {
+			ending_text.setText("Cегодня автобусов в этом направлении больше нет.");
 			table.removeAllViews();
-			table.addView(empty_row);
-		}
+		} else
+			ending_text.setText("Больше нет ближайших рейсов.");
+		table.addView(ending);
+
 	}
 
 	public View getTimeLeftRow(TimeTable.ScheduleElement t, STime now) {
@@ -178,15 +214,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		return row;
 	}
 
-
 	private void makeFullScheduleView() {
+		Log.i("loading", "makeFullScheduleView()");
 		currentState = State.FULL_VIEW;
-		if (fullView == null) {
+
+		if (fullView == null)
 			fullView = layoutInflater.inflate(R.layout.full_layout, null); // Создаём view с таблицей
-			CheckBox checkBox = fullView.findViewById(R.id.view_past);
-			checkBox.setOnCheckedChangeListener(mOnShowPastChangedListener);
-			checkBox.setChecked(showPast);
-		}
+
+		CheckBox checkBox = fullView.findViewById(R.id.view_past);
+		checkBox.setOnCheckedChangeListener(mOnShowPastChangedListener);
+		checkBox.setChecked(showPast);
 
 		contentView.removeAllViews(); // очищаем от созданных ранее объектов
 		contentView.addView(fullView); // добавляем созданный view в область контента
@@ -194,13 +231,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		if (timeTable == null)
 			timeTable = dataLoader.getFullJsonInfo(); // объект с данными о времени
 
+		updateFullScheduleView();
+	}
 
+	private void updateFullScheduleView() {
 		LinearLayout content = fullView.findViewById(R.id.content);
 		content.removeAllViews();
 		content.addView(layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
 		content.addView(makeTwoColumnsTable(timeTable));
 	}
-
 
 	public TableLayout makeTwoColumnsTable(TimeTable timeTable) {
 		STime now = getCurrentTime();
@@ -291,6 +330,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	public void setContent(View view) {
 		contentView.removeAllViews();
 		contentView.addView(view);
+	}
+
+	@Override
+	public void onStop() {
+		new DataLoader.SettingsObject(countToShowOnShort, currentState, showPast).savePreferences(getApplicationContext());
+		super.onStop();
 	}
 
 

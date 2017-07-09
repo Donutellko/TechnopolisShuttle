@@ -1,5 +1,7 @@
 package com.donutellko.technopolisshuttle;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -235,6 +237,51 @@ public class DataLoader {
 
 		public ScheduleElement toScheduleElement() {
 			return new ScheduleElement(new STime(time), mask);
+		}
+	}
+
+	public static class SettingsObject {
+		private String countToShowOnShort_s = "countToShowOnShort_s", currentState_s = "currentState", showPast_s = "shopPast";
+		int countToShowOnShort;
+		MainActivity.State currentState;
+		boolean showPast;
+
+		public SettingsObject(int countToShowOnShort, MainActivity.State currentState, boolean showPast) {
+			this.countToShowOnShort = countToShowOnShort;
+			this.currentState = currentState;
+			this.showPast = showPast;
+		}
+
+		public SettingsObject() { }
+
+		public boolean loadPreferences(Context context) {
+			SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+
+			int state =
+					sp.getInt(currentState_s, -1);
+			countToShowOnShort =
+					sp.getInt(countToShowOnShort_s, -1);
+			boolean tmpShowPast =
+					sp.getBoolean(showPast_s, true);
+
+			Log.i("loadPreferences()", state + ", " + countToShowOnShort );
+			if (state == -1 || countToShowOnShort == -1)
+				return false;
+
+			currentState = MainActivity.State.values()[state];
+			showPast = tmpShowPast;
+			return true;
+		}
+
+		public void savePreferences (Context context) {
+			SharedPreferences.Editor sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).edit();
+
+			sp.putInt(currentState_s, currentState.ordinal());
+			sp.putInt(countToShowOnShort_s, countToShowOnShort);
+			sp.putBoolean(showPast_s, showPast);
+
+			sp.apply();
+			Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal() );
 		}
 	}
 }
