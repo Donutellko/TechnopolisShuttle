@@ -32,7 +32,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -342,11 +344,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		}
 	};
 
-
 	@Override
 	public void onMapReady(GoogleMap map) {
 		LatLng technopolis = new LatLng(59.818026, 30.327783);
 		LatLng underground = new LatLng(59.854728, 30.320958);
+
+		LatLngBounds all = new LatLngBounds(
+				new LatLng(59.8, 30.32), new LatLng(59.87, 30.33));
+
+		map.moveCamera(CameraUpdateFactory.newLatLngBounds(all, 0));
 
 		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 			// TODO: Consider calling
@@ -360,18 +366,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		}
 
 		map.setMyLocationEnabled(true);
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(underground, 13));
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(technopolis, 13));
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(underground, 13));
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(technopolis, 13));
 
 		map.addMarker(new MarkerOptions()
 				.title(     "м. Московская")
-				.snippet("ст.м. Московская")
+				.snippet("Московский проспект, 189")
 				.position(underground));
 
 
 		map.addMarker(new MarkerOptions()
 				.title("TECHNOPOLIS")
-				.snippet("Технополис.")
+				.snippet("Пулковское шоссе, 40к4")
+				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 				.position(technopolis));
 	}
 }
