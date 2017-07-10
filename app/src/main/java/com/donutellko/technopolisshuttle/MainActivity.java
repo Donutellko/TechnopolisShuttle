@@ -3,6 +3,9 @@ package com.donutellko.technopolisshuttle;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -37,6 +40,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import com.donutellko.technopolisshuttle.DataLoader.STime;
 
 import java.util.List;
@@ -46,10 +50,14 @@ import com.donutellko.technopolisshuttle.DataLoader.SettingsObject;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
 	//CONSTANTS
+	private final LatLng
+			TECHNOPOLIS = new LatLng(59.818026, 30.327783),
+			UNDERGROUND = new LatLng(59.854728, 30.320958);
+	private final double DISTANCE_TO_SHOW_FROM = 2;
 	private static int countToShowOnShort = 5; // defaults
 	private State currentState = State.SHORT_VIEW; //default
 	// CheckBox values
-	private boolean showPast = true;
+	private boolean showPast = true, showFrom = false;
 
 	private DataLoader dataLoader = new DataLoader();
 	private TimeTable timeTable;
@@ -61,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	LinearLayout contentView; // Область контента (всё кроме нав. панели)
 	ToggleButton toggleButtonToTechnopolis, toggleButtonToUnderground;
 	BottomNavigationView navigation;
+	ToggleButton fromTumbler;
 
 	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
 
@@ -89,14 +98,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 		curtime = Calendar.getInstance();
 
+		double toTechno = getDistanceBetween(TECHNOPOLIS, getLocation());
+		showFrom = toTechno > 0 && toTechno < DISTANCE_TO_SHOW_FROM;
+
+
 		CountDownTimer timer = new CountDownTimer(Long.MAX_VALUE, 1000) {
 			@Override
 			public void onTick(long millisUntilFinished) {
 				switch (currentState) {
-					case SHORT_VIEW: updateShortViewTable(); break;
-					case FULL_VIEW: updateFullScheduleView(); break;
+					case SHORT_VIEW:
+						updateShortViewTable();
+						break;
+					case FULL_VIEW:
+						updateFullScheduleView();
+						break;
 				}
 			}
+
 			@Override
 			public void onFinish() {
 				this.start();
@@ -150,6 +168,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 			toggleButtonToUnderground.setOnClickListener(toggleToUnderground);
 		}
 
+		if (fromTumbler == null) {
+			fromTumbler = (ToggleButton) shortView.findViewById(R.id.toggle_from);
+			fromTumbler.setChecked(showFrom);
+		}
+
 		Spinner weekdays = shortView.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.weekdays, android.R.layout.simple_spinner_item); // Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Apply the adapter to the spinner
@@ -159,8 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		updateShortViewTable();
 	}
 
-	public void updateShortViewTable () {
-		ToggleButton from_tumbler = (ToggleButton) shortView.findViewById(R.id.toggle_from);
+	public void updateShortViewTable() {
 		STime now = getCurrentTime();
 		Log.i("getCurrentTime()", now.toString());
 
@@ -169,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		table.removeAllViews();
 		table.addView(layoutInflater.inflate(R.layout.short_head, null));
 
-		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, from_tumbler.isChecked());
+		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, showFrom);
 
 		for (int i = 0; i < Math.min(after.size(), countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
@@ -247,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 		List<TimeTable.ScheduleElement>
 				from = new ArrayList<>(),
-				to   = new ArrayList<>();
+				to = new ArrayList<>();
 
 		if (showPast) {
 			int max = timeTable.from.length;
@@ -255,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 			for (int i = 0; i < max; i++) {
 				table.addView(makeTwoColumnsRow(
 						(i < timeTable.from.length ? timeTable.from[i] : null),
-						(i < timeTable.to  .length ? timeTable.to  [i] : null))); // суём инфу в таблицу
+						(i < timeTable.to.length ? timeTable.to[i] : null))); // суём инфу в таблицу
 			}
 		} else {
 			for (TimeTable.ScheduleElement d : timeTable.from)
@@ -391,8 +413,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 	@Override
 	public void onMapReady(GoogleMap map) {
-		LatLng technopolis = new LatLng(59.818026, 30.327783);
-		LatLng underground = new LatLng(59.854728, 30.320958);
 
 		LatLngBounds all = new LatLngBounds(
 				new LatLng(59.8, 30.32), new LatLng(59.87, 30.33));
@@ -415,15 +435,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        map.moveCamera(CameraUpdateFactory.newLatLngZoom(technopolis, 13));
 
 		map.addMarker(new MarkerOptions()
-				.title(     "м. Московская")
+				.title("м. Московская")
 				.snippet("Московский проспект, 189")
-				.position(underground));
+				.position(UNDERGROUND));
 
 
 		map.addMarker(new MarkerOptions()
 				.title("TECHNOPOLIS")
 				.snippet("Пулковское шоссе, 40к4")
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-				.position(technopolis));
+				.position(TECHNOPOLIS));
+	}
+
+	public double getDistanceBetween(LatLng first, LatLng second) {
+		double MAGIC_CONSTANT = 110.096; // коэфф километры/координаты
+		if (first == null || second == null) return -1;
+		double dlatt = first.latitude - second.latitude,
+				dlong = first.longitude - second.longitude;
+		return MAGIC_CONSTANT * Math.sqrt(dlatt * dlatt + dlong * dlong);
+	}
+
+	public LatLng getLocation() {
+		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		Criteria criteria = new Criteria();
+		String provider = locationManager.getBestProvider(criteria, true);
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			// ну и ладно
+			// ну и пожалста
+			// ну и очень-то и хотелось
+			return null;
+		}
+		Location location = locationManager.getLastKnownLocation(provider);
+		if (location == null) {
+			Log.i("getLocation()", "location is null");
+			return null;
+		} else {
+			double latitude = location.getLatitude();
+			double longitude = location.getLongitude();
+			Log.i("getLocation()", latitude + " : " + longitude);
+			return new LatLng(latitude, longitude);
+		}
 	}
 }
