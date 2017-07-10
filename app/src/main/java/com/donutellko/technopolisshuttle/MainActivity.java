@@ -17,6 +17,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	private State currentState = State.SHORT_VIEW; //default
 	// CheckBox values
 	private boolean showPast = true, showFrom = false;
+	private int weekday;
 
 	private DataLoader dataLoader = new DataLoader();
 	private TimeTable timeTable;
@@ -70,6 +72,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	ToggleButton toggleButtonToTechnopolis, toggleButtonToUnderground;
 	BottomNavigationView navigation;
 	ToggleButton fromTumbler;
+	Spinner weekdaysSpinner;
+	private AdapterView.OnItemSelectedListener mWeekdaysSpinnerListener = new AdapterView.OnItemSelectedListener() {
+		@Override
+		public void onItemSelected (AdapterView<?> adapterView, View view, int i, long l) {
+			weekday = i;
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> adapterView) {
+			weekday = getWeekdayNumber();
+		}
+	};
 
 	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
 
@@ -99,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		curtime = Calendar.getInstance();
 
 		double toTechno = getDistanceBetween(TECHNOPOLIS, getLocation());
-		showFrom = toTechno > 0 && toTechno < DISTANCE_TO_SHOW_FROM;
+		showFrom = toTechno >= 0 && toTechno < DISTANCE_TO_SHOW_FROM;
 
 
 		CountDownTimer timer = new CountDownTimer(Long.MAX_VALUE, 1000) {
@@ -145,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 	private void makeShortScheduleView() {
 		Log.i("loading", "makeShortScheduleView()");
 		currentState = State.SHORT_VIEW;
+		weekday = getWeekdayNumber();
 
 		contentView.removeAllViews(); // очищаем от добавленных ранее отображений
 		if (shortView == null) {
@@ -173,25 +188,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 			fromTumbler.setChecked(showFrom);
 		}
 
-		Spinner weekdays = shortView.findViewById(R.id.spinner_weekdays);
+		weekdaysSpinner = shortView.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.weekdays, android.R.layout.simple_spinner_item); // Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Apply the adapter to the spinner
-		weekdays.setAdapter(adapter);
-		weekdays.setSelection(getWeekdayNumber());
+		weekdaysSpinner.setOnItemSelectedListener(mWeekdaysSpinnerListener);
+		weekdaysSpinner.setAdapter(adapter);
+		weekdaysSpinner.setSelection(getWeekdayNumber());
 
 		updateShortViewTable();
 	}
 
 	public void updateShortViewTable() {
+
 		STime now = getCurrentTime();
 		Log.i("getCurrentTime()", now.toString());
+		showFrom = fromTumbler.isChecked();
 
 		TableLayout table = shortView.findViewById(R.id.table);
 
 		table.removeAllViews();
 		table.addView(layoutInflater.inflate(R.layout.short_head, null));
 
-		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, showFrom);
+		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, showFrom, weekday);
 
 		for (int i = 0; i < Math.min(after.size(), countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
@@ -212,8 +230,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		if (after.size() == 0) {
 			ending_text.setText("Cегодня автобусов в этом направлении больше нет.");
 			table.removeAllViews();
-		} else
-			ending_text.setText("Больше нет ближайших рейсов.");
+		} else if (after.size() >= countToShowOnShort - 1)
+			ending_text.setText("Показаны " + countToShowOnShort + " ближайших рейсов.");
+		else {
+			ending_text.setText("Больше нет рейсов на сегодня.");
+		}
 		table.addView(ending);
 
 	}
@@ -346,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 
+		contentView.addView(layoutInflater.inflate(R.layout.map_adresses, null));
 		contentView.addView(mapView);
 	}
 

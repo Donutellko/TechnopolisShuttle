@@ -299,11 +299,14 @@ class TimeTable {
 		this.to = (ScheduleElement[]) to.toArray();
 	}
 
-	public List<ScheduleElement> getTimeAfter (STime now, boolean To) {
+	public List<ScheduleElement> getTimeAfter (STime now, boolean To, int weekday) {
 		List<ScheduleElement> result = new ArrayList<>();
+
 		for (ScheduleElement t : (To ? to : from))
-			if (now.isBefore(t.time))
+			if (now.isBefore(t.time) && t.worksAt(weekday)) {
+				Log.i("weekdays", t.mask + " " + weekday + " " + t.worksAt(weekday));
 				result.add(t);
+			}
 
 		return result;
 	}
