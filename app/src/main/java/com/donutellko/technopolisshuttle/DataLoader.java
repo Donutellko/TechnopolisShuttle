@@ -22,26 +22,26 @@ public class DataLoader {
 	public static class STime {
 		int hour, min;
 
-		public STime (int hour, int min) {
+		public STime(int hour, int min) {
 			this.hour = hour;
 			this.min = min;
 		}
 
 		@Deprecated
-		public STime (Date d) {
+		public STime(Date d) {
 			hour = d.getHours();
 			min = d.getMinutes();
 		}
 
 		@Deprecated
-		public STime (java.sql.Time t) {
+		public STime(java.sql.Time t) {
 			hour = t.getHours();
 			min = t.getMinutes();
 		}
 
-		public STime (String s) { // исключительно вида "09:15:
+		public STime(String s) { // исключительно вида "09:15:
 			hour = (s.charAt(0) - '0') * 10 + (s.charAt(1) - '0');
-			min  = (s.charAt(3) - '0') * 10 + (s.charAt(4) - '0');
+			min = (s.charAt(3) - '0') * 10 + (s.charAt(4) - '0');
 		}
 
 		public boolean isBefore(STime t) {
@@ -50,7 +50,7 @@ public class DataLoader {
 			return false;
 		}
 
-		public STime getDifference (STime t) {
+		public STime getDifference(STime t) {
 			int dh = t.hour - hour;
 			int dm = t.min - min;
 			if (dm < 0 && dh > 0) {
@@ -60,7 +60,7 @@ public class DataLoader {
 			return new STime(dh, dm);
 		}
 
-		public ArrayList<STime> getListAfter (STime[] arr) {
+		public ArrayList<STime> getListAfter(STime[] arr) {
 			ArrayList<STime> list = new ArrayList<STime>();
 			for (STime t : arr)
 				if (this.isBefore(t)) list.add(t);
@@ -86,7 +86,7 @@ public class DataLoader {
 	}
 
 	public TimeTable getFullDefaultInfo() {
-		ScheduleElement[] defaultTimeFrom = new ScheduleElement[] {
+		ScheduleElement[] defaultTimeFrom = new ScheduleElement[]{
 				new ScheduleElement(7, 45, 31),
 
 				new ScheduleElement(8, 00, 31),
@@ -202,12 +202,12 @@ public class DataLoader {
 
 		Log.i("json", json1 + "\n" + json2);
 		DataObject[]
-			dataObject1 = new Gson().fromJson(json1, DataObject[].class),
-			dataObject2 = new Gson().fromJson(json2, DataObject[].class);
+				dataObject1 = new Gson().fromJson(json1, DataObject[].class),
+				dataObject2 = new Gson().fromJson(json2, DataObject[].class);
 
 		ScheduleElement[]
 				se1 = new ScheduleElement[dataObject1.length],
-				se2  = new ScheduleElement[dataObject2.length];
+				se2 = new ScheduleElement[dataObject2.length];
 
 		for (int i = 0; i < dataObject1.length; i++)
 			se1[i] = dataObject1[i].toScheduleElement();
@@ -226,8 +226,8 @@ public class DataLoader {
 
 	private String getDefaultJson() {
 		String s =
-					"[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":15},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":15},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}]" +
-					"[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]";
+				"[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":15},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":15},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}]" +
+						"[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]";
 		return s;
 	}
 
@@ -252,7 +252,8 @@ public class DataLoader {
 			this.showPast = showPast;
 		}
 
-		public SettingsObject() { }
+		public SettingsObject() {
+		}
 
 		public boolean loadPreferences(Context context) {
 			SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
@@ -264,7 +265,7 @@ public class DataLoader {
 			boolean tmpShowPast =
 					sp.getBoolean(showPast_s, true);
 
-			Log.i("loadPreferences()", state + ", " + countToShowOnShort );
+			Log.i("loadPreferences()", state + ", " + countToShowOnShort);
 			if (state == -1 || countToShowOnShort == -1)
 				return false;
 
@@ -273,7 +274,7 @@ public class DataLoader {
 			return true;
 		}
 
-		public void savePreferences (Context context) {
+		public void savePreferences(Context context) {
 			SharedPreferences.Editor sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).edit();
 
 			sp.putInt(currentState_s, currentState.ordinal());
@@ -281,7 +282,7 @@ public class DataLoader {
 			sp.putBoolean(showPast_s, showPast);
 
 			sp.apply();
-			Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal() );
+			Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal());
 		}
 	}
 }
@@ -299,7 +300,7 @@ class TimeTable {
 		this.to = (ScheduleElement[]) to.toArray();
 	}
 
-	public List<ScheduleElement> getTimeAfter (STime now, boolean To, int weekday) {
+	public List<ScheduleElement> getTimeAfter(STime now, boolean To, int weekday) {
 		List<ScheduleElement> result = new ArrayList<>();
 
 		for (ScheduleElement t : (To ? to : from))
