@@ -85,115 +85,6 @@ public class DataLoader {
 		}
 	}
 
-	public TimeTable getFullDefaultInfo() {
-		ScheduleElement[] defaultTimeFrom = new ScheduleElement[]{
-				new ScheduleElement(7, 45, 31),
-
-				new ScheduleElement(8, 00, 31),
-				new ScheduleElement(8, 10, 31),
-				new ScheduleElement(8, 20, 31),
-				new ScheduleElement(8, 30, 31),
-				new ScheduleElement(8, 35, 31),
-				new ScheduleElement(8, 40, 31),
-				new ScheduleElement(8, 50, 31),
-
-				new ScheduleElement(9, 00, 31),
-				new ScheduleElement(9, 10, 31),
-				new ScheduleElement(9, 15, 31),
-				new ScheduleElement(9, 20, 31),
-				new ScheduleElement(9, 30, 31),
-				new ScheduleElement(9, 40, 31),
-				new ScheduleElement(9, 50, 31),
-				new ScheduleElement(9, 55, 31),
-
-				new ScheduleElement(10, 00, 31),
-				new ScheduleElement(10, 10, 31),
-				new ScheduleElement(10, 20, 31),
-				new ScheduleElement(10, 30, 31),
-				new ScheduleElement(10, 35, 31),
-				new ScheduleElement(10, 40, 31),
-				new ScheduleElement(10, 50, 31),
-
-				new ScheduleElement(11, 00, 31),
-				new ScheduleElement(11, 10, 31),
-				new ScheduleElement(11, 20, 31),
-				new ScheduleElement(11, 30, 31),
-				new ScheduleElement(11, 50, 31),
-
-				new ScheduleElement(12, 10, 31),
-				new ScheduleElement(12, 30, 31),
-
-				new ScheduleElement(13, 10, 31),
-				new ScheduleElement(13, 50, 31),
-
-				new ScheduleElement(14, 30, 31),
-
-				new ScheduleElement(15, 10, 31),
-				new ScheduleElement(15, 30, 31),
-
-				new ScheduleElement(16, 10, 31),
-				new ScheduleElement(16, 50, 31),
-
-				new ScheduleElement(17, 20, 31),
-		};
-
-		ScheduleElement[] defaultTimeTo = new ScheduleElement[]{
-				new ScheduleElement(9, 30, 31),
-
-				new ScheduleElement(10, 10, 31),
-				new ScheduleElement(10, 50, 31),
-
-				new ScheduleElement(11, 30, 31),
-
-				new ScheduleElement(12, 10, 31),
-				new ScheduleElement(12, 50, 31),
-
-				new ScheduleElement(13, 30, 31),
-
-				new ScheduleElement(14, 10, 31),
-				new ScheduleElement(14, 50, 31),
-
-				new ScheduleElement(15, 10, 31),
-				new ScheduleElement(15, 30, 31),
-				new ScheduleElement(15, 50, 31),
-
-				new ScheduleElement(16, 00, 31),
-				new ScheduleElement(16, 30, 31),
-				new ScheduleElement(16, 50, 31),
-
-				new ScheduleElement(17, 00, 31),
-				new ScheduleElement(17, 10, 31),
-				new ScheduleElement(17, 30, 31),
-				new ScheduleElement(17, 40, 31),
-				new ScheduleElement(17, 50, 31),
-
-				new ScheduleElement(18, 00, 31),
-				new ScheduleElement(18, 10, 31),
-				new ScheduleElement(18, 20, 31),
-				new ScheduleElement(18, 30, 31),
-				new ScheduleElement(18, 40, 31),
-				new ScheduleElement(18, 50, 31),
-
-				new ScheduleElement(19, 10, 31),
-				new ScheduleElement(19, 20, 31),
-				new ScheduleElement(19, 30, 31),
-				new ScheduleElement(19, 40, 31),
-				new ScheduleElement(19, 50, 31),
-
-				new ScheduleElement(20, 10, 31),
-				new ScheduleElement(20, 45, 31),
-
-				new ScheduleElement(21, 20, 31),
-
-		};
-		return new TimeTable(defaultTimeFrom, defaultTimeTo);
-	}
-
-	public TimeTable getFullSavedInfo() {
-		//TODO
-		return getFullDefaultInfo();
-	}
-
 	public TimeTable getFullJsonInfo() {
 		String json = getJson();
 		int start2 = json.indexOf("[", 1);
@@ -226,7 +117,7 @@ public class DataLoader {
 
 	private String getDefaultJson() {
 		String s =
-				"[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":15},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":15},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}]" +
+				"[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":16},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":16},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}]" +
 						"[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]";
 		return s;
 	}

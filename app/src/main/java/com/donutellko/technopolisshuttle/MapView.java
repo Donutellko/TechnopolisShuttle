@@ -44,14 +44,17 @@ public class MapView extends SView implements OnMapReadyCallback {
 
 	@Override
 	public void prepareView() {
+		((LinearLayout) view).addView(MainActivity.layoutInflater.inflate(LAYOUT_RESOURCE, null));
+		((LinearLayout) view).addView(MainActivity.layoutInflater.inflate(ADRESSES_LAYOUT, null));
+
 		MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
 
 		mapFragment.getMapAsync(this);
 
-		View map = View.inflate(context, R.layout.map_layout, null);
+		View map = MainActivity.layoutInflater.inflate(R.layout.map_layout, null);
 		LinearLayout content = new LinearLayout(context, null);
 
-		content.addView(View.inflate(context, R.layout.map_adresses, null));
+		content.addView(MainActivity.layoutInflater.inflate(R.layout.map_adresses, null));
 		content.addView(map);
 	}
 

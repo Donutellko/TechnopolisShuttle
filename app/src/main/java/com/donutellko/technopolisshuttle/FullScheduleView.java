@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -23,12 +24,12 @@ public class FullScheduleView extends SView {
 	private TimeTable timeTable;
 	private CheckBox showPastCheckBox;
 	private boolean showPastState;
-	private LinearLayout content;
+	LinearLayout content;
 
 	public FullScheduleView(Context context, TimeTable timeTable, boolean showPastState) {
 		super(context);
 
-		view = View.inflate(context, LAYOUT_RESOURCE, null);
+		view = MainActivity.layoutInflater.inflate(LAYOUT_RESOURCE, null);
 		this.timeTable = timeTable;
 		this.showPastState = showPastState;
 	}
@@ -38,14 +39,15 @@ public class FullScheduleView extends SView {
 		showPastCheckBox = view.findViewById(R.id.view_past);
 		showPastCheckBox.setOnCheckedChangeListener(mOnShowPastChangedListener);
 
+		content = view.findViewById(R.id.content);
+
 		updateView();
 	}
 
 	@Override
 	public void updateView() {
-		LinearLayout content = view.findViewById(R.id.content);
 		content.removeAllViews();
-		content.addView(View.inflate(context, R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+		content.addView(MainActivity.layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
 		content.addView(makeTwoColumnsTable());
 	}
 
@@ -57,8 +59,11 @@ public class FullScheduleView extends SView {
 		showPastCheckBox.setChecked(showPastState);
 	}
 
-	private TableLayout makeTwoColumnsTable() {
+	private View makeTwoColumnsTable() {
+		ScrollView result = new ScrollView(context);
 		TableLayout table = new TableLayout(context);
+		result.addView(table);
+
 		STime currentTime = getCurrentTime();
 
 		List<TimeTable.ScheduleElement>
@@ -87,11 +92,11 @@ public class FullScheduleView extends SView {
 						(i < from.size() ? from.get(i) : null),
 						(i < to.size() ? to.get(i) : null), currentTime)); // суём инфу в таблицу
 		}
-		return table;
+		return result;
 	}
 
 	private View makeTwoColumnsRow(TimeTable.ScheduleElement t1, TimeTable.ScheduleElement t2, STime currentTime) {
-		View row = View.inflate(context, R.layout.full_2col_row, null);
+		View row = MainActivity.layoutInflater.inflate(R.layout.full_2col_row, null);
 
 		TextView tFrom = (TextView) row.findViewById(R.id.t_from);
 		TextView tTo = (TextView) row.findViewById(R.id.t_to);

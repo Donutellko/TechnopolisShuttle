@@ -29,9 +29,9 @@ public class ShortScheduleView extends SView {
 
 	public ShortScheduleView(Context context, TimeTable timeTable, int countToShow, boolean showToTechno) {
 		super(context);
+		Log.i("ShortScheduleView", "Method called");
 
 		view = MainActivity.layoutInflater.inflate(LAYOUT_RESOURCE, null);
-		//view = View.inflate(context, LAYOUT_RESOURCE, null);
 
 		this.timeTable = timeTable;
 		this.countToShow = countToShow;
@@ -41,11 +41,13 @@ public class ShortScheduleView extends SView {
 	}
 
 	public void setTimeTable(TimeTable timeTable) {
+		Log.i("Short.setTimeTable", "Method called");
 		this.timeTable = timeTable;
 	}
 
 	@Override
 	public void prepareView() {
+		Log.i("Short.prepareView", "Method called");
 		int weekday = getWeekdayNumber();
 
 		table = view.findViewById(R.id.table);
@@ -73,13 +75,12 @@ public class ShortScheduleView extends SView {
 
 	@Override
 	public void updateView() {
+		Log.i("Short.updateView", "Method called");
 		DataLoader.STime now = getCurrentTime();
-		Log.i("getCurrentTime()", now.toString());
 		showToTechno = toggleButtonToTechnopolis.isChecked();
-
 		table.removeAllViews();
-		table.addView(View.inflate(context, R.layout.short_head, null));
 
+		table.addView(MainActivity.layoutInflater.inflate(R.layout.short_head, null));
 		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, showToTechno, weekdaySelected);
 
 		for (int i = 0; i < Math.min(after.size(), countToShow); i++)
@@ -117,7 +118,7 @@ public class ShortScheduleView extends SView {
 			if (left.min != 0) timeLeft += " " + left.min + " мин";
 		}
 
-		View row = View.inflate(context, R.layout.short_row, null);
+		View row = MainActivity.layoutInflater.inflate(R.layout.short_row, null);
 		((TextView) row.findViewById(R.id.time)).setText(t.time.hour + ":" + (t.time.min <= 9 ? "0" : "") + t.time.min);
 		((TextView) row.findViewById(R.id.timeleft)).setText(timeLeft);
 

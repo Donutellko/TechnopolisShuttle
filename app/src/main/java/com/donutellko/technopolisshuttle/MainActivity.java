@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.i("onCreate", "Method called");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void loadView(State currentState) {
-		Log.i("loadView()", currentState.name());
+		Log.i("loadView", "Method called");
 		switch (currentState) {
 			case SHORT_VIEW:
 				navigation.setSelectedItemId(R.id.navigation_short);
@@ -129,11 +130,13 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public static int getWeekdayNumber() {
+		Log.i("getWeekdayNumber", "Method called");
 		Calendar curtime = Calendar.getInstance();
 		return curtime.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY;
 	}
 
 	public static boolean firstIsBefore(DataLoader.STime d1, DataLoader.STime d2) {
+		Log.i("firstIsBefore", "Method called");
 		if (d1.hour < d2.hour)
 			return true;
 		if (d1.hour == d2.hour && d1.min < d2.min)
@@ -142,12 +145,14 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void setContent(SView sView) {
+		Log.i("setContent", "Method called");
 		contentBlock.removeAllViews();
 		contentBlock.addView(sView.getView());
 	}
 
 	@Override
 	public void onStop() {
+		Log.i("onStop", "Method called");
 		new DataLoader.SettingsObject(countToShowOnShort, currentState, showPast).savePreferences(getApplicationContext());
 		super.onStop();
 	}
