@@ -2,7 +2,6 @@ package com.donutellko.technopolisshuttle;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,7 +24,7 @@ public class ShortScheduleView extends SView {
 	private int weekdaySelected;
 	private TableLayout table;
 
-	ToggleButton toggleButtonToTechnopolis, toggleButtonFromTechnopolis;
+	ToggleButton toggleTo, toggleFrom;
 
 	public ShortScheduleView(Context context, TimeTable timeTable, int countToShow, boolean showToTechno) {
 		super(context);
@@ -49,13 +48,13 @@ public class ShortScheduleView extends SView {
 
 		table = view.findViewById(R.id.table);
 
-		toggleButtonToTechnopolis = view.findViewById(R.id.toggle_to);
-		toggleButtonToTechnopolis.setOnClickListener(toggleToTechnopolisListener);
-		toggleButtonToTechnopolis.setChecked(showToTechno);
+		toggleTo = view.findViewById(R.id.toggle_to);
+		toggleTo.setOnClickListener(toggleToListener);
+		toggleTo.setChecked(showToTechno);
 
-		toggleButtonFromTechnopolis = view.findViewById(R.id.toggle_from);
-		toggleButtonFromTechnopolis.setOnClickListener(toggleFromTechnopolisListener);
-		toggleButtonFromTechnopolis.setChecked(!showToTechno);
+		toggleFrom = view.findViewById(R.id.toggle_from);
+		toggleFrom.setOnClickListener(toggleFromListener);
+		toggleFrom.setChecked(!showToTechno);
 
 		Spinner weekdaysSpinner = view.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter =
@@ -71,7 +70,7 @@ public class ShortScheduleView extends SView {
 	@Override
 	public void updateView() {
 		DataLoader.STime now = getCurrentTime();
-		showToTechno = toggleButtonToTechnopolis.isChecked();
+		showToTechno = toggleTo.isChecked();
 		table.removeAllViews();
 
 		table.addView(View.inflate(context, R.layout.short_head, null));
@@ -85,9 +84,7 @@ public class ShortScheduleView extends SView {
 
 		ending_text.setTextColor(Color.DKGRAY);
 		ending.setPadding(15, 15, 15, 15);
-		//ending_text.setMinimumWidth(width);
-		//ending.setGravity(View.TEXT_ALIGNMENT_CENTER);
-		ending_text.setGravity(View.TEXT_ALIGNMENT_GRAVITY);
+		ending_text.setPadding(15, 15, 15, 15);
 
 		ending.addView(ending_text);
 		if (after.size() == 0) {
@@ -119,22 +116,26 @@ public class ShortScheduleView extends SView {
 		return row;
 	}
 
-	private ToggleButton.OnClickListener toggleToTechnopolisListener
-			= new ToggleButton.OnClickListener() {
+	private ToggleButton.OnClickListener toggleToListener = new ToggleButton.OnClickListener() {
 		@Override
-		public void onClick(View view) {
-			Log.i("listener", "toggle To clicked");
-			toggleButtonFromTechnopolis.setChecked(!toggleButtonToTechnopolis.isChecked());
+		public void onClick(View v) {
+			toggleTo.setChecked(true);
+			
+			if (toggleFrom.isChecked()) {
+				toggleFrom.setChecked(false);
+			}
 			updateView();
 		}
 	};
 
-	private ToggleButton.OnClickListener toggleFromTechnopolisListener
-			= new ToggleButton.OnClickListener() {
+	private ToggleButton.OnClickListener toggleFromListener = new ToggleButton.OnClickListener() {
 		@Override
-		public void onClick(View view) {
-			Log.i("listener", "toggle From clicked");
-			toggleButtonToTechnopolis.setChecked(!toggleButtonFromTechnopolis.isChecked());
+		public void onClick(View v) {
+			toggleFrom.setChecked(true);
+
+			if (toggleTo.isChecked()) {
+				toggleTo.setChecked(false);
+			}
 			updateView();
 		}
 	};
