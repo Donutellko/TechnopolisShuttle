@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -40,22 +41,17 @@ public class MapView extends SView implements OnMapReadyCallback {
 		this.coordsTechnopolis = coordsTechnopolis;
 		this.coordsUnderground = coordsUnderground;
 		this.fragmentManager = fragmentManager;
+
+		((LinearLayout) view).addView(View.inflate(context, LAYOUT_RESOURCE, null));
+		((LinearLayout) view).addView(View.inflate(context, ADRESSES_LAYOUT, null));
+
+		prepareView();
 	}
 
 	@Override
 	public void prepareView() {
-		((LinearLayout) view).addView(MainActivity.layoutInflater.inflate(LAYOUT_RESOURCE, null));
-		((LinearLayout) view).addView(MainActivity.layoutInflater.inflate(ADRESSES_LAYOUT, null));
-
 		MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
-
 		mapFragment.getMapAsync(this);
-
-		View map = MainActivity.layoutInflater.inflate(R.layout.map_layout, null);
-		LinearLayout content = new LinearLayout(context, null);
-
-		content.addView(MainActivity.layoutInflater.inflate(R.layout.map_adresses, null));
-		content.addView(map);
 	}
 
 	@Override
@@ -65,11 +61,13 @@ public class MapView extends SView implements OnMapReadyCallback {
 
 	@Override
 	public void onMapReady(GoogleMap map) {
+//		LatLngBounds bounds = new LatLngBounds(coordsTechnopolis, coordsUnderground);
+		LatLngBounds bounds = new LatLngBounds(new LatLng(59.8, 30.32), new LatLng(59.87, 30.33));
+		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
+//		map.moveCamera(cameraUpdate);
 
-		LatLngBounds all = new LatLngBounds(
-				coordsTechnopolis, coordsUnderground);
-
-		map.moveCamera(CameraUpdateFactory.newLatLngBounds(all, 0));
+//		map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+//		map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 			// TODO: Consider calling
@@ -97,6 +95,7 @@ public class MapView extends SView implements OnMapReadyCallback {
 				.snippet("Пулковское шоссе, 40к4")
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 				.position(coordsTechnopolis));
+
 	}
 
 	public double getDistanceBetween(LatLng first, LatLng second) {

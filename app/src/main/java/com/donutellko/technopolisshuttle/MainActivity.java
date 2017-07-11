@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
@@ -73,10 +75,10 @@ public class MainActivity extends AppCompatActivity {
 
 		DataLoader dataLoader = new DataLoader();
 		TimeTable timeTable = dataLoader.getFullJsonInfo();
-		Context context = getApplicationContext();
 
 		timeTable = dataLoader.getFullJsonInfo();
 
+		Context context = this;
 		shortView = new ShortScheduleView(context, timeTable, countToShowOnShort, showTo);
 		fullView = new FullScheduleView(context, timeTable, showPast);
 		mapView = new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
@@ -170,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
 					setContent(fullView);
 					return true;
 				case R.id.navigation_map:
+					mapView.prepareView();
 					setContent(mapView);
 					return true;
 			}

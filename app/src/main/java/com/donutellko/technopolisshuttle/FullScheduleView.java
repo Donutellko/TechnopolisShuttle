@@ -29,9 +29,11 @@ public class FullScheduleView extends SView {
 	public FullScheduleView(Context context, TimeTable timeTable, boolean showPastState) {
 		super(context);
 
-		view = MainActivity.layoutInflater.inflate(LAYOUT_RESOURCE, null);
+		view = View.inflate(context, LAYOUT_RESOURCE, null);
 		this.timeTable = timeTable;
 		this.showPastState = showPastState;
+
+		prepareView();
 	}
 
 	@Override
@@ -47,7 +49,7 @@ public class FullScheduleView extends SView {
 	@Override
 	public void updateView() {
 		content.removeAllViews();
-		content.addView(MainActivity.layoutInflater.inflate(R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
+		content.addView(View.inflate(context, R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
 		content.addView(makeTwoColumnsTable());
 	}
 
@@ -96,7 +98,7 @@ public class FullScheduleView extends SView {
 	}
 
 	private View makeTwoColumnsRow(TimeTable.ScheduleElement t1, TimeTable.ScheduleElement t2, STime currentTime) {
-		View row = MainActivity.layoutInflater.inflate(R.layout.full_2col_row, null);
+		View row = View.inflate(context, R.layout.full_2col_row, null);
 
 		TextView tFrom = (TextView) row.findViewById(R.id.t_from);
 		TextView tTo = (TextView) row.findViewById(R.id.t_to);

@@ -25,13 +25,12 @@ public class ShortScheduleView extends SView {
 	private int weekdaySelected;
 	private TableLayout table;
 
-	ToggleButton toggleButtonToTechnopolis, toggleButtonToUnderground;
+	ToggleButton toggleButtonToTechnopolis, toggleButtonFromTechnopolis;
 
 	public ShortScheduleView(Context context, TimeTable timeTable, int countToShow, boolean showToTechno) {
 		super(context);
-		Log.i("ShortScheduleView", "Method called");
 
-		view = MainActivity.layoutInflater.inflate(LAYOUT_RESOURCE, null);
+		view = View.inflate(context, LAYOUT_RESOURCE, null);
 
 		this.timeTable = timeTable;
 		this.countToShow = countToShow;
@@ -41,26 +40,22 @@ public class ShortScheduleView extends SView {
 	}
 
 	public void setTimeTable(TimeTable timeTable) {
-		Log.i("Short.setTimeTable", "Method called");
 		this.timeTable = timeTable;
 	}
 
 	@Override
 	public void prepareView() {
-		Log.i("Short.prepareView", "Method called");
 		int weekday = getWeekdayNumber();
 
 		table = view.findViewById(R.id.table);
 
-		Log.i("asnhjfgkjlas", table + " " + toggleButtonToTechnopolis + " " + view);
-
 		toggleButtonToTechnopolis = view.findViewById(R.id.toggle_to);
 		toggleButtonToTechnopolis.setOnClickListener(toggleToTechnopolisListener);
-		toggleButtonToTechnopolis.setChecked(!showToTechno);
+		toggleButtonToTechnopolis.setChecked(showToTechno);
 
-		toggleButtonToUnderground = view.findViewById(R.id.toggle_from);
-		toggleButtonToUnderground.setOnClickListener(toggleToUndergroundListener);
-		toggleButtonToUnderground.setChecked(showToTechno);
+		toggleButtonFromTechnopolis = view.findViewById(R.id.toggle_from);
+		toggleButtonFromTechnopolis.setOnClickListener(toggleFromTechnopolisListener);
+		toggleButtonFromTechnopolis.setChecked(!showToTechno);
 
 		Spinner weekdaysSpinner = view.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter =
@@ -75,13 +70,12 @@ public class ShortScheduleView extends SView {
 
 	@Override
 	public void updateView() {
-		Log.i("Short.updateView", "Method called");
 		DataLoader.STime now = getCurrentTime();
 		showToTechno = toggleButtonToTechnopolis.isChecked();
 		table.removeAllViews();
 
-		table.addView(MainActivity.layoutInflater.inflate(R.layout.short_head, null));
-		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, showToTechno, weekdaySelected);
+		table.addView(View.inflate(context, R.layout.short_head, null));
+		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, !showToTechno, weekdaySelected);
 
 		for (int i = 0; i < Math.min(after.size(), countToShow); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
@@ -118,7 +112,7 @@ public class ShortScheduleView extends SView {
 			if (left.min != 0) timeLeft += " " + left.min + " мин";
 		}
 
-		View row = MainActivity.layoutInflater.inflate(R.layout.short_row, null);
+		View row = View.inflate(context, R.layout.short_row, null);
 		((TextView) row.findViewById(R.id.time)).setText(t.time.hour + ":" + (t.time.min <= 9 ? "0" : "") + t.time.min);
 		((TextView) row.findViewById(R.id.timeleft)).setText(timeLeft);
 
@@ -130,17 +124,17 @@ public class ShortScheduleView extends SView {
 		@Override
 		public void onClick(View view) {
 			Log.i("listener", "toggle To clicked");
-			toggleButtonToUnderground.setChecked(!toggleButtonToTechnopolis.isChecked());
+			toggleButtonFromTechnopolis.setChecked(!toggleButtonToTechnopolis.isChecked());
 			updateView();
 		}
 	};
 
-	private ToggleButton.OnClickListener toggleToUndergroundListener
+	private ToggleButton.OnClickListener toggleFromTechnopolisListener
 			= new ToggleButton.OnClickListener() {
 		@Override
 		public void onClick(View view) {
 			Log.i("listener", "toggle From clicked");
-			toggleButtonToTechnopolis.setChecked(!toggleButtonToUnderground.isChecked());
+			toggleButtonToTechnopolis.setChecked(!toggleButtonFromTechnopolis.isChecked());
 			updateView();
 		}
 	};
