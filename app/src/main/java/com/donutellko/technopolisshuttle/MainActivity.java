@@ -12,8 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
@@ -41,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 	ShortScheduleView shortView;
 	FullScheduleView fullView;
 	MapView mapView;
+
 	public static LayoutInflater layoutInflater;
 
 	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 		fullView = new FullScheduleView(context, timeTable, showPast);
 		mapView = new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
 
-		loadView(currentState);
+		changeView(currentState);
 
 		getUpdateTimer(1000).start(); // запускаем автообновление значений каждые (параметр) миллисекунд
 	}
@@ -111,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
 		};
 	}
 
-	private void loadView(State currentState) {
-		Log.i("loadView", "Method called");
-		switch (currentState) {
+	private void changeView(State state) {
+		Log.i("changeView", "Method called");
+		switch (state) {
 			case SHORT_VIEW:
 				navigation.setSelectedItemId(R.id.navigation_short);
 				break;
@@ -165,18 +164,20 @@ public class MainActivity extends AppCompatActivity {
 		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 			Log.i("listener", "bootomnavigation changed");
 			switch (item.getItemId()) {
-				case R.id.navigation_short:
-					setContent(shortView);
-					return true;
-				case R.id.navigation_full:
-					setContent(fullView);
-					return true;
-				case R.id.navigation_map:
-					mapView.prepareView();
-					setContent(mapView);
-					return true;
+				case R.id.navigation_short: loadView(State.SHORT_VIEW); return true;
+				case R.id.navigation_full:  loadView(State.FULL_VIEW ); return true;
+				case R.id.navigation_map:   loadView(State.MAP_VIEW  ); return true;
 			}
 			return false;
 		}
 	};
+
+	private void loadView(State state) {
+		currentState = state;
+		switch (state) {
+			case SHORT_VIEW: setContent(shortView); break;
+			case FULL_VIEW:  setContent(fullView ); break;
+			case MAP_VIEW:   setContent(mapView  ); mapView.prepareView(); break;
+		}
+	}
 }

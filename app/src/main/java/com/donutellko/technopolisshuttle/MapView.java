@@ -45,7 +45,6 @@ public class MapView extends SView implements OnMapReadyCallback {
 		((LinearLayout) view).addView(View.inflate(context, LAYOUT_RESOURCE, null));
 		((LinearLayout) view).addView(View.inflate(context, ADRESSES_LAYOUT, null));
 
-		prepareView();
 	}
 
 	@Override
@@ -56,7 +55,7 @@ public class MapView extends SView implements OnMapReadyCallback {
 
 	@Override
 	public void updateView() {
-
+		throw new UnsupportedOperationException("updateView не должно вызываться у MapView");
 	}
 
 	@Override
@@ -66,7 +65,7 @@ public class MapView extends SView implements OnMapReadyCallback {
 		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
 //		map.moveCamera(cameraUpdate);
 
-//		map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+		map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 //		map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
