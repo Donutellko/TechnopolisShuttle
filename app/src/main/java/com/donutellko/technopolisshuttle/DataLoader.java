@@ -1,15 +1,16 @@
 package com.donutellko.technopolisshuttle;
 
-import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.donutellko.technopolisshuttle.DataLoader.STime;
 import com.donutellko.technopolisshuttle.TimeTable.ScheduleElement;
+import com.donutellko.technopolisshuttle.DataLoader.STime;
 import com.google.gson.Gson;
 
 /**
@@ -131,45 +132,59 @@ public class DataLoader {
 		}
 	}
 
-	public static class SettingsObject {
-		private String countToShowOnShort_s = "countToShowOnShort_s", currentState_s = "currentState", showPast_s = "shopPast";
-		int countToShowOnShort;
-		MainActivity.State currentState;
-		boolean showPast;
+	public static STime getCurrentTime() {
+		Calendar curtime = Calendar.getInstance();
+		return new STime(curtime.getTime());
+	}
 
-		public SettingsObject(int countToShowOnShort, MainActivity.State currentState, boolean showPast) {
-			this.countToShowOnShort = countToShowOnShort;
-			this.currentState = currentState;
-			this.showPast = showPast;
-		}
+	public static int getWeekdayNumber() {
+		Log.i("getWeekdayNumber", "Method called");
+		Calendar curtime = Calendar.getInstance();
+		return curtime.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY;
+	}
 
-		public SettingsObject() {
-		}
+	public static boolean firstIsBefore(DataLoader.STime d1, DataLoader.STime d2) {
+		if (d1.hour < d2.hour)
+			return true;
+		if (d1.hour == d2.hour && d1.min < d2.min)
+			return true;
+		return false;
+	}
+
+	public static class SettingsSingleton {
+		public static SettingsSingleton singleton = new SettingsSingleton();
+		public SettingsSingleton() { }
+
+		private String
+				countToShowOnShort_s = "countToShowOnShort_s",
+				currentState_s =       "currentState",
+				showPast_s =           "shopPast",
+				distanceToShowFrom_s = "distanceToShowFrom";
+
+		// fields with default values
+		public int                    countToShowOnShort = 5;
+		public MainActivity.State     currentState = MainActivity.State.SHORT_VIEW;
+		public boolean                showPast = true;
+		public boolean                showTo = false; // не сохраняется!
+		public float                  distanceToShowFrom = 2;
 
 		public boolean loadPreferences(Context context) {
 			SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
 
-			int state =
-					sp.getInt(currentState_s, -1);
-			countToShowOnShort =
-					sp.getInt(countToShowOnShort_s, -1);
-			boolean tmpShowPast =
-					sp.getBoolean(showPast_s, true);
+			currentState =       MainActivity.State.values()[
+					             sp.getInt(currentState_s, currentState.ordinal())];
+			countToShowOnShort = sp.getInt(countToShowOnShort_s, countToShowOnShort);
+			showPast =           sp.getBoolean(showPast_s, showPast);
+			distanceToShowFrom = sp.getFloat(distanceToShowFrom_s, distanceToShowFrom);
 
-			Log.i("loadPreferences()", state + ", " + countToShowOnShort);
-			if (state == -1 || countToShowOnShort == -1)
-				return false;
-
-			currentState = MainActivity.State.values()[state];
-			showPast = tmpShowPast;
 			return true;
 		}
 
 		public void savePreferences(Context context) {
 			SharedPreferences.Editor sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).edit();
 
-			sp.putInt(currentState_s, currentState.ordinal());
 			sp.putInt(countToShowOnShort_s, countToShowOnShort);
+			sp.putInt(currentState_s, currentState.ordinal());
 			sp.putBoolean(showPast_s, showPast);
 
 			sp.apply();
@@ -184,11 +199,6 @@ class TimeTable {
 	public TimeTable(ScheduleElement[] from, ScheduleElement[] to) {
 		this.from = from;
 		this.to = to;
-	}
-
-	public TimeTable(List<ScheduleElement> from, List<ScheduleElement> to) {
-		this.from = (ScheduleElement[]) from.toArray();
-		this.to = (ScheduleElement[]) to.toArray();
 	}
 
 	public List<ScheduleElement> getTimeAfter(STime now, boolean To, int weekday) {

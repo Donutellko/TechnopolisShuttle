@@ -1,49 +1,45 @@
 package com.donutellko.technopolisshuttle;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
+import android.os.CountDownTimer;
+import android.content.Context;
+import android.view.MenuItem;
+import android.os.Bundle;
+import android.view.Menu;
+import android.util.Log;
 
 import java.util.Calendar;
 
-import com.donutellko.technopolisshuttle.DataLoader.STime;
+import com.google.android.gms.maps.model.LatLng;
 
-
-import com.donutellko.technopolisshuttle.DataLoader.SettingsObject;
+import com.donutellko.technopolisshuttle.DataLoader.SettingsSingleton;
 
 public class MainActivity extends AppCompatActivity {
 
 	private LatLng
 			coordsTechnopolis = new LatLng(59.818026, 30.327783),
 			coordsUnderground = new LatLng(59.854728, 30.320958);
-	private final double DISTANCE_TO_SHOW_FROM = 2;
-	private static int countToShowOnShort = 5; // defaults
-	private State currentState = State.SHORT_VIEW; //default
-	// CheckBox values
-	private boolean showPast = true, showTo = true;
 
 	Calendar curtime;
+
 	LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
 	BottomNavigationView navigation;
 
 	ShortScheduleView shortView;
 	FullScheduleView fullView;
 	MapView mapView;
-	public static LayoutInflater layoutInflater;
+	SettingsView settingsView;
 
-	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
+	public static LayoutInflater layoutInflater;
+	public static SettingsSingleton settingsSingleton = SettingsSingleton.singleton;
+
+	enum State { SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,55 +48,96 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		layoutInflater = getLayoutInflater();
-
 		curtime = Calendar.getInstance();
-
 		contentBlock = (LinearLayout) findViewById(R.id.content);
 
 		navigation = (BottomNavigationView) findViewById(R.id.navigation);
 		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-		SettingsObject settings = new SettingsObject();
-		if (settings.loadPreferences(getApplicationContext())) {
-			currentState = settings.currentState;
-			countToShowOnShort = settings.countToShowOnShort;
-			showPast = settings.showPast;
-			Log.i("settings", currentState + " " + countToShowOnShort);
-		} else {
-			Log.i("settings", "Preferences не загружены");
-		}
 
-		//double toTechno = getDistanceBetween(TECHNOPOLIS, getLocation());
-		//showFrom = toTechno >= 0 && toTechno < DISTANCE_TO_SHOW_FROM;
+		if (settingsSingleton.loadPreferences(getApplicationContext()))
+			Log.i("Preferences", "loaded");
+		else
+			Log.i("Preferences", "not found");
 
 		DataLoader dataLoader = new DataLoader();
 		TimeTable timeTable = dataLoader.getFullJsonInfo();
 
-		timeTable = dataLoader.getFullJsonInfo();
-
 		Context context = this;
-		shortView = new ShortScheduleView(context, timeTable, countToShowOnShort, showTo);
-		fullView = new FullScheduleView(context, timeTable, showPast);
-		mapView = new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
+		shortView = new ShortScheduleView(context, settingsSingleton, timeTable, settingsSingleton.showTo);
+		fullView =  new FullScheduleView (context, timeTable, settingsSingleton.showPast);
+		mapView =   new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
 
-		loadView(currentState);
+		settingsView = new SettingsView(context, settingsSingleton);
+
+		changeView(settingsSingleton.currentState);
 
 		getUpdateTimer(1000).start(); // запускаем автообновление значений каждые (параметр) миллисекунд
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.action_reload:
+				Snackbar.make(contentBlock, "Not available yet", Snackbar.LENGTH_LONG)
+							.setAction("Action", null).show();
+				return true;
+			case R.id.action_settings:
+				setContent(settingsView);
+				return true;
+			case R.id.action_change:
+				Snackbar.make(contentBlock, "Not available yet", Snackbar.LENGTH_LONG)
+						.setAction("Action", null).show();
+				return true;
+			case R.id.action_help:
+				Snackbar.make(contentBlock, "Not available yet", Snackbar.LENGTH_LONG)
+						.setAction("Action", null).show();
+				return true;
+			case R.id.action_about:
+				Snackbar.make(contentBlock, "Not available yet", Snackbar.LENGTH_LONG)
+						.setAction("Action", null).show();
+				return true;
+			default:
+				Log.e("Хьюстон!", "У нас проблемы!");
+				return false;
+		}
+	}
+
+	@Override
+	public void onStop() {
+		Log.i("onStop", "Method called");
+		SettingsSingleton.singleton.savePreferences(getApplicationContext());
+		super.onStop();
+	}
+
+	public void setContent(SView sView) {
+		Log.i("setContent", "Method called");
+		contentBlock.removeAllViews();
+		contentBlock.addView(sView.getView());
 	}
 
 	private CountDownTimer getUpdateTimer(long interval) {
 		return new CountDownTimer(Long.MAX_VALUE, interval) {
 			@Override
 			public void onTick(long millisUntilFinished) {
-				switch (currentState) {
+				switch (MainActivity.settingsSingleton.currentState) {
 					case SHORT_VIEW:
 						shortView.updateView();
 						break;
 					case FULL_VIEW:
-						fullView.updateView();
+//						fullView.updateView();
 						break;
 					case MAP_VIEW:
+//						mapView.updateView();
 						break;
+					default:
+						Log.e("Хьюстон!", "У нас проблемы!");
 				}
 			}
 
@@ -111,9 +148,9 @@ public class MainActivity extends AppCompatActivity {
 		};
 	}
 
-	private void loadView(State currentState) {
-		Log.i("loadView", "Method called");
-		switch (currentState) {
+	private void changeView(State state) {
+		Log.i("changeView", "Method called");
+		switch (state) {
 			case SHORT_VIEW:
 				navigation.setSelectedItemId(R.id.navigation_short);
 				break;
@@ -126,57 +163,30 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	public static STime getCurrentTime() {
-		Calendar curtime = Calendar.getInstance();
-		return new STime(curtime.getTime());
-	}
-
-	public static int getWeekdayNumber() {
-		Log.i("getWeekdayNumber", "Method called");
-		Calendar curtime = Calendar.getInstance();
-		return curtime.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY;
-	}
-
-	public static boolean firstIsBefore(DataLoader.STime d1, DataLoader.STime d2) {
-		Log.i("firstIsBefore", "Method called");
-		if (d1.hour < d2.hour)
-			return true;
-		if (d1.hour == d2.hour && d1.min < d2.min)
-			return true;
-		return false;
-	}
-
-	public void setContent(SView sView) {
-		Log.i("setContent", "Method called");
-		contentBlock.removeAllViews();
-		contentBlock.addView(sView.getView());
-	}
-
-	@Override
-	public void onStop() {
-		Log.i("onStop", "Method called");
-		new DataLoader.SettingsObject(countToShowOnShort, currentState, showPast).savePreferences(getApplicationContext());
-		super.onStop();
-	}
-
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
 			= new BottomNavigationView.OnNavigationItemSelectedListener() {
 		@Override
 		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 			Log.i("listener", "bootomnavigation changed");
 			switch (item.getItemId()) {
-				case R.id.navigation_short:
-					setContent(shortView);
-					return true;
-				case R.id.navigation_full:
-					setContent(fullView);
-					return true;
-				case R.id.navigation_map:
-					mapView.prepareView();
-					setContent(mapView);
-					return true;
+				case R.id.navigation_short: loadView(State.SHORT_VIEW); return true;
+				case R.id.navigation_full:  loadView(State.FULL_VIEW ); return true;
+				case R.id.navigation_map:   loadView(State.MAP_VIEW  ); return true;
+				default:
+					Log.e("Хьюстон!", "У нас проблемы!");
 			}
 			return false;
 		}
 	};
+
+	private void loadView(State state) {
+		settingsSingleton.currentState = state;
+		switch (state) {
+			case SHORT_VIEW: setContent(shortView); break;
+			case FULL_VIEW:  setContent(fullView ); break;
+			case MAP_VIEW:   setContent(mapView  ); mapView.prepareView(); break;
+			default:
+				Log.e("Хьюстон!", "У нас проблемы!");
+		}
+	}
 }

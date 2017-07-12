@@ -1,39 +1,39 @@
 package com.donutellko.technopolisshuttle;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.view.View;
-import android.widget.AdapterView;
+import android.widget.ToggleButton;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.AdapterView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.ToggleButton;
+import android.content.Context;
+import android.widget.Spinner;
+import android.graphics.Color;
+import android.view.View;
 
 import java.util.List;
 
-import static com.donutellko.technopolisshuttle.MainActivity.getCurrentTime;
-import static com.donutellko.technopolisshuttle.MainActivity.getWeekdayNumber;
+import static com.donutellko.technopolisshuttle.DataLoader.getWeekdayNumber;
+import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 
 public class ShortScheduleView extends SView {
 	private final int LAYOUT_RESOURCE = R.layout.short_layout;
 	private TimeTable timeTable;
-	private int countToShow;
 	private boolean showToTechno;
 	private int weekdaySelected;
 	private TableLayout table;
+	private DataLoader.SettingsSingleton settingsSingleton;
 
 	ToggleButton toggleTo, toggleFrom;
 
-	public ShortScheduleView(Context context, TimeTable timeTable, int countToShow, boolean showToTechno) {
+	public ShortScheduleView(Context context, DataLoader.SettingsSingleton settingsSingleton, TimeTable timeTable, boolean showToTechno) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
 
 		this.timeTable = timeTable;
-		this.countToShow = countToShow;
 		this.showToTechno = showToTechno;
+		this.settingsSingleton  = settingsSingleton;
 
 		prepareView();
 	}
@@ -76,7 +76,7 @@ public class ShortScheduleView extends SView {
 		table.addView(View.inflate(context, R.layout.short_head, null));
 		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, !showToTechno, weekdaySelected);
 
-		for (int i = 0; i < Math.min(after.size(), countToShow); i++)
+		for (int i = 0; i < Math.min(after.size(), settingsSingleton.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
 
 		TableRow ending = new TableRow(context);
@@ -90,8 +90,8 @@ public class ShortScheduleView extends SView {
 		if (after.size() == 0) {
 			ending_text.setText("Cегодня автобусов в этом направлении больше нет.");
 			table.removeAllViews();
-		} else if (after.size() >= countToShow - 1)
-			ending_text.setText("Показаны " + countToShow + " ближайших рейсов.");
+		} else if (after.size() >= settingsSingleton.countToShowOnShort - 1)
+			ending_text.setText("Показаны " + settingsSingleton.countToShowOnShort + " ближайших рейсов.");
 		else {
 			ending_text.setText("Больше нет рейсов на сегодня.");
 		}
