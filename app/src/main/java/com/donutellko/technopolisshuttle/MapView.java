@@ -47,7 +47,7 @@ public class MapView extends SView implements OnMapReadyCallback {
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
 //		((LinearLayout) view).addView(mapView); //TODO: не отображается правильно
-		((LinearLayout) view.findViewById(R.id.container)).addView(View.inflate(context, FRAGMENT_RESOURCE, null));
+//		((LinearLayout) view.findViewById(R.id.container)).addView(View.inflate(context, FRAGMENT_RESOURCE, null));
 //		((LinearLayout) mapView.findViewById(R.id.container)).addView(View.inflate(context, FRAGMENT_RESOURCE, null));
 
 	}

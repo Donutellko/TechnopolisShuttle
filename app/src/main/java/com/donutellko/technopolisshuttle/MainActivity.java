@@ -1,13 +1,8 @@
 package com.donutellko.technopolisshuttle;
 
-import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.provider.Settings;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.Snackbar;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -46,18 +41,23 @@ public class MainActivity extends AppCompatActivity {
 	public static LayoutInflater layoutInflater;
 	public static SettingsSingleton settingsSingleton = SettingsSingleton.singleton;
 
-	LocationManager locationManager;
-	static SLocationListener locationListener;
+//	LocationManager locationManager;
+//	static SLocationListener locationListener;
 
-	enum State { SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW }
+	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		/*locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locationListener = new SLocationListener();
+
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)  {
+			locationManager.requestLocationUpdates("network", 5000, 0, locationListener);
+			locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
+		}*/
 
 		applicationContext = getApplicationContext();
 
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 		TimeTable timeTable = dataLoader.getFullJsonInfo();
 
 		Context context = this;
-		shortView = new ShortScheduleView(context, settingsSingleton, timeTable, settingsSingleton.showTo);
+		shortView = new ShortScheduleView(context, settingsSingleton, timeTable);
 		fullView =  new FullScheduleView (context, timeTable, settingsSingleton.showPast);
 		mapView =   new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
 
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
 		changeView(settingsSingleton.currentState);
 
 		getUpdateTimer(1000).start(); // запускаем автообновление значений каждые (параметр) миллисекунд
+
 	}
 
 	@Override
@@ -211,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-	class SLocationListener implements LocationListener {
+	/*class SLocationListener implements LocationListener {
 		double myLongitude = 0, myLatitude = 90;
 		boolean updated = false;
 
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
 		@Override
 		public void onLocationChanged(Location location) {
-			Log.i("onLocationChanged()", location.toString());
+			Log.w("onLocationChanged()", location.getLatitude() + " " + location.getLongitude());
 			myLongitude = location.getLongitude();
 			myLatitude = location.getLatitude();
 			updated = true;
@@ -246,10 +247,8 @@ public class MainActivity extends AppCompatActivity {
 
 		@Override
 		public void onProviderDisabled(String s) {
-			Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-			startActivity(i);
+			// Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			// startActivity(i);
 		}
-
-	}
-
+	}*/
 }

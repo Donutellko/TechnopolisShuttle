@@ -87,48 +87,59 @@ public class DataLoader {
 	}
 
 	public TimeTable getFullJsonInfo() {
-		String json = getJson();
-		int start2 = json.indexOf("[", 1);
-		String json1 = json.substring(0, start2);
-		String json2 = json.substring(start2);
+		String s;
+		s = getJsonOnline();
+		if (s == null)
+			s = getJsonCached();
+		if (s == null)
+			s = getDefaultJson();
 
-		Log.i("json", json1 + "\n" + json2);
-		DataObject[]
-				dataObject1 = new Gson().fromJson(json1, DataObject[].class),
-				dataObject2 = new Gson().fromJson(json2, DataObject[].class);
+		JsonObject jsonObject= new Gson().fromJson(s, JsonObject.class);
 
 		ScheduleElement[]
-				se1 = new ScheduleElement[dataObject1.length],
-				se2 = new ScheduleElement[dataObject2.length];
+				seFrom = jsonObject.toScheduleElementArray(jsonObject.fromOffice),
+				seTo = jsonObject.toScheduleElementArray(jsonObject.toOffice);
 
-		for (int i = 0; i < dataObject1.length; i++)
-			se1[i] = dataObject1[i].toScheduleElement();
-
-		for (int i = 0; i < dataObject2.length; i++)
-			se2[i] = dataObject2[i].toScheduleElement();
-
-		TimeTable t = new TimeTable(se2, se1);
+		TimeTable t = new TimeTable(seFrom, seTo);
 		return t;
 	}
 
-	public String getJson() {
+	public String getJsonOnline() {
+		String s = null;
 		// TODO
-		return getDefaultJson();
-	}
-
-	private String getDefaultJson() {
-		String s =
-				"[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":16},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":16},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}]" +
-						"[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]";
 		return s;
 	}
 
-	private class DataObject {
-		String time;
-		int mask;
+	private String getJsonCached() {
+		String s = null;
+		s = SettingsSingleton.singleton.jsonCached_s;
+		return  s;
+	}
 
-		public ScheduleElement toScheduleElement() {
-			return new ScheduleElement(new STime(time), mask);
+	private static String getDefaultJson() {
+		String s =
+				"{\"fromOffice\"=[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":16},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":16},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}],"
+				+"\"toOffice\"=[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]}";
+		return s;
+	}
+
+	private class JsonObject {
+		DataObject[] fromOffice, toOffice;
+
+		public ScheduleElement[] toScheduleElementArray(DataObject[] dataObjects) {
+			ScheduleElement[] scheduleElements = new ScheduleElement[dataObjects.length];
+			for (int i = 0; i < dataObjects.length; i++)
+				scheduleElements[i] = dataObjects[i].toScheduleElement();
+			return scheduleElements;
+		}
+
+		class DataObject {
+			String time;
+			int mask;
+
+			public ScheduleElement toScheduleElement() {
+				return new ScheduleElement(new STime(time), mask);
+			}
 		}
 	}
 
@@ -159,14 +170,17 @@ public class DataLoader {
 				countToShowOnShort_s = "countToShowOnShort_s",
 				currentState_s =       "currentState",
 				showPast_s =           "shopPast",
-				distanceToShowFrom_s = "distanceToShowFrom";
+				distanceToShowFrom_s = "distanceToShowFrom",
+				jsonCached =           "jsonCached";
 
-		// fields with default values
-		public int                    countToShowOnShort = 5;
-		public MainActivity.State     currentState = MainActivity.State.SHORT_VIEW;
-		public boolean                showPast = true;
-		public boolean                showTo = false; // не сохраняется!
-		public float                  distanceToShowFrom = 2;
+		// fields with !!!!default!!! values
+		public int                      countToShowOnShort = 5;
+		public MainActivity.State       currentState = MainActivity.State.SHORT_VIEW;
+		public boolean                  showPast = true;
+		public boolean                  showTo = true; // не сохранять!
+		public float                    distanceToShowFrom = 2;
+		public String                   jsonCached_s = null;
+
 
 		public boolean loadPreferences(Context context) {
 			SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
@@ -176,6 +190,7 @@ public class DataLoader {
 			countToShowOnShort = sp.getInt(countToShowOnShort_s, countToShowOnShort);
 			showPast =           sp.getBoolean(showPast_s, showPast);
 			distanceToShowFrom = sp.getFloat(distanceToShowFrom_s, distanceToShowFrom);
+			jsonCached_s =       sp.getString(jsonCached, jsonCached_s);
 
 			return true;
 		}
@@ -186,6 +201,7 @@ public class DataLoader {
 			sp.putInt(countToShowOnShort_s, countToShowOnShort);
 			sp.putInt(currentState_s, currentState.ordinal());
 			sp.putBoolean(showPast_s, showPast);
+			sp.putString(jsonCached_s, jsonCached);
 
 			sp.apply();
 			Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal());

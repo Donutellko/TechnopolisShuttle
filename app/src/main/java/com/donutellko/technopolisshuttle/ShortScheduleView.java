@@ -1,5 +1,6 @@
 package com.donutellko.technopolisshuttle;
 
+import android.util.Log;
 import android.widget.ToggleButton;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
@@ -22,20 +23,18 @@ public class ShortScheduleView extends SView {
 			TOGGLE_TO = R.id.toggle_to,
 			TOGGLE_FROM = R.id.toggle_from;
 	private TimeTable timeTable;
-	private boolean showToTechno;
 	private int weekdaySelected;
 	private TableLayout table;
 	private DataLoader.SettingsSingleton settingsSingleton;
 
 	ToggleButton toggleTo, toggleFrom;
 
-	public ShortScheduleView(Context context, DataLoader.SettingsSingleton settingsSingleton, TimeTable timeTable, boolean showToTechno) {
+	public ShortScheduleView(Context context, DataLoader.SettingsSingleton settingsSingleton, TimeTable timeTable) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
 
 		this.timeTable = timeTable;
-		this.showToTechno = showToTechno;
 		this.settingsSingleton  = settingsSingleton;
 
 		prepareView();
@@ -53,11 +52,11 @@ public class ShortScheduleView extends SView {
 
 		toggleTo = view.findViewById(TOGGLE_TO);
 		toggleTo.setOnClickListener(toggleToListener);
-		toggleTo.setChecked(showToTechno);
+		toggleTo.setChecked(settingsSingleton.showTo);
 
 		toggleFrom = view.findViewById(TOGGLE_FROM);
 		toggleFrom.setOnClickListener(toggleFromListener);
-		toggleFrom.setChecked(!showToTechno);
+		toggleFrom.setChecked(!settingsSingleton.showTo);
 
 		Spinner weekdaysSpinner = view.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter =
@@ -67,7 +66,9 @@ public class ShortScheduleView extends SView {
 		weekdaysSpinner.setAdapter(adapter);
 		weekdaysSpinner.setSelection(weekday);
 
-		settingsSingleton.showTo = MainActivity.locationListener.getDistanceToTechnopolis() > settingsSingleton.distanceToShowFrom;
+//		double dist = MainActivity.locationListener.getDistanceToTechnopolis();
+//		settingsSingleton.showTo = dist > settingsSingleton.distanceToShowFrom;
+//		Log.i("lsnd", dist + " > " + settingsSingleton.distanceToShowFrom + " = " + settingsSingleton.showTo);
 
 		updateView();
 	}
@@ -76,11 +77,11 @@ public class ShortScheduleView extends SView {
 	public void updateView() {
 		DataLoader.STime now = getCurrentTime();
 
-		showToTechno = toggleTo.isChecked();
+		settingsSingleton.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
 		table.addView(View.inflate(context, R.layout.short_head, null));
-		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, !showToTechno, weekdaySelected);
+		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, !settingsSingleton.showTo, weekdaySelected);
 
 		for (int i = 0; i < Math.min(after.size(), settingsSingleton.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
