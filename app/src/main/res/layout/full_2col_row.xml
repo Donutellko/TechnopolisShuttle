@@ -33,12 +33,5 @@
             android:textAlignment="center"
             android:textSize="24sp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="только пн, пт"
-            android:textAlignment="center"
-            android:textColor="@color/colorAccent"
-            android:textSize="12sp"/>
     </LinearLayout>
 </LinearLayout>
