@@ -1,23 +1,23 @@
 package com.donutellko.technopolisshuttle;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
-import android.view.View;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.CheckBox;
+import android.content.Context;
+import android.graphics.Color;
+import android.view.View;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.donutellko.technopolisshuttle.DataLoader.STime;
 
-import static com.donutellko.technopolisshuttle.MainActivity.firstIsBefore;
-import static com.donutellko.technopolisshuttle.MainActivity.getCurrentTime;
+import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
+import static com.donutellko.technopolisshuttle.DataLoader.firstIsBefore;
 
 public class FullScheduleView extends SView {
 	private final int LAYOUT_RESOURCE = R.layout.full_layout;
@@ -100,8 +100,8 @@ public class FullScheduleView extends SView {
 	private View makeTwoColumnsRow(TimeTable.ScheduleElement t1, TimeTable.ScheduleElement t2, STime currentTime) {
 		View row = View.inflate(context, R.layout.full_2col_row, null);
 
-		TextView tFrom = (TextView) row.findViewById(R.id.t_from);
-		TextView tTo = (TextView) row.findViewById(R.id.t_to);
+		TextView tFrom = row.findViewById(R.id.t_from);
+		TextView tTo = row.findViewById(R.id.t_to);
 
 		if (t1 == null) tFrom.setText("");
 		else {

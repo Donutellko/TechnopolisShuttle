@@ -1,15 +1,16 @@
 package com.donutellko.technopolisshuttle;
 
-import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.donutellko.technopolisshuttle.DataLoader.STime;
 import com.donutellko.technopolisshuttle.TimeTable.ScheduleElement;
+import com.donutellko.technopolisshuttle.DataLoader.STime;
 import com.google.gson.Gson;
 
 /**
@@ -86,91 +87,121 @@ public class DataLoader {
 	}
 
 	public TimeTable getFullJsonInfo() {
-		String json = getJson();
-		int start2 = json.indexOf("[", 1);
-		String json1 = json.substring(0, start2);
-		String json2 = json.substring(start2);
+		String s;
+		s = getJsonOnline();
+		if (s == null)
+			s = getJsonCached();
+		if (s == null)
+			s = getDefaultJson();
 
-		Log.i("json", json1 + "\n" + json2);
-		DataObject[]
-				dataObject1 = new Gson().fromJson(json1, DataObject[].class),
-				dataObject2 = new Gson().fromJson(json2, DataObject[].class);
+		JsonObject jsonObject= new Gson().fromJson(s, JsonObject.class);
 
 		ScheduleElement[]
-				se1 = new ScheduleElement[dataObject1.length],
-				se2 = new ScheduleElement[dataObject2.length];
+				seFrom = jsonObject.toScheduleElementArray(jsonObject.fromOffice),
+				seTo = jsonObject.toScheduleElementArray(jsonObject.toOffice);
 
-		for (int i = 0; i < dataObject1.length; i++)
-			se1[i] = dataObject1[i].toScheduleElement();
-
-		for (int i = 0; i < dataObject2.length; i++)
-			se2[i] = dataObject2[i].toScheduleElement();
-
-		TimeTable t = new TimeTable(se2, se1);
+		TimeTable t = new TimeTable(seFrom, seTo);
 		return t;
 	}
 
-	public String getJson() {
+	public String getJsonOnline() {
+		String s = null;
 		// TODO
-		return getDefaultJson();
-	}
-
-	private String getDefaultJson() {
-		String s =
-				"[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":16},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":16},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}]" +
-						"[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]";
 		return s;
 	}
 
-	private class DataObject {
-		String time;
-		int mask;
+	private String getJsonCached() {
+		String s = null;
+		s = SettingsSingleton.singleton.jsonCached_s;
+		return  s;
+	}
 
-		public ScheduleElement toScheduleElement() {
-			return new ScheduleElement(new STime(time), mask);
+	private static String getDefaultJson() {
+		String s =
+				"{\"fromOffice\"=[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":16},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":16},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}],"
+				+"\"toOffice\"=[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]}";
+		return s;
+	}
+
+	private class JsonObject {
+		DataObject[] fromOffice, toOffice;
+
+		public ScheduleElement[] toScheduleElementArray(DataObject[] dataObjects) {
+			ScheduleElement[] scheduleElements = new ScheduleElement[dataObjects.length];
+			for (int i = 0; i < dataObjects.length; i++)
+				scheduleElements[i] = dataObjects[i].toScheduleElement();
+			return scheduleElements;
+		}
+
+		class DataObject {
+			String time;
+			int mask;
+
+			public ScheduleElement toScheduleElement() {
+				return new ScheduleElement(new STime(time), mask);
+			}
 		}
 	}
 
-	public static class SettingsObject {
-		private String countToShowOnShort_s = "countToShowOnShort_s", currentState_s = "currentState", showPast_s = "shopPast";
-		int countToShowOnShort;
-		MainActivity.State currentState;
-		boolean showPast;
+	public static STime getCurrentTime() {
+		Calendar curtime = Calendar.getInstance();
+		return new STime(curtime.getTime());
+	}
 
-		public SettingsObject(int countToShowOnShort, MainActivity.State currentState, boolean showPast) {
-			this.countToShowOnShort = countToShowOnShort;
-			this.currentState = currentState;
-			this.showPast = showPast;
-		}
+	public static int getWeekdayNumber() {
+		Log.i("getWeekdayNumber", "Method called");
+		Calendar curtime = Calendar.getInstance();
+		return curtime.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY;
+	}
 
-		public SettingsObject() {
-		}
+	public static boolean firstIsBefore(DataLoader.STime d1, DataLoader.STime d2) {
+		if (d1.hour < d2.hour)
+			return true;
+		if (d1.hour == d2.hour && d1.min < d2.min)
+			return true;
+		return false;
+	}
+
+	public static class SettingsSingleton {
+		public static SettingsSingleton singleton = new SettingsSingleton();
+		public SettingsSingleton() { }
+
+		private String
+				countToShowOnShort_s = "countToShowOnShort_s",
+				currentState_s =       "currentState",
+				showPast_s =           "shopPast",
+				distanceToShowFrom_s = "distanceToShowFrom",
+				jsonCached =           "jsonCached";
+
+		// fields with !!!!default!!! values
+		public int                      countToShowOnShort = 5;
+		public MainActivity.State       currentState = MainActivity.State.SHORT_VIEW;
+		public boolean                  showPast = true;
+		public boolean                  showTo = true; // не сохранять!
+		public float                    distanceToShowFrom = 2;
+		public String                   jsonCached_s = null;
+
 
 		public boolean loadPreferences(Context context) {
 			SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
 
-			int state =
-					sp.getInt(currentState_s, -1);
-			countToShowOnShort =
-					sp.getInt(countToShowOnShort_s, -1);
-			boolean tmpShowPast =
-					sp.getBoolean(showPast_s, true);
+			currentState =       MainActivity.State.values()[
+					             sp.getInt(currentState_s, currentState.ordinal())];
+			countToShowOnShort = sp.getInt(countToShowOnShort_s, countToShowOnShort);
+			showPast =           sp.getBoolean(showPast_s, showPast);
+			distanceToShowFrom = sp.getFloat(distanceToShowFrom_s, distanceToShowFrom);
+			jsonCached_s =       sp.getString(jsonCached, jsonCached_s);
 
-			Log.i("loadPreferences()", state + ", " + countToShowOnShort);
-			if (state == -1 || countToShowOnShort == -1)
-				return false;
-
-			currentState = MainActivity.State.values()[state];
-			showPast = tmpShowPast;
 			return true;
 		}
 
 		public void savePreferences(Context context) {
 			SharedPreferences.Editor sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).edit();
 
-			sp.putInt(currentState_s, currentState.ordinal());
 			sp.putInt(countToShowOnShort_s, countToShowOnShort);
+			sp.putInt(currentState_s, currentState.ordinal());
 			sp.putBoolean(showPast_s, showPast);
+			sp.putString(jsonCached_s, jsonCached);
 
 			sp.apply();
 			Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal());
@@ -186,17 +217,11 @@ class TimeTable {
 		this.to = to;
 	}
 
-	public TimeTable(List<ScheduleElement> from, List<ScheduleElement> to) {
-		this.from = (ScheduleElement[]) from.toArray();
-		this.to = (ScheduleElement[]) to.toArray();
-	}
-
 	public List<ScheduleElement> getTimeAfter(STime now, boolean To, int weekday) {
 		List<ScheduleElement> result = new ArrayList<>();
 
 		for (ScheduleElement t : (To ? to : from))
 			if (now.isBefore(t.time) && t.worksAt(weekday)) {
-				Log.i("weekdays", t.mask + " " + weekday + " " + t.worksAt(weekday));
 				result.add(t);
 			}
 

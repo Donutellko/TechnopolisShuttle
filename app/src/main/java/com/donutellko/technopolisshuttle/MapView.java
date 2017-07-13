@@ -1,26 +1,26 @@
 package com.donutellko.technopolisshuttle;
 
-import android.Manifest;
-import android.app.FragmentManager;
-import android.content.Context;
+import android.support.v4.app.ActivityCompat;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.app.FragmentManager;
+import android.widget.LinearLayout;
 import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
-import android.support.v4.app.ActivityCompat;
-import android.util.Log;
+import android.content.Context;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.util.Log;
+import android.Manifest;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.GoogleMap;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -28,8 +28,8 @@ public class MapView extends SView implements OnMapReadyCallback {
 
 	private FragmentManager fragmentManager;
 	private final int
-			LAYOUT_RESOURCE = R.layout.map_layout,
-			ADRESSES_LAYOUT = R.layout.map_adresses;
+			FRAGMENT_RESOURCE = R.layout.map_fragment,
+			LAYOUT_RESOURCE = R.layout.map_layout;
 
 	private LatLng
 			coordsTechnopolis,
@@ -38,12 +38,17 @@ public class MapView extends SView implements OnMapReadyCallback {
 	public MapView(Context context, FragmentManager fragmentManager, LatLng coordsTechnopolis, LatLng coordsUnderground) {
 		super(context);
 		view = new LinearLayout(context);
+//		((LinearLayout) view).set
+		//new LinearLayout(context, LinearLayout.VERTICAL);
+//		new LinearLayout(context, new AttributeSet(LinearLayout.VERTICAL));
 		this.coordsTechnopolis = coordsTechnopolis;
 		this.coordsUnderground = coordsUnderground;
 		this.fragmentManager = fragmentManager;
 
-		((LinearLayout) view).addView(View.inflate(context, LAYOUT_RESOURCE, null));
-		((LinearLayout) view).addView(View.inflate(context, ADRESSES_LAYOUT, null));
+		view = View.inflate(context, LAYOUT_RESOURCE, null);
+//		((LinearLayout) view).addView(mapView); //TODO: не отображается правильно
+//		((LinearLayout) view.findViewById(R.id.container)).addView(View.inflate(context, FRAGMENT_RESOURCE, null));
+//		((LinearLayout) mapView.findViewById(R.id.container)).addView(View.inflate(context, FRAGMENT_RESOURCE, null));
 
 	}
 
@@ -65,7 +70,12 @@ public class MapView extends SView implements OnMapReadyCallback {
 		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
 //		map.moveCamera(cameraUpdate);
 
-		map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+		try {
+			map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+		} catch (Exception e) {
+			DataLoader.SettingsSingleton.singleton.currentState = MainActivity.State.SHORT_VIEW;
+			DataLoader.SettingsSingleton.singleton.savePreferences(MainActivity.applicationContext);
+		}
 //		map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -94,6 +104,16 @@ public class MapView extends SView implements OnMapReadyCallback {
 				.snippet("Пулковское шоссе, 40к4")
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 				.position(coordsTechnopolis));
+
+		map.addMarker(new MarkerOptions()
+				.title("Северный полюс")
+				.snippet("Тут нет пингвинов")
+				.position(new LatLng(80, 30)));
+
+		map.addMarker(new MarkerOptions()
+				.title("Южный полюс")
+				.snippet("Тут есть пингвины")
+				.position(new LatLng(-86, 30)));
 
 	}
 
