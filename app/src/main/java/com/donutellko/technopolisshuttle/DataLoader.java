@@ -206,7 +206,6 @@ class TimeTable {
 
 		for (ScheduleElement t : (To ? to : from))
 			if (now.isBefore(t.time) && t.worksAt(weekday)) {
-				Log.i("weekdays", t.mask + " " + weekday + " " + t.worksAt(weekday));
 				result.add(t);
 			}
 

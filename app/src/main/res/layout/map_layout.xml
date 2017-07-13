@@ -1,7 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
 
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-          android:name="com.google.android.gms.maps.MapFragment"
-          android:id="@+id/map"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"/>
+    <TextView
+        android:id="@+id/metro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_red_light"
+        android:paddingBottom="5dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="5dp"
+        android:text="Автобусная ост., м.Московская \nМосковский проспект, 189"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/tech"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.08"
+        android:background="@android:color/holo_blue_dark"
+        android:paddingBottom="5dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="5dp"
+        android:text='Б.Ц. "TECHNOPOLIS" \nПулковское шоссе, 40к4'
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="14dp"/>
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    </LinearLayout>
+</LinearLayout>
