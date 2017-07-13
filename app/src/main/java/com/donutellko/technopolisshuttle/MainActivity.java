@@ -11,8 +11,8 @@ import android.content.Context;
 import android.view.MenuItem;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -29,8 +29,10 @@ public class MainActivity extends AppCompatActivity {
 			coordsUnderground = new LatLng(59.854728, 30.320958);
 
 	Calendar curtime;
+	static TimeTable timeTable;
+	DataLoader dataLoader;
 
-	LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
+	static LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
 	BottomNavigationView navigation;
 
 	ShortScheduleView shortView;
@@ -73,12 +75,12 @@ public class MainActivity extends AppCompatActivity {
 		else
 			Log.i("Preferences", "not found");
 
-		DataLoader dataLoader = new DataLoader();
-		TimeTable timeTable = dataLoader.getFullJsonInfo();
+		dataLoader = new DataLoader();
+		timeTable = dataLoader.getFullJsonInfo();
 
 		Context context = this;
 		shortView = new ShortScheduleView(context, settingsSingleton, timeTable);
-		fullView =  new FullScheduleView (context, timeTable, settingsSingleton.showPast);
+		fullView =  new FullScheduleView (context, settingsSingleton.showPast);
 		mapView =   new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
 
 		settingsView = new SettingsView(context, settingsSingleton);
@@ -95,27 +97,42 @@ public class MainActivity extends AppCompatActivity {
 		return true;
 	}
 
+	public static void viewNotifier(String s) {
+		if (settingsSingleton.noSnackbar)
+			return;
+		if (settingsSingleton.showToast)
+			viewToast(s);
+		else
+			viewSnackbar(s);
+	}
+
+	public static void viewSnackbar(String s) {
+		Snackbar.make(contentBlock, s, Snackbar.LENGTH_SHORT)
+				.setAction("Action", null).show();
+	}
+	public static void viewToast(String s) {
+		Toast toast = Toast.makeText(applicationContext,
+				s, Toast.LENGTH_SHORT);
+		toast.show();
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_reload:
-				Snackbar.make(contentBlock, "Not available yet", Snackbar.LENGTH_LONG)
-						.setAction("Action", null).show();
+				timeTable = dataLoader.getFullJsonInfo();
 				return true;
 			case R.id.action_settings:
 				setContent(settingsView);
 				return true;
 			case R.id.action_change:
-				Snackbar.make(contentBlock, "Not available yet", Snackbar.LENGTH_LONG)
-						.setAction("Action", null).show();
+				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_help:
-				Snackbar.make(contentBlock, "Not available yet", Snackbar.LENGTH_LONG)
-						.setAction("Action", null).show();
+				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_about:
-				Snackbar.make(contentBlock, "Not available yet", Snackbar.LENGTH_LONG)
-						.setAction("Action", null).show();
+				viewNotifier("Not available yet");
 				return true;
 			default:
 				Log.e("Хьюстон!", "У нас проблемы!");
@@ -156,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
 					case MAP_VIEW:
 //						mapView.updateView();
 						break;
+					case SETTINGS_VIEW:
+						settingsView.updateView();
 					default:
 						Log.e("Хьюстон!", "У нас проблемы!");
 				}

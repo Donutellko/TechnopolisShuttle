@@ -1,6 +1,9 @@
 package com.donutellko.technopolisshuttle;
 
+import android.support.design.widget.TabLayout;
 import android.util.Log;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.ToggleButton;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
@@ -48,7 +51,12 @@ public class ShortScheduleView extends SView {
 	public void prepareView() {
 		int weekday = getWeekdayNumber();
 
-		table = view.findViewById(R.id.table);
+		LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
+		container.addView(View.inflate(context, R.layout.short_head, null));
+		ScrollView scrollView = new ScrollView(context);
+		table = new TableLayout(context);
+		scrollView.addView(table);
+		container.addView(scrollView);
 
 		toggleTo = view.findViewById(TOGGLE_TO);
 		toggleTo.setOnClickListener(toggleToListener);
@@ -80,7 +88,6 @@ public class ShortScheduleView extends SView {
 		settingsSingleton.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
-		table.addView(View.inflate(context, R.layout.short_head, null));
 		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, !settingsSingleton.showTo, weekdaySelected);
 
 		for (int i = 0; i < Math.min(after.size(), settingsSingleton.countToShowOnShort); i++)

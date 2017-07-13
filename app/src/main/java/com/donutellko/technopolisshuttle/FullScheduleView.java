@@ -26,11 +26,11 @@ public class FullScheduleView extends SView {
 	private boolean showPastState;
 	LinearLayout content;
 
-	public FullScheduleView(Context context, TimeTable timeTable, boolean showPastState) {
+	public FullScheduleView(Context context, boolean showPastState) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
-		this.timeTable = timeTable;
+		this.timeTable = MainActivity.timeTable;
 		this.showPastState = showPastState;
 
 		prepareView();
