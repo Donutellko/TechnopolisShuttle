@@ -14,15 +14,14 @@ import android.util.Log;
 
 public class SettingsView extends SView {
 	int LAYOUT_RESOURCE = R.layout.settings_layout;
-	Settings Settings;
-	EditText countOnShort, technoRadius, serverIp;
-	Button resetButton, saveButton;
+	Settings settings = Settings.singleton;
+	EditText countOnShort, technoRadius, serverIp, timeout;
+	Button resetButton, saveButton, closeButton;
 	CheckBox noSnackbar, useToast;
 
 
-	public SettingsView(Context context, Settings Settings) {
+	public SettingsView(Context context) {
 		super(context);
-		this.Settings = Settings;
 		prepareView();
 	}
 
@@ -31,15 +30,19 @@ public class SettingsView extends SView {
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
 
 		serverIp = view.findViewById(R.id.server_ip);
-		serverIp.setText(Settings.serverIp + "");
+		serverIp.setText(settings.serverIp + "");
 		serverIp.setOnKeyListener(serverIpListener);
 
+		timeout = view.findViewById(R.id.timeout);
+		timeout.setText(settings.connection_timeout + "");
+		timeout.setOnKeyListener(timeoutListener);
+
 		countOnShort = view.findViewById(R.id.count_to_show_on_short);
-		countOnShort.setText(Settings.countToShowOnShort + "");
+		countOnShort.setText(settings.countToShowOnShort + "");
 		countOnShort.setOnKeyListener(countOnShortListener);
 
 		technoRadius = view.findViewById(R.id.techno_radius);
-		technoRadius.setText(Settings.distanceToShowFrom + "");
+		technoRadius.setText(settings.distanceToShowFrom + "");
 		technoRadius.setOnKeyListener(technoRadiusListener);
 
 
@@ -57,6 +60,10 @@ public class SettingsView extends SView {
 		saveButton = view.findViewById(R.id.save);
 		saveButton.setText("Сохранить");
 		saveButton.setOnClickListener(saveListener);
+
+		closeButton = view.findViewById(R.id.close);
+		closeButton.setText("Закрыть");
+		closeButton.setOnClickListener(closeListener);
 	}
 
 	@Override
@@ -71,8 +78,8 @@ public class SettingsView extends SView {
 		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
 			if (keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
 					(keyCode == KeyEvent.KEYCODE_ENTER)) {
-				Settings.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
-				Log.i("editor", "lol " + Settings.countToShowOnShort);
+				settings.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
+				Log.i("editor", "lol " + settings.countToShowOnShort);
 				MainActivity.viewNotifier("Сохранено!");
 				return true;
 			}
@@ -86,7 +93,7 @@ public class SettingsView extends SView {
 		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
 			if (keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
 					(keyCode == KeyEvent.KEYCODE_ENTER)) {
-				Settings.serverIp = serverIp.getText().toString();
+				settings.serverIp = serverIp.getText().toString();
 				Log.i("editor", "lol " + serverIp);
 				MainActivity.viewNotifier("Сохранено!");
 				return true;
@@ -95,14 +102,14 @@ public class SettingsView extends SView {
 		}
 	};
 
-	private EditText.OnKeyListener technoRadiusListener
+	private EditText.OnKeyListener timeoutListener
 			= new EditText.OnKeyListener() {
 		@Override
 		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
 			if (keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
 					(keyCode == KeyEvent.KEYCODE_ENTER)) {
-				Settings.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
-				Log.i("editor", "lol " + Settings.distanceToShowFrom);
+				settings.connection_timeout = Integer.parseInt(timeout.getText() + "");
+				Log.i("editor", "lol " + settings.connection_timeout);
 				MainActivity.viewNotifier("Сохранено!");
 				return true;
 			}
@@ -111,10 +118,25 @@ public class SettingsView extends SView {
 	};
 
 
+	private EditText.OnKeyListener technoRadiusListener
+			= new EditText.OnKeyListener() {
+		@Override
+		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+			if (keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+					(keyCode == KeyEvent.KEYCODE_ENTER)) {
+				settings.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
+				Log.i("editor", "lol " + settings.distanceToShowFrom);
+				MainActivity.viewNotifier("Сохранено!");
+				return true;
+			}
+			return false;
+		}
+	};
+
 	private Button.OnClickListener resetListener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			Settings.reset();
+			settings.reset();
 			prepareView();
 		}
 	};
@@ -125,30 +147,38 @@ public class SettingsView extends SView {
 			if (technoRadius.getText().toString().equals("") || technoRadius.getText().toString().equals(""))
 				MainActivity.viewNotifier("Введены некорректные значения");
 			else {
-				Settings.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
-				Settings.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
-				Settings.serverIp = serverIp.getText().toString();
+				settings.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
+				settings.connection_timeout = Integer.parseInt(timeout.getText() + "");
+				settings.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
+				settings.serverIp = serverIp.getText().toString();
 
-				Settings.noSnackbar = noSnackbar.isChecked();
-				Settings.showToast = useToast.isChecked();
+				settings.noSnackbar = noSnackbar.isChecked();
+				settings.showToast = useToast.isChecked();
 
-				Settings.savePreferences(MainActivity.applicationContext);
+				settings.savePreferences(MainActivity.applicationContext);
 				MainActivity.viewNotifier("Сохранено!");
 			}
+		}
+	};
+
+	private Button.OnClickListener closeListener = new Button.OnClickListener() { //TODO: нормальная проверка
+		@Override
+		public void onClick(View view) {
+			MainActivity.changeView(settings.currentState);
 		}
 	};
 
 	private View.OnClickListener noSnackbarListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			Settings.singleton.noSnackbar = noSnackbar.isChecked();
+			settings.singleton.noSnackbar = noSnackbar.isChecked();
 		}
 	};
 
 	private View.OnClickListener useToastListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			Settings.singleton.showToast = useToast.isChecked();
+			settings.singleton.showToast = useToast.isChecked();
 		}
 	};
 }

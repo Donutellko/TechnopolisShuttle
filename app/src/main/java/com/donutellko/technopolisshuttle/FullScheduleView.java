@@ -18,6 +18,7 @@ import com.donutellko.technopolisshuttle.DataLoader.STime;
 
 import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 import static com.donutellko.technopolisshuttle.DataLoader.firstIsBefore;
+import static com.donutellko.technopolisshuttle.MainActivity.settings;
 import static com.donutellko.technopolisshuttle.MainActivity.timeTable;
 
 public class FullScheduleView extends SView {
@@ -26,11 +27,10 @@ public class FullScheduleView extends SView {
 	private boolean showPastState;
 	LinearLayout content;
 
-	public FullScheduleView(Context context, boolean showPastState) {
+	public FullScheduleView(Context context) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
-		this.showPastState = showPastState;
 
 		prepareView();
 	}
@@ -38,6 +38,7 @@ public class FullScheduleView extends SView {
 	@Override
 	public void prepareView() {
 		showPastCheckBox = view.findViewById(R.id.view_past);
+		showPastCheckBox.setChecked(settings.showPast);
 		showPastCheckBox.setOnCheckedChangeListener(mOnShowPastChangedListener);
 
 		content = view.findViewById(R.id.content);

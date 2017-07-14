@@ -1,7 +1,5 @@
 package com.donutellko.technopolisshuttle;
 
-import android.support.design.widget.TabLayout;
-import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.ToggleButton;
@@ -12,7 +10,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.content.Context;
 import android.widget.Spinner;
-import android.graphics.Color;
 import android.view.View;
 
 import java.util.List;
@@ -27,16 +24,14 @@ public class ShortScheduleView extends SView {
 			TOGGLE_FROM = R.id.toggle_from;
 	private int weekdaySelected;
 	private TableLayout table;
-	private Settings Settings;
+	private Settings settings = Settings.singleton;
 
 	ToggleButton toggleTo, toggleFrom;
 
-	public ShortScheduleView(Context context, Settings Settings, TimeTable timeTable) {
+	public ShortScheduleView(Context context) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
-
-		this.Settings  = Settings;
 
 		prepareView();
 	}
@@ -54,11 +49,11 @@ public class ShortScheduleView extends SView {
 
 		toggleTo = view.findViewById(TOGGLE_TO);
 		toggleTo.setOnClickListener(toggleToListener);
-		toggleTo.setChecked(Settings.showTo);
+		toggleTo.setChecked(settings.showTo);
 
 		toggleFrom = view.findViewById(TOGGLE_FROM);
 		toggleFrom.setOnClickListener(toggleFromListener);
-		toggleFrom.setChecked(!Settings.showTo);
+		toggleFrom.setChecked(!settings.showTo);
 
 		Spinner weekdaysSpinner = view.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter =
@@ -79,12 +74,12 @@ public class ShortScheduleView extends SView {
 	public void updateView() {
 		DataLoader.STime now = getCurrentTime();
 
-		Settings.showTo = toggleTo.isChecked();
+		settings.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
-		List<TimeTable.ScheduleElement> after = MainActivity.timeTable.getTimeAfter(now, Settings.showTo, weekdaySelected);
+		List<TimeTable.ScheduleElement> after = MainActivity.timeTable.getTimeAfter(now, settings.showTo, weekdaySelected);
 
-		for (int i = 0; i < Math.min(after.size(), Settings.countToShowOnShort); i++)
+		for (int i = 0; i < Math.min(after.size(), settings.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
 
 		TableRow ending = new TableRow(context);
@@ -98,8 +93,8 @@ public class ShortScheduleView extends SView {
 		if (after.size() == 0) {
 			ending_text.setText("Cегодня автобусов в этом направлении больше нет.");
 			table.removeAllViews();
-		} else if (after.size() >= Settings.countToShowOnShort - 1)
-			ending_text.setText("Показаны " + Settings.countToShowOnShort + " ближайших рейсов.");
+		} else if (after.size() >= settings.countToShowOnShort - 1)
+			ending_text.setText("Показаны " + settings.countToShowOnShort + " ближайших рейсов.");
 		else {
 			ending_text.setText("Больше нет рейсов на сегодня.");
 		}

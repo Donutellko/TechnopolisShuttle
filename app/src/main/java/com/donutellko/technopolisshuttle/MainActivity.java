@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 	DataLoader dataLoader;
 
 	static LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
-	BottomNavigationView navigation;
+	static BottomNavigationView navigation;
 
 	static ShortScheduleView shortView;
 	static FullScheduleView fullView;
@@ -69,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
 		timeTable = dataLoader.updateJsonInfo();
 
 		Context context = this;
-		shortView = new ShortScheduleView(context, settings, timeTable);
-		fullView =  new FullScheduleView (context, settings.showPast);
+		shortView = new ShortScheduleView(context);
+		fullView =  new FullScheduleView (context);
 		mapView =   new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
 
-		settingsView = new SettingsView(context, settings);
+		settingsView = new SettingsView(context);
 
 		changeView(settings.currentState);
 
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
 		};
 	}
 
-	private void changeView(State state) {
+	public static void changeView(State state) {
 		Log.i("changeView", "Method called");
 		switch (state) {
 			case SHORT_VIEW: navigation.setSelectedItemId(R.id.navigation_short); break;
