@@ -132,7 +132,7 @@ public class DataLoader {
 	public String getJsonOnline() {
 		Log.i("getJsonOnline()", "trying to load online");
 		String s = null;
-		AsyncTask<String, Void, String> lol = new JsonGetter().execute("http://192.168.0.100:8081/schedule");
+		AsyncTask<String, Void, String> lol = new JsonGetter().execute(SettingsSingleton.singleton.serverIp + "/schedule");
 		try {
 			s = lol.get();
 			if (s == null) throw new Exception();
@@ -211,7 +211,8 @@ public class DataLoader {
 				distanceToShowFrom_s = "distanceToShowFrom",
 				jsonCached_s = "jsonCached",
 				showToast_s = "showToast" ,
-				noSnackbar_s = "noSnackbar";
+				noSnackbar_s = "noSnackbar",
+				serverIp_s = "serverIp";
 
 		// fields with !!!!default!!! values
 		public int countToShowOnShort = 5;
@@ -222,6 +223,7 @@ public class DataLoader {
 		public String jsonCached = null;
 		public boolean showToast = false;
 		public boolean noSnackbar = false;
+		public String serverIp = "http://192.168.0.100:8081";
 
 
 		public boolean loadPreferences(Context context) {
@@ -235,6 +237,7 @@ public class DataLoader {
 			jsonCached = sp.getString(jsonCached_s, jsonCached);
 			showToast = sp.getBoolean(showToast_s, showToast);
 			noSnackbar = sp.getBoolean(noSnackbar_s, noSnackbar);
+			serverIp = sp.getString(serverIp_s, serverIp);
 
 			return true;
 		}
@@ -249,6 +252,7 @@ public class DataLoader {
 				sp.putString(jsonCached_s, jsonCached);
 			sp.putBoolean(showToast_s, showToast);
 			sp.putBoolean(noSnackbar_s, noSnackbar);
+			sp.putString(serverIp_s, serverIp);
 
 			sp.apply();
 			Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal());
@@ -343,8 +347,6 @@ class JsonGetter extends AsyncTask<String, Void, String> {
 		return result;
 	}
 
-	public String SERVER_IP = "217.66.158.150:81";
-
 	public String getJson() {
 		HashMap<String, String> postDataParams = new HashMap<String, String>();
 		postDataParams.put("lol", "/schedule");
@@ -354,7 +356,7 @@ class JsonGetter extends AsyncTask<String, Void, String> {
 		URL url;
 		String response = "";
 		try {
-			url = new URL("http://" + SERVER_IP + "/schedule");
+			url = new URL(DataLoader.SettingsSingleton.singleton.serverIp + "/schedule");
 
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(15000);

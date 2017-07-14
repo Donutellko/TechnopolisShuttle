@@ -15,7 +15,7 @@ import android.util.Log;
 public class SettingsView extends SView {
 	int LAYOUT_RESOURCE = R.layout.settings_layout;
 	DataLoader.SettingsSingleton settingsSingleton;
-	EditText countOnShort, technoRadius;
+	EditText countOnShort, technoRadius, serverIp;
 	Button resetButton, saveButton;
 	CheckBox noSnackbar, useToast;
 
@@ -29,6 +29,11 @@ public class SettingsView extends SView {
 	@Override
 	public void prepareView() {
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
+
+		serverIp = view.findViewById(R.id.server_ip);
+		serverIp.setText(settingsSingleton.serverIp + "");
+		serverIp.setOnKeyListener(serverIpListener);
+
 		countOnShort = view.findViewById(R.id.count_to_show_on_short);
 		countOnShort.setText(settingsSingleton.countToShowOnShort + "");
 		countOnShort.setOnKeyListener(countOnShortListener);
@@ -75,6 +80,21 @@ public class SettingsView extends SView {
 		}
 	};
 
+	private EditText.OnKeyListener serverIpListener
+			= new EditText.OnKeyListener() {
+		@Override
+		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+			if (keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+					(keyCode == KeyEvent.KEYCODE_ENTER)) {
+				settingsSingleton.serverIp = serverIp.getText().toString();
+				Log.i("editor", "lol " + serverIp);
+				MainActivity.viewNotifier("Сохранено!");
+				return true;
+			}
+			return false;
+		}
+	};
+
 	private EditText.OnKeyListener technoRadiusListener
 			= new EditText.OnKeyListener() {
 		@Override
@@ -95,6 +115,7 @@ public class SettingsView extends SView {
 		@Override
 		public void onClick(View view) {
 			settingsSingleton.reset();
+			prepareView();
 		}
 	};
 
@@ -106,6 +127,7 @@ public class SettingsView extends SView {
 			else {
 				settingsSingleton.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
 				settingsSingleton.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
+				settingsSingleton.serverIp = serverIp.getText().toString();
 
 				settingsSingleton.noSnackbar = noSnackbar.isChecked();
 				settingsSingleton.showToast = useToast.isChecked();
