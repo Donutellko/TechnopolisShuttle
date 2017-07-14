@@ -135,6 +135,7 @@ public class DataLoader {
 		AsyncTask<String, Void, String> lol = new JsonGetter().execute("http://192.168.0.100:8081/schedule");
 		try {
 			s = lol.get();
+			if (s == null) throw new Exception();
 			MainActivity.viewNotifier("Расписание синхронизировано!");
 		} catch (Exception e) {
 			MainActivity.viewNotifier("Расписание не синхронизировано!");
