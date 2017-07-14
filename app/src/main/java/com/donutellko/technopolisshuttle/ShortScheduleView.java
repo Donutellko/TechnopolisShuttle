@@ -25,26 +25,20 @@ public class ShortScheduleView extends SView {
 			LAYOUT_RESOURCE = R.layout.short_layout,
 			TOGGLE_TO = R.id.toggle_to,
 			TOGGLE_FROM = R.id.toggle_from;
-	private TimeTable timeTable;
 	private int weekdaySelected;
 	private TableLayout table;
-	private DataLoader.SettingsSingleton settingsSingleton;
+	private Settings Settings;
 
 	ToggleButton toggleTo, toggleFrom;
 
-	public ShortScheduleView(Context context, DataLoader.SettingsSingleton settingsSingleton, TimeTable timeTable) {
+	public ShortScheduleView(Context context, Settings Settings, TimeTable timeTable) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
 
-		this.timeTable = timeTable;
-		this.settingsSingleton  = settingsSingleton;
+		this.Settings  = Settings;
 
 		prepareView();
-	}
-
-	public void setTimeTable(TimeTable timeTable) {
-		this.timeTable = timeTable;
 	}
 
 	@Override
@@ -60,11 +54,11 @@ public class ShortScheduleView extends SView {
 
 		toggleTo = view.findViewById(TOGGLE_TO);
 		toggleTo.setOnClickListener(toggleToListener);
-		toggleTo.setChecked(settingsSingleton.showTo);
+		toggleTo.setChecked(Settings.showTo);
 
 		toggleFrom = view.findViewById(TOGGLE_FROM);
 		toggleFrom.setOnClickListener(toggleFromListener);
-		toggleFrom.setChecked(!settingsSingleton.showTo);
+		toggleFrom.setChecked(!Settings.showTo);
 
 		Spinner weekdaysSpinner = view.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter =
@@ -75,8 +69,8 @@ public class ShortScheduleView extends SView {
 		weekdaysSpinner.setSelection(weekday);
 
 //		double dist = MainActivity.locationListener.getDistanceToTechnopolis();
-//		settingsSingleton.showTo = dist > settingsSingleton.distanceToShowFrom;
-//		Log.i("lsnd", dist + " > " + settingsSingleton.distanceToShowFrom + " = " + settingsSingleton.showTo);
+//		settings.showTo = dist > settings.distanceToShowFrom;
+//		Log.i("lsnd", dist + " > " + settings.distanceToShowFrom + " = " + settings.showTo);
 
 		updateView();
 	}
@@ -85,12 +79,12 @@ public class ShortScheduleView extends SView {
 	public void updateView() {
 		DataLoader.STime now = getCurrentTime();
 
-		settingsSingleton.showTo = toggleTo.isChecked();
+		Settings.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
-		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, settingsSingleton.showTo, weekdaySelected);
+		List<TimeTable.ScheduleElement> after = MainActivity.timeTable.getTimeAfter(now, Settings.showTo, weekdaySelected);
 
-		for (int i = 0; i < Math.min(after.size(), settingsSingleton.countToShowOnShort); i++)
+		for (int i = 0; i < Math.min(after.size(), Settings.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
 
 		TableRow ending = new TableRow(context);
@@ -104,8 +98,8 @@ public class ShortScheduleView extends SView {
 		if (after.size() == 0) {
 			ending_text.setText("Cегодня автобусов в этом направлении больше нет.");
 			table.removeAllViews();
-		} else if (after.size() >= settingsSingleton.countToShowOnShort - 1)
-			ending_text.setText("Показаны " + settingsSingleton.countToShowOnShort + " ближайших рейсов.");
+		} else if (after.size() >= Settings.countToShowOnShort - 1)
+			ending_text.setText("Показаны " + Settings.countToShowOnShort + " ближайших рейсов.");
 		else {
 			ending_text.setText("Больше нет рейсов на сегодня.");
 		}

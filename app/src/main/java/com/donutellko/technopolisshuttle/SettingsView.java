@@ -14,15 +14,15 @@ import android.util.Log;
 
 public class SettingsView extends SView {
 	int LAYOUT_RESOURCE = R.layout.settings_layout;
-	DataLoader.SettingsSingleton settingsSingleton;
+	Settings Settings;
 	EditText countOnShort, technoRadius, serverIp;
 	Button resetButton, saveButton;
 	CheckBox noSnackbar, useToast;
 
 
-	public SettingsView(Context context, DataLoader.SettingsSingleton settingsSingleton) {
+	public SettingsView(Context context, Settings Settings) {
 		super(context);
-		this.settingsSingleton = settingsSingleton;
+		this.Settings = Settings;
 		prepareView();
 	}
 
@@ -31,15 +31,15 @@ public class SettingsView extends SView {
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
 
 		serverIp = view.findViewById(R.id.server_ip);
-		serverIp.setText(settingsSingleton.serverIp + "");
+		serverIp.setText(Settings.serverIp + "");
 		serverIp.setOnKeyListener(serverIpListener);
 
 		countOnShort = view.findViewById(R.id.count_to_show_on_short);
-		countOnShort.setText(settingsSingleton.countToShowOnShort + "");
+		countOnShort.setText(Settings.countToShowOnShort + "");
 		countOnShort.setOnKeyListener(countOnShortListener);
 
 		technoRadius = view.findViewById(R.id.techno_radius);
-		technoRadius.setText(settingsSingleton.distanceToShowFrom + "");
+		technoRadius.setText(Settings.distanceToShowFrom + "");
 		technoRadius.setOnKeyListener(technoRadiusListener);
 
 
@@ -71,8 +71,8 @@ public class SettingsView extends SView {
 		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
 			if (keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
 					(keyCode == KeyEvent.KEYCODE_ENTER)) {
-				settingsSingleton.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
-				Log.i("editor", "lol " + settingsSingleton.countToShowOnShort);
+				Settings.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
+				Log.i("editor", "lol " + Settings.countToShowOnShort);
 				MainActivity.viewNotifier("Сохранено!");
 				return true;
 			}
@@ -86,7 +86,7 @@ public class SettingsView extends SView {
 		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
 			if (keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
 					(keyCode == KeyEvent.KEYCODE_ENTER)) {
-				settingsSingleton.serverIp = serverIp.getText().toString();
+				Settings.serverIp = serverIp.getText().toString();
 				Log.i("editor", "lol " + serverIp);
 				MainActivity.viewNotifier("Сохранено!");
 				return true;
@@ -101,8 +101,8 @@ public class SettingsView extends SView {
 		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
 			if (keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
 					(keyCode == KeyEvent.KEYCODE_ENTER)) {
-				settingsSingleton.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
-				Log.i("editor", "lol " + settingsSingleton.distanceToShowFrom);
+				Settings.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
+				Log.i("editor", "lol " + Settings.distanceToShowFrom);
 				MainActivity.viewNotifier("Сохранено!");
 				return true;
 			}
@@ -114,7 +114,7 @@ public class SettingsView extends SView {
 	private Button.OnClickListener resetListener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			settingsSingleton.reset();
+			Settings.reset();
 			prepareView();
 		}
 	};
@@ -125,14 +125,14 @@ public class SettingsView extends SView {
 			if (technoRadius.getText().toString().equals("") || technoRadius.getText().toString().equals(""))
 				MainActivity.viewNotifier("Введены некорректные значения");
 			else {
-				settingsSingleton.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
-				settingsSingleton.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
-				settingsSingleton.serverIp = serverIp.getText().toString();
+				Settings.distanceToShowFrom = Float.parseFloat(technoRadius.getText() + "");
+				Settings.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
+				Settings.serverIp = serverIp.getText().toString();
 
-				settingsSingleton.noSnackbar = noSnackbar.isChecked();
-				settingsSingleton.showToast = useToast.isChecked();
+				Settings.noSnackbar = noSnackbar.isChecked();
+				Settings.showToast = useToast.isChecked();
 
-				settingsSingleton.savePreferences(MainActivity.applicationContext);
+				Settings.savePreferences(MainActivity.applicationContext);
 				MainActivity.viewNotifier("Сохранено!");
 			}
 		}
@@ -141,14 +141,14 @@ public class SettingsView extends SView {
 	private View.OnClickListener noSnackbarListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			DataLoader.SettingsSingleton.singleton.noSnackbar = noSnackbar.isChecked();
+			Settings.singleton.noSnackbar = noSnackbar.isChecked();
 		}
 	};
 
 	private View.OnClickListener useToastListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			DataLoader.SettingsSingleton.singleton.showToast = useToast.isChecked();
+			Settings.singleton.showToast = useToast.isChecked();
 		}
 	};
 }

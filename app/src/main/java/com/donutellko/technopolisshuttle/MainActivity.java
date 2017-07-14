@@ -18,8 +18,6 @@ import java.util.Calendar;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import com.donutellko.technopolisshuttle.DataLoader.SettingsSingleton;
-
 public class MainActivity extends AppCompatActivity {
 
 	public static Context applicationContext;
@@ -35,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
 	static LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
 	BottomNavigationView navigation;
 
-	ShortScheduleView shortView;
-	FullScheduleView fullView;
+	static ShortScheduleView shortView;
+	static FullScheduleView fullView;
 	MapView mapView;
 	SettingsView settingsView;
 
 	public static LayoutInflater layoutInflater;
-	public static SettingsSingleton settingsSingleton = SettingsSingleton.singleton;
+	public static Settings settings = Settings.singleton;
 
 //	LocationManager locationManager;
 //	static SLocationListener locationListener;
@@ -53,14 +51,6 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		/*locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		locationListener = new SLocationListener();
-
-		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)  {
-			locationManager.requestLocationUpdates("network", 5000, 0, locationListener);
-			locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
-		}*/
-
 		applicationContext = getApplicationContext();
 
 		layoutInflater = getLayoutInflater();
@@ -70,22 +60,22 @@ public class MainActivity extends AppCompatActivity {
 		navigation = (BottomNavigationView) findViewById(R.id.navigation);
 		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-		if (settingsSingleton.loadPreferences(getApplicationContext()))
+		if (settings.loadPreferences(getApplicationContext()))
 			Log.i("Preferences", "loaded");
 		else
 			Log.i("Preferences", "not found");
 
 		dataLoader = new DataLoader();
-		timeTable = dataLoader.getFullJsonInfo();
+		timeTable = dataLoader.updateJsonInfo();
 
 		Context context = this;
-		shortView = new ShortScheduleView(context, settingsSingleton, timeTable);
-		fullView =  new FullScheduleView (context, settingsSingleton.showPast);
+		shortView = new ShortScheduleView(context, settings, timeTable);
+		fullView =  new FullScheduleView (context, settings.showPast);
 		mapView =   new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
 
-		settingsView = new SettingsView(context, settingsSingleton);
+		settingsView = new SettingsView(context, settings);
 
-		changeView(settingsSingleton.currentState);
+		changeView(settings.currentState);
 
 		getUpdateTimer(1000).start(); // запускаем автообновление значений каждые (параметр) миллисекунд
 
@@ -98,9 +88,9 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public static void viewNotifier(String s) {
-		if (settingsSingleton.noSnackbar)
+		if (settings.noSnackbar)
 			return;
-		if (settingsSingleton.showToast)
+		if (settings.showToast)
 			viewToast(s);
 		else
 			viewSnackbar(s);
@@ -116,11 +106,20 @@ public class MainActivity extends AppCompatActivity {
 		toast.show();
 	}
 
+	public static void updateTimeTable(TimeTable timeTable1) {
+		timeTable = timeTable1;
+		if (settings.currentState == MainActivity.State.FULL_VIEW)
+			fullView.updateView();
+		else if (settings.currentState == State.SHORT_VIEW)
+			shortView.updateView();
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_reload:
-				timeTable = dataLoader.getFullJsonInfo();
+//				timeTable = dataLoader.updateJsonInfo();
+				dataLoader.updateJsonOnline();
 				return true;
 			case R.id.action_settings:
 				setContent(settingsView);
@@ -143,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onStop() {
 		Log.i("onStop", "Method called");
-		SettingsSingleton.singleton.savePreferences(getApplicationContext());
+		settings.singleton.savePreferences(getApplicationContext());
 		super.onStop();
 	}
 
@@ -163,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 		return new CountDownTimer(Long.MAX_VALUE, interval) {
 			@Override
 			public void onTick(long millisUntilFinished) {
-				switch (MainActivity.settingsSingleton.currentState) {
+				switch (MainActivity.settings.currentState) {
 					case SHORT_VIEW:
 						shortView.updateView();
 						break;
@@ -213,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
 	};
 
 	private void loadView(State state) {
-		settingsSingleton.currentState = state;
+		settings.currentState = state;
 		switch (state) {
 			case SHORT_VIEW: setContent(shortView); break;
 			case FULL_VIEW:  setContent(fullView ); break;
@@ -222,48 +221,4 @@ public class MainActivity extends AppCompatActivity {
 				Log.e("Хьюстон!", "У нас проблемы!");
 		}
 	}
-
-
-
-	/*class SLocationListener implements LocationListener {
-		double myLongitude = 0, myLatitude = 90;
-		boolean updated = false;
-
-		public double getDistanceToTechnopolis() {
-			double distance = 110.096 * Math.sqrt(
-					Math.pow(myLatitude - coordsTechnopolis.latitude, 2) + Math.pow(myLongitude - coordsTechnopolis.longitude, 2)
-			);
-
-			if (myLongitude == 0 && myLatitude == 90)
-				Log.e("Distance", "Ты е6@нутый? Что ты там делаешь? Приложение не работает на Северном Полюсе!");
-			Log.i("Distance", "Technopolis:" + coordsTechnopolis.latitude + ", " + coordsTechnopolis.longitude);
-			Log.i("Distance", "Me         :" + myLatitude + ", " + myLongitude);
-			Log.i("Distance", distance + "km до Технополиса");
-			return distance;
-		}
-
-		@Override
-		public void onLocationChanged(Location location) {
-			Log.w("onLocationChanged()", location.getLatitude() + " " + location.getLongitude());
-			myLongitude = location.getLongitude();
-			myLatitude = location.getLatitude();
-			updated = true;
-		}
-
-		@Override
-		public void onStatusChanged(String s, int i, Bundle bundle) {
-		}
-
-		@Override
-		public void onProviderEnabled(String s) {
-		}
-
-		@Override
-		public void onProviderDisabled(String s) {
-			// Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-			// startActivity(i);
-		}
-	}*/
-
-	// first_push
 }

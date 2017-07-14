@@ -32,8 +32,9 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by Donut on 04.07.2017.
  */
 
-// Получает данные из памяти и базы данных
+// Получает данные из памяти, базы данных и сервера
 public class DataLoader {
+	public static DataLoader singleton = new DataLoader();
 
 	public static class STime {
 		int hour, min;
@@ -62,7 +63,7 @@ public class DataLoader {
 			} else if (s.length() == 4) {
 				hour = (s.charAt(0) - '0');
 				min = (s.charAt(2) - '0') * 10 + (s.charAt(3) - '0');
-			} else Log.e("WRONG!", "Неправильный формат времени: "+ s);
+			} else Log.e("WRONG!", "Неправильный формат времени: " + s);
 		}
 
 		public boolean isBefore(STime t) {
@@ -106,19 +107,12 @@ public class DataLoader {
 		}
 	}
 
-	public TimeTable getFullJsonInfo() {
-		String s;
-		s = getJsonOnline();
-		if (s == null)
-			s = getJsonCached();
-		else {
-			SettingsSingleton.singleton.jsonCached = s;
-			SettingsSingleton.singleton.savePreferences(MainActivity.applicationContext);
-		} if (s == null)
-			s = getJsonDefault();
+	public TimeTable updateJsonInfo() {
+		updateJsonOnline();
+		return getJsonTimeTable(getJsonOffline());
+	}
 
-		Log.i("JSON!", s);
-
+	public static TimeTable getJsonTimeTable(String s) {
 		JsonObject jsonObject = new Gson().fromJson(s, JsonObject.class);
 
 		ScheduleElement[]
@@ -129,25 +123,32 @@ public class DataLoader {
 		return t;
 	}
 
-	public String getJsonOnline() {
-		Log.i("getJsonOnline()", "trying to load online");
-		String s = null;
-		AsyncTask<String, Void, String> lol = new JsonGetter().execute(SettingsSingleton.singleton.serverIp + "/schedule");
-		try {
-			s = lol.get();
-			if (s == null) throw new Exception();
-			MainActivity.viewNotifier("Расписание синхронизировано!");
-		} catch (Exception e) {
-			MainActivity.viewNotifier("Расписание не синхронизировано!");
-			e.printStackTrace();
-		}
+	public String getJsonOffline() {
+		String s;
+		s = getJsonCached();
+		if (s == null)
+			s = getJsonDefault();
+
+		Log.i("JSON!", s);
+
 		return s;
+	}
+
+	public void updateJsonOnline() {
+//		AsyncTask<String, Void, String> lol =
+		new JsonGetter().execute(Settings.singleton.serverIp + "/schedule");
+	}
+
+	@Deprecated
+	public void getJsonOnline() {
+		Log.i("getJsonOnline()", "trying to load online");
+		AsyncTask<String, Void, Void> lol = new JsonGetter().execute(Settings.singleton.serverIp + "/schedule");
 	}
 
 	private String getJsonCached() {
 		Log.i("getJsonCaches()", "trying to load from cache");
 		String s = null;
-		s = SettingsSingleton.singleton.jsonCached;
+		s = Settings.singleton.jsonCached;
 		return s;
 	}
 
@@ -198,71 +199,7 @@ public class DataLoader {
 		return false;
 	}
 
-	public static class SettingsSingleton {
-		public static SettingsSingleton singleton = new SettingsSingleton();
 
-		public SettingsSingleton() {
-		}
-
-		private String
-				countToShowOnShort_s = "countToShowOnShort_s",
-				currentState_s = "currentState",
-				showPast_s = "shopPast",
-				distanceToShowFrom_s = "distanceToShowFrom",
-				jsonCached_s = "jsonCached",
-				showToast_s = "showToast" ,
-				noSnackbar_s = "noSnackbar",
-				serverIp_s = "serverIp";
-
-		// fields with !!!!default!!! values
-		public int countToShowOnShort = 5;
-		public MainActivity.State currentState = MainActivity.State.SHORT_VIEW;
-		public boolean showPast = true;
-		public boolean showTo = true; // не сохранять!
-		public float distanceToShowFrom = 2;
-		public String jsonCached = null;
-		public boolean showToast = false;
-		public boolean noSnackbar = false;
-		public String serverIp = "http://192.168.0.100:8081";
-
-
-		public boolean loadPreferences(Context context) {
-			SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
-
-			currentState = MainActivity.State.values()[
-					sp.getInt(currentState_s, currentState.ordinal())];
-			countToShowOnShort = sp.getInt(countToShowOnShort_s, countToShowOnShort);
-			showPast = sp.getBoolean(showPast_s, showPast);
-			distanceToShowFrom = sp.getFloat(distanceToShowFrom_s, distanceToShowFrom);
-			jsonCached = sp.getString(jsonCached_s, jsonCached);
-			showToast = sp.getBoolean(showToast_s, showToast);
-			noSnackbar = sp.getBoolean(noSnackbar_s, noSnackbar);
-			serverIp = sp.getString(serverIp_s, serverIp);
-
-			return true;
-		}
-
-		public void savePreferences(Context context) {
-			SharedPreferences.Editor sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).edit();
-
-			sp.putInt(countToShowOnShort_s, countToShowOnShort);
-			sp.putInt(currentState_s, currentState.ordinal());
-			sp.putBoolean(showPast_s, showPast);
-			if (jsonCached != null)
-				sp.putString(jsonCached_s, jsonCached);
-			sp.putBoolean(showToast_s, showToast);
-			sp.putBoolean(noSnackbar_s, noSnackbar);
-			sp.putString(serverIp_s, serverIp);
-
-			sp.apply();
-			Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal());
-		}
-
-		public void reset() {
-			singleton = new SettingsSingleton();
-			singleton.savePreferences(MainActivity.applicationContext);
-		}
-	}
 }
 
 class TimeTable {
@@ -307,20 +244,25 @@ class TimeTable {
 }
 
 
-class JsonGetter extends AsyncTask<String, Void, String> {
-
+class JsonGetter extends AsyncTask<String, Void, Void> {
 	@Override
-	protected String doInBackground(String... strings) {
+	protected Void doInBackground(String... strings) {
 		try {
-			return getJson_1(strings[0]);
+			String s = (getJson(strings[0]));
+			if (s == null) throw new Exception("ара!");
+
+			Settings.singleton.jsonCached = s;
+			Settings.singleton.savePreferences(MainActivity.applicationContext);
+			MainActivity.viewNotifier("Расписание синхронизировано!");
+			MainActivity.updateTimeTable(DataLoader.singleton.getJsonTimeTable(s));
 		} catch (Exception e) {
+			MainActivity.viewNotifier("Расписание не синхронизировано");
 			e.printStackTrace();
-			Log.i("JSOOOOOOON STATHAM!", "PISSED HIS OWN SHOES!!");
 		}
 		return null;
 	}
 
-	public static String getJson_1(String url_s) throws Exception {
+	public static String getJson(String url_s) throws Exception {
 		String result = null;
 
 		BufferedReader reader = null;
@@ -329,9 +271,7 @@ class JsonGetter extends AsyncTask<String, Void, String> {
 		try {
 			URL url = new URL(url_s);
 			uc = url.openConnection();
-//			HttpParams httpParameters = new BasicHttpParams();
-//			HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
-			uc.setConnectTimeout(200);
+			uc.setConnectTimeout(Settings.singleton.connection_timeout);
 			uc.connect();
 			reader = new BufferedReader(new InputStreamReader(uc.getInputStream()));
 			StringBuffer buffer = new StringBuffer();
@@ -348,68 +288,6 @@ class JsonGetter extends AsyncTask<String, Void, String> {
 
 		Log.i("JSOOOOOOON STATHAM!", result);
 		return result;
-	}
-
-	public String getJson() {
-		HashMap<String, String> postDataParams = new HashMap<String, String>();
-		postDataParams.put("lol", "/schedule");
-
-		Log.i("JSOOOOOOOON", "getJSON()");
-
-		URL url;
-		String response = "";
-		try {
-			url = new URL(DataLoader.SettingsSingleton.singleton.serverIp + "/schedule");
-
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setReadTimeout(15000);
-			conn.setConnectTimeout(15000);
-			conn.setRequestMethod("GET");
-			conn.setDoInput(true);
-			conn.setDoOutput(true);
-
-
-			OutputStream os = conn.getOutputStream();
-			BufferedWriter writer = new BufferedWriter(
-					new OutputStreamWriter(os, "UTF-8"));
-			writer.write(getPostDataString(postDataParams));
-
-			writer.flush();
-			writer.close();
-			os.close();
-			int responseCode = conn.getResponseCode();
-
-			if (responseCode == HttpsURLConnection.HTTP_OK) {
-				String line;
-				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-				while ((line = br.readLine()) != null) {
-					response += line;
-				}
-			} else {
-				response = null;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Log.i("JSOOOOOOON", response);
-		return response;
-	}
-
-	private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
-		StringBuilder result = new StringBuilder();
-		boolean first = true;
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-			if (first)
-				first = false;
-			else
-				result.append("&");
-
-			result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-			result.append("=");
-			result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-		}
-
-		return result.toString();
 	}
 
 }

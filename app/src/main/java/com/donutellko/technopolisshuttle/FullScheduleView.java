@@ -18,10 +18,10 @@ import com.donutellko.technopolisshuttle.DataLoader.STime;
 
 import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 import static com.donutellko.technopolisshuttle.DataLoader.firstIsBefore;
+import static com.donutellko.technopolisshuttle.MainActivity.timeTable;
 
 public class FullScheduleView extends SView {
 	private final int LAYOUT_RESOURCE = R.layout.full_layout;
-	private TimeTable timeTable;
 	private CheckBox showPastCheckBox;
 	private boolean showPastState;
 	LinearLayout content;
@@ -30,7 +30,6 @@ public class FullScheduleView extends SView {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
-		this.timeTable = MainActivity.timeTable;
 		this.showPastState = showPastState;
 
 		prepareView();
@@ -51,10 +50,6 @@ public class FullScheduleView extends SView {
 		content.removeAllViews();
 		content.addView(View.inflate(context, R.layout.full_2col_head, null)); //добавляем заголовок в таблицу так, чтобы он не пролистывался
 		content.addView(makeTwoColumnsTable());
-	}
-
-	public void setTimeTable(TimeTable timeTable) {
-		this.timeTable = timeTable;
 	}
 
 	public void setShowPastCheckBoxState(boolean b) {
