@@ -88,7 +88,7 @@ public class ShortScheduleView extends SView {
 		settingsSingleton.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
-		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, !settingsSingleton.showTo, weekdaySelected);
+		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, settingsSingleton.showTo, weekdaySelected);
 
 		for (int i = 0; i < Math.min(after.size(), settingsSingleton.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));

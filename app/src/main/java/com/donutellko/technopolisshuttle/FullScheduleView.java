@@ -100,8 +100,8 @@ public class FullScheduleView extends SView {
 	private View makeTwoColumnsRow(TimeTable.ScheduleElement t1, TimeTable.ScheduleElement t2, STime currentTime) {
 		View row = View.inflate(context, R.layout.full_2col_row, null);
 
-		TextView tFrom = row.findViewById(R.id.t_from);
-		TextView tTo = row.findViewById(R.id.t_to);
+		TextView tFrom = row.findViewById(R.id.from_tech);
+		TextView tTo = row.findViewById(R.id.to_tech);
 
 		if (t1 == null) tFrom.setText("");
 		else {

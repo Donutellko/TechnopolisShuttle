@@ -11,12 +11,12 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/t_from"
+            android:id="@+id/to_tech"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="14:35"
             android:textAlignment="center"
-            android:textSize="24sp" />
+            android:textSize="24sp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -26,12 +26,12 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/t_to"
+            android:id="@+id/from_tech"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="15:20"
             android:textAlignment="center"
-            android:textSize="24sp" />
+            android:textSize="24sp"/>
 
     </LinearLayout>
 </LinearLayout>

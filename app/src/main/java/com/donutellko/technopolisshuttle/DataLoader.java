@@ -329,6 +329,9 @@ class JsonGetter extends AsyncTask<String, Void, String> {
 		try {
 			URL url = new URL(url_s);
 			uc = url.openConnection();
+//			HttpParams httpParameters = new BasicHttpParams();
+//			HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
+			uc.setConnectTimeout(200);
 			uc.connect();
 			reader = new BufferedReader(new InputStreamReader(uc.getInputStream()));
 			StringBuffer buffer = new StringBuffer();

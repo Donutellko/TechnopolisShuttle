@@ -190,15 +190,9 @@ public class MainActivity extends AppCompatActivity {
 	private void changeView(State state) {
 		Log.i("changeView", "Method called");
 		switch (state) {
-			case SHORT_VIEW:
-				navigation.setSelectedItemId(R.id.navigation_short);
-				break;
-			case FULL_VIEW:
-				navigation.setSelectedItemId(R.id.navigation_full);
-				break;
-			case MAP_VIEW:
-				navigation.setSelectedItemId(R.id.navigation_map);
-				break;
+			case SHORT_VIEW: navigation.setSelectedItemId(R.id.navigation_short); break;
+			case FULL_VIEW:  navigation.setSelectedItemId(R.id.navigation_full ); break;
+			case MAP_VIEW:   navigation.setSelectedItemId(R.id.navigation_map  ); break;
 		}
 	}
 
@@ -270,4 +264,6 @@ public class MainActivity extends AppCompatActivity {
 			// startActivity(i);
 		}
 	}*/
+
+	// first_push
 }
