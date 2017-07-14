@@ -53,17 +53,17 @@ public class MainActivity extends AppCompatActivity {
 
 		applicationContext = getApplicationContext();
 
+		if (settings.loadPreferences(getApplicationContext()))
+			Log.i("Preferences", "loaded");
+		else
+			Log.i("Preferences", "not found");
+
 		layoutInflater = getLayoutInflater();
 		curtime = Calendar.getInstance();
 		contentBlock = (LinearLayout) findViewById(R.id.content);
 
 		navigation = (BottomNavigationView) findViewById(R.id.navigation);
 		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-		if (settings.loadPreferences(getApplicationContext()))
-			Log.i("Preferences", "loaded");
-		else
-			Log.i("Preferences", "not found");
 
 		dataLoader = new DataLoader();
 		timeTable = dataLoader.updateJsonInfo();

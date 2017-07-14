@@ -31,19 +31,19 @@ public class SettingsView extends SView {
 
 		serverIp = view.findViewById(R.id.server_ip);
 		serverIp.setText(settings.serverIp + "");
-		serverIp.setOnKeyListener(serverIpListener);
+//		serverIp.setOnKeyListener(serverIpListener);
 
 		timeout = view.findViewById(R.id.timeout);
 		timeout.setText(settings.connection_timeout + "");
-		timeout.setOnKeyListener(timeoutListener);
+//		timeout.setOnKeyListener(timeoutListener);
 
 		countOnShort = view.findViewById(R.id.count_to_show_on_short);
 		countOnShort.setText(settings.countToShowOnShort + "");
-		countOnShort.setOnKeyListener(countOnShortListener);
+//		countOnShort.setOnKeyListener(countOnShortListener);
 
 		technoRadius = view.findViewById(R.id.techno_radius);
 		technoRadius.setText(settings.distanceToShowFrom + "");
-		technoRadius.setOnKeyListener(technoRadiusListener);
+//		technoRadius.setOnKeyListener(technoRadiusListener);
 
 
 		noSnackbar = view.findViewById(R.id.no_snackbar);
@@ -72,7 +72,7 @@ public class SettingsView extends SView {
 		throw new UnsupportedOperationException("updateView не должно вызываться у SettingsView");
 	}
 
-	private EditText.OnKeyListener countOnShortListener
+/*	private EditText.OnKeyListener countOnShortListener
 			= new EditText.OnKeyListener() {
 		@Override
 		public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
@@ -131,7 +131,7 @@ public class SettingsView extends SView {
 			}
 			return false;
 		}
-	};
+	};*/
 
 	private Button.OnClickListener resetListener = new Button.OnClickListener() {
 		@Override

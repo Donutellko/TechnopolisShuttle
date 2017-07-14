@@ -18,10 +18,11 @@ public class Settings {
 	public boolean showPast = true;
 	public boolean showTo = true; // не сохранять!
 	public float distanceToShowFrom = 2;
-	public String jsonCached = null;
 	public boolean showToast = false;
 	public boolean noSnackbar = false;
 	public String serverIp = "http://192.168.0.100:8081";
+	public String jsonCached = null;
+	public String jsonLastSync = "2017.07.14 14:54";
 	public int connection_timeout = 500;
 
 	// названия, под которыми сохраняется
@@ -34,9 +35,8 @@ public class Settings {
 			showToast_s = "showToast",
 			noSnackbar_s = "noSnackbar",
 			serverIp_s = "serverIp",
-			connection_timeout_s = "connection_timeout";
-
-
+			connection_timeout_s = "connection_timeout",
+			jsonLastSync_s = "jsonLastSync";
 
 
 	public boolean loadPreferences(Context context) {
@@ -51,6 +51,7 @@ public class Settings {
 		showToast = sp.getBoolean(showToast_s, showToast);
 		noSnackbar = sp.getBoolean(noSnackbar_s, noSnackbar);
 		serverIp = sp.getString(serverIp_s, serverIp);
+		jsonLastSync = sp.getString(jsonLastSync_s, jsonLastSync);
 		connection_timeout = sp.getInt(connection_timeout_s, connection_timeout);
 
 		return true;
@@ -67,6 +68,7 @@ public class Settings {
 		sp.putBoolean(showToast_s, showToast);
 		sp.putBoolean(noSnackbar_s, noSnackbar);
 		sp.putString(serverIp_s, serverIp);
+		sp.putString(jsonLastSync_s, jsonLastSync);
 		sp.putInt(connection_timeout_s, connection_timeout);
 
 		sp.apply();
