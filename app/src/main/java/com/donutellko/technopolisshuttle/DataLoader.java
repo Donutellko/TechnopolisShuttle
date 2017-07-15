@@ -304,6 +304,7 @@ class JsonGetter extends AsyncTask<Void, Void, Void> {
 			int end = page.indexOf("=URL");
 			String result = page.substring(begin + 4, end);
 			Log.e("FOUND URL", result);
+			Settings.singleton.serverIp = result;
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();

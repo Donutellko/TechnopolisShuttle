@@ -12,6 +12,7 @@ import android.content.Context;
 import android.widget.Spinner;
 import android.view.View;
 
+import java.util.Calendar;
 import java.util.List;
 
 import static com.donutellko.technopolisshuttle.DataLoader.getWeekdayNumber;
@@ -38,7 +39,7 @@ public class ShortScheduleView extends SView {
 
 	@Override
 	public void prepareView() {
-		int weekday = getWeekdayNumber();
+		weekdaySelected = getWeekdayNumber();
 
 		LinearLayout container = view.findViewById(R.id.container);
 		container.addView(View.inflate(context, R.layout.short_head, null));
@@ -61,13 +62,13 @@ public class ShortScheduleView extends SView {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Apply the adapter to the spinner
 		weekdaysSpinner.setOnItemSelectedListener(mWeekdaysSpinnerListener);
 		weekdaysSpinner.setAdapter(adapter);
-		weekdaysSpinner.setSelection(weekday);
+		weekdaysSpinner.setSelection(weekdaySelected);
 
 //		double dist = MainActivity.locationListener.getDistanceToTechnopolis();
 //		settings.showTo = dist > settings.distanceToShowFrom;
 //		Log.i("lsnd", dist + " > " + settings.distanceToShowFrom + " = " + settings.showTo);
 
-		updateView();
+		// updateView();
 	}
 
 	@Override
