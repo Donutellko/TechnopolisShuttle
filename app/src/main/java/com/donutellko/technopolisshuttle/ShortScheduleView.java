@@ -40,7 +40,7 @@ public class ShortScheduleView extends SView {
 	public void prepareView() {
 		int weekday = getWeekdayNumber();
 
-		LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
+		LinearLayout container = view.findViewById(R.id.container);
 		container.addView(View.inflate(context, R.layout.short_head, null));
 		ScrollView scrollView = new ScrollView(context);
 		table = new TableLayout(context);

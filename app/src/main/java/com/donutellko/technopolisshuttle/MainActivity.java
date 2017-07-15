@@ -1,10 +1,13 @@
 package com.donutellko.technopolisshuttle;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.Snackbar;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.os.CountDownTimer;
 import android.content.Context;
@@ -18,9 +21,13 @@ import java.util.Calendar;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import static android.widget.Toast.LENGTH_SHORT;
+
 public class MainActivity extends AppCompatActivity {
 
 	public static Context applicationContext;
+	public static Window getWindow;
+	private static boolean needtoUpdateTimeTable = false;
 
 	private LatLng
 			coordsTechnopolis = new LatLng(59.818026, 30.327783),
@@ -35,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
 	static ShortScheduleView shortView;
 	static FullScheduleView fullView;
-	MapView mapView;
-	SettingsView settingsView;
+	static MapView mapView;
+	static SettingsView settingsView;
 
 	public static LayoutInflater layoutInflater;
 	public static Settings settings = Settings.singleton;
@@ -44,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 //	LocationManager locationManager;
 //	static SLocationListener locationListener;
 
-	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW}
+	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW, HELP_VIEW, ABOUT_VIEW}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +59,9 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		applicationContext = getApplicationContext();
+		getWindow = getWindow();
 
-		if (settings.loadPreferences(getApplicationContext()))
+		if (settings.loadPreferences(applicationContext))
 			Log.i("Preferences", "loaded");
 		else
 			Log.i("Preferences", "not found");
@@ -68,12 +76,11 @@ public class MainActivity extends AppCompatActivity {
 		dataLoader = new DataLoader();
 		timeTable = dataLoader.updateJsonInfo();
 
-		Context context = this;
-		shortView = new ShortScheduleView(context);
-		fullView =  new FullScheduleView (context);
-		mapView =   new MapView(context, getFragmentManager(), coordsTechnopolis, coordsUnderground);
+		shortView = new ShortScheduleView(this);
+		fullView =  new FullScheduleView (this);
+		mapView =   new MapView(this, getFragmentManager(), coordsTechnopolis, coordsUnderground);
 
-		settingsView = new SettingsView(context);
+		settingsView = new SettingsView(this);
 
 		changeView(settings.currentState);
 
@@ -100,18 +107,26 @@ public class MainActivity extends AppCompatActivity {
 		Snackbar.make(contentBlock, s, Snackbar.LENGTH_SHORT)
 				.setAction("Action", null).show();
 	}
+
 	public static void viewToast(String s) {
 		Toast toast = Toast.makeText(applicationContext,
-				s, Toast.LENGTH_SHORT);
+				s, LENGTH_SHORT);
 		toast.show();
 	}
 
 	public static void updateTimeTable(TimeTable timeTable1) {
 		timeTable = timeTable1;
-		if (settings.currentState == MainActivity.State.FULL_VIEW)
-			fullView.updateView();
-		else if (settings.currentState == State.SHORT_VIEW)
-			shortView.updateView();
+		needtoUpdateTimeTable = true;
+	}
+
+	private void checkUpdatedTimeTable() {
+		if (needtoUpdateTimeTable) {
+			needtoUpdateTimeTable = false;
+			if (settings.currentState == MainActivity.State.FULL_VIEW)
+				fullView.updateView();
+			else if (settings.currentState == State.SHORT_VIEW)
+				shortView.updateView();
+		}
 	}
 
 	@Override
@@ -122,15 +137,20 @@ public class MainActivity extends AppCompatActivity {
 				dataLoader.updateJsonOnline();
 				return true;
 			case R.id.action_settings:
+				settings.currentState = State.SETTINGS_VIEW;
 				setContent(settingsView);
 				return true;
 			case R.id.action_change:
-				viewNotifier("Not available yet");
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/spreadsheets/d/1yajaDHYL4pWad_cYUAab1C2ZypiYTDg2Vqxe3zmWDiI"));
+				startActivity(browserIntent);
+//				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_help:
+				settings.currentState = State.HELP_VIEW;
 				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_about:
+				settings.currentState = State.ABOUT_VIEW;
 				viewNotifier("Not available yet");
 				return true;
 			default:
@@ -152,7 +172,25 @@ public class MainActivity extends AppCompatActivity {
 		Log.i("onDestroy", "Method called");
 	}
 
-	public void setContent(SView sView) {
+
+	// При нажатии "назад" возвращение из меню в основную часть, при двойном выход
+	private long backPressedTime = 0;
+	@Override
+	public void onBackPressed() {
+		if (settings.currentState == State.FULL_VIEW || settings.currentState == State.SHORT_VIEW || settings.currentState == State.MAP_VIEW) {
+			long time = Calendar.getInstance().getTimeInMillis();
+			if (time - backPressedTime < LENGTH_SHORT)
+				super.onBackPressed();
+			else {
+				viewSnackbar("Нажмите повторно для выхода");
+				backPressedTime = time;
+			}
+		} else {
+			navigation.setSelectedItemId(navigation.getSelectedItemId()); // заново вызываем текущий стейт (шорт, фул или мап)
+		}
+	}
+
+	public static void setContent(SView sView) {
 		Log.i("setContent", "Method called");
 		contentBlock.removeAllViews();
 		contentBlock.addView(sView.getView());
@@ -162,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
 		return new CountDownTimer(Long.MAX_VALUE, interval) {
 			@Override
 			public void onTick(long millisUntilFinished) {
+				checkUpdatedTimeTable();
 				switch (MainActivity.settings.currentState) {
 					case SHORT_VIEW:
 						shortView.updateView();
@@ -173,7 +212,8 @@ public class MainActivity extends AppCompatActivity {
 //						mapView.updateView();
 						break;
 					case SETTINGS_VIEW:
-						settingsView.updateView();
+//						settingsView.updateView();
+						break;
 					default:
 						Log.e("Хьюстон!", "У нас проблемы!");
 				}
