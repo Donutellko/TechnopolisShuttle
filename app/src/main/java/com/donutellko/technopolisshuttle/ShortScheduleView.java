@@ -1,7 +1,5 @@
 package com.donutellko.technopolisshuttle;
 
-import android.support.design.widget.TabLayout;
-import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.ToggleButton;
@@ -12,9 +10,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.content.Context;
 import android.widget.Spinner;
-import android.graphics.Color;
 import android.view.View;
 
+import java.util.Calendar;
 import java.util.List;
 
 import static com.donutellko.technopolisshuttle.DataLoader.getWeekdayNumber;
@@ -25,33 +23,25 @@ public class ShortScheduleView extends SView {
 			LAYOUT_RESOURCE = R.layout.short_layout,
 			TOGGLE_TO = R.id.toggle_to,
 			TOGGLE_FROM = R.id.toggle_from;
-	private TimeTable timeTable;
 	private int weekdaySelected;
 	private TableLayout table;
-	private DataLoader.SettingsSingleton settingsSingleton;
+	private Settings settings = Settings.singleton;
 
 	ToggleButton toggleTo, toggleFrom;
 
-	public ShortScheduleView(Context context, DataLoader.SettingsSingleton settingsSingleton, TimeTable timeTable) {
+	public ShortScheduleView(Context context) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
 
-		this.timeTable = timeTable;
-		this.settingsSingleton  = settingsSingleton;
-
 		prepareView();
-	}
-
-	public void setTimeTable(TimeTable timeTable) {
-		this.timeTable = timeTable;
 	}
 
 	@Override
 	public void prepareView() {
-		int weekday = getWeekdayNumber();
+		weekdaySelected = getWeekdayNumber();
 
-		LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
+		LinearLayout container = view.findViewById(R.id.container);
 		container.addView(View.inflate(context, R.layout.short_head, null));
 		ScrollView scrollView = new ScrollView(context);
 		table = new TableLayout(context);
@@ -60,11 +50,11 @@ public class ShortScheduleView extends SView {
 
 		toggleTo = view.findViewById(TOGGLE_TO);
 		toggleTo.setOnClickListener(toggleToListener);
-		toggleTo.setChecked(settingsSingleton.showTo);
+		toggleTo.setChecked(settings.showTo);
 
 		toggleFrom = view.findViewById(TOGGLE_FROM);
 		toggleFrom.setOnClickListener(toggleFromListener);
-		toggleFrom.setChecked(!settingsSingleton.showTo);
+		toggleFrom.setChecked(!settings.showTo);
 
 		Spinner weekdaysSpinner = view.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter =
@@ -72,25 +62,25 @@ public class ShortScheduleView extends SView {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Apply the adapter to the spinner
 		weekdaysSpinner.setOnItemSelectedListener(mWeekdaysSpinnerListener);
 		weekdaysSpinner.setAdapter(adapter);
-		weekdaysSpinner.setSelection(weekday);
+		weekdaysSpinner.setSelection(weekdaySelected);
 
 //		double dist = MainActivity.locationListener.getDistanceToTechnopolis();
-//		settingsSingleton.showTo = dist > settingsSingleton.distanceToShowFrom;
-//		Log.i("lsnd", dist + " > " + settingsSingleton.distanceToShowFrom + " = " + settingsSingleton.showTo);
+//		settings.showTo = dist > settings.distanceToShowFrom;
+//		Log.i("lsnd", dist + " > " + settings.distanceToShowFrom + " = " + settings.showTo);
 
-		updateView();
+		// updateView();
 	}
 
 	@Override
 	public void updateView() {
 		DataLoader.STime now = getCurrentTime();
 
-		settingsSingleton.showTo = toggleTo.isChecked();
+		settings.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
-		List<TimeTable.ScheduleElement> after = timeTable.getTimeAfter(now, settingsSingleton.showTo, weekdaySelected);
+		List<TimeTable.ScheduleElement> after = MainActivity.timeTable.getTimeAfter(now, settings.showTo, weekdaySelected);
 
-		for (int i = 0; i < Math.min(after.size(), settingsSingleton.countToShowOnShort); i++)
+		for (int i = 0; i < Math.min(after.size(), settings.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
 
 		TableRow ending = new TableRow(context);
@@ -104,8 +94,8 @@ public class ShortScheduleView extends SView {
 		if (after.size() == 0) {
 			ending_text.setText("Cегодня автобусов в этом направлении больше нет.");
 			table.removeAllViews();
-		} else if (after.size() >= settingsSingleton.countToShowOnShort - 1)
-			ending_text.setText("Показаны " + settingsSingleton.countToShowOnShort + " ближайших рейсов.");
+		} else if (after.size() >= settings.countToShowOnShort - 1)
+			ending_text.setText("Показаны " + settings.countToShowOnShort + " ближайших рейсов.");
 		else {
 			ending_text.setText("Больше нет рейсов на сегодня.");
 		}

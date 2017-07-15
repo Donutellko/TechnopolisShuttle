@@ -8,10 +8,12 @@
     <CheckBox
         android:id="@+id/view_past"
         android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:checked="true"
         android:text="Отображать прошедшие"
-        android:textAlignment="viewStart"/>
+        android:textAlignment="viewStart"
+        android:textSize="14sp"/>
 
     <LinearLayout
         android:id="@+id/content"

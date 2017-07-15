@@ -18,20 +18,18 @@ import com.donutellko.technopolisshuttle.DataLoader.STime;
 
 import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 import static com.donutellko.technopolisshuttle.DataLoader.firstIsBefore;
+import static com.donutellko.technopolisshuttle.MainActivity.settings;
+import static com.donutellko.technopolisshuttle.MainActivity.timeTable;
 
 public class FullScheduleView extends SView {
 	private final int LAYOUT_RESOURCE = R.layout.full_layout;
-	private TimeTable timeTable;
 	private CheckBox showPastCheckBox;
-	private boolean showPastState;
 	LinearLayout content;
 
-	public FullScheduleView(Context context, boolean showPastState) {
+	public FullScheduleView(Context context) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
-		this.timeTable = MainActivity.timeTable;
-		this.showPastState = showPastState;
 
 		prepareView();
 	}
@@ -39,6 +37,7 @@ public class FullScheduleView extends SView {
 	@Override
 	public void prepareView() {
 		showPastCheckBox = view.findViewById(R.id.view_past);
+		showPastCheckBox.setChecked(settings.showPast);
 		showPastCheckBox.setOnCheckedChangeListener(mOnShowPastChangedListener);
 
 		content = view.findViewById(R.id.content);
@@ -53,14 +52,6 @@ public class FullScheduleView extends SView {
 		content.addView(makeTwoColumnsTable());
 	}
 
-	public void setTimeTable(TimeTable timeTable) {
-		this.timeTable = timeTable;
-	}
-
-	public void setShowPastCheckBoxState(boolean b) {
-		showPastCheckBox.setChecked(showPastState);
-	}
-
 	private View makeTwoColumnsTable() {
 		ScrollView result = new ScrollView(context);
 		TableLayout table = new TableLayout(context);
@@ -72,7 +63,7 @@ public class FullScheduleView extends SView {
 				from = new ArrayList<>(),
 				to = new ArrayList<>();
 
-		if (showPastState) {
+		if (settings.showPast) {
 			int max = timeTable.from.length;
 			if (timeTable.to.length > max) max = timeTable.to.length;
 			for (int i = 0; i < max; i++) {
@@ -125,7 +116,7 @@ public class FullScheduleView extends SView {
 		@Override
 		public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 			Log.i("listener", "showPast changed");
-			showPastState = compoundButton.isChecked();
+			settings.showPast = compoundButton.isChecked();
 			updateView();
 		}
 	};
