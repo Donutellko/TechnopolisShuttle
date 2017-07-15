@@ -7,7 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.Snackbar;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
+import android.webkit.WebViewFragment;
 import android.widget.LinearLayout;
 import android.os.CountDownTimer;
 import android.content.Context;
@@ -82,10 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
 		settingsView = new SettingsView(this);
 
+		getUpdateTimer(500).start(); // запускаем автообновление значений каждые (параметр) миллисекунд
+
 		changeView(settings.currentState);
-
-		getUpdateTimer(1000).start(); // запускаем автообновление значений каждые (параметр) миллисекунд
-
 	}
 
 	@Override
@@ -147,7 +149,16 @@ public class MainActivity extends AppCompatActivity {
 				return true;
 			case R.id.action_help:
 				settings.currentState = State.HELP_VIEW;
-				viewNotifier("Not available yet");
+				final WebView webView = new WebView(this);
+				webView.getSettings().setSupportZoom(true);
+				webView.getSettings().setBuiltInZoomControls(true);
+				new Runnable() {
+					public void run() {
+						webView.getSettings().setDisplayZoomControls(false);
+					}
+				}.run();
+				webView.loadUrl("https://github.com/Donutellko/TechnopolisShuttle/wiki");
+				setContent(webView);
 				return true;
 			case R.id.action_about:
 				settings.currentState = State.ABOUT_VIEW;
@@ -194,6 +205,12 @@ public class MainActivity extends AppCompatActivity {
 		Log.i("setContent", "Method called");
 		contentBlock.removeAllViews();
 		contentBlock.addView(sView.getView());
+	}
+
+	public static void setContent(View view) {
+		Log.i("setContent", "Method called");
+		contentBlock.removeAllViews();
+		contentBlock.addView(view);
 	}
 
 	private CountDownTimer getUpdateTimer(long interval) {
