@@ -64,11 +64,7 @@ public class ShortScheduleView extends SView {
 		weekdaysSpinner.setAdapter(adapter);
 		weekdaysSpinner.setSelection(weekdaySelected);
 
-//		double dist = MainActivity.locationListener.getDistanceToTechnopolis();
-//		settings.showTo = dist > settings.distanceToShowFrom;
-//		Log.i("lsnd", dist + " > " + settings.distanceToShowFrom + " = " + settings.showTo);
-
-		// updateView();
+		updateView();
 	}
 
 	@Override
@@ -78,7 +74,8 @@ public class ShortScheduleView extends SView {
 		settings.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
-		List<TimeTable.ScheduleElement> after = MainActivity.timeTable.getTimeAfter(now, settings.showTo, weekdaySelected);
+		List<TimeTable.ScheduleElement> after =
+				MainActivity.timeTable.getTimeAfter(now, settings.showTo, weekdaySelected);
 
 		for (int i = 0; i < Math.min(after.size(), settings.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));

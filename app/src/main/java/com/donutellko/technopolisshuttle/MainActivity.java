@@ -12,7 +12,6 @@ import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebViewFragment;
 import android.widget.LinearLayout;
 import android.os.CountDownTimer;
 import android.content.Context;
@@ -53,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
 	public static LayoutInflater layoutInflater;
 	public static Settings settings = Settings.singleton;
 
-//	LocationManager locationManager;
-//	static SLocationListener locationListener;
-
 	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW, HELP_VIEW, ACTION_WEB, ABOUT_VIEW}
 
 	@Override
@@ -82,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
 		timeTable = dataLoader.updateJsonInfo();
 
 		shortView = new ShortScheduleView(this);
-		fullView =  new FullScheduleView (this);
-		mapView =   new MapView(this, getFragmentManager(), coordsTechnopolis, coordsUnderground);
+		fullView = new FullScheduleView(this);
+		mapView = new MapView(this, getFragmentManager(), coordsTechnopolis, coordsUnderground);
 
 		settingsView = new SettingsView(this);
 
@@ -181,22 +177,22 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	@Override
-	public void onStop() {
-		Log.i("onStop", "Method called");
-		settings.singleton.savePreferences(getApplicationContext());
-		super.onStop();
-	}
+	//@Override
+	//public void onPause() {
+	//	settings.savePreferences(getApplicationContext());
+	//	super.onPause();
+	//}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Log.i("onDestroy", "Method called");
+	public void onPause() {
+		settings.savePreferences(getApplicationContext());
+		super.onPause();
 	}
 
 
 	// При нажатии "назад" возвращение из меню в основную часть, при двойном выход
 	private long backPressedTime = 0;
+
 	@Override
 	public void onBackPressed() {
 		if (settings.currentState == State.FULL_VIEW || settings.currentState == State.SHORT_VIEW || settings.currentState == State.MAP_VIEW) {
@@ -213,13 +209,11 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public static void setContent(SView sView) {
-		Log.i("setContent", "Method called");
 		contentBlock.removeAllViews();
 		contentBlock.addView(sView.getView());
 	}
 
 	public static void setContent(View view) {
-		Log.i("setContent", "Method called");
 		contentBlock.removeAllViews();
 		contentBlock.addView(view);
 	}
@@ -255,11 +249,16 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public static void changeView(State state) {
-		Log.i("changeView", "Method called");
 		switch (state) {
-			case SHORT_VIEW: navigation.setSelectedItemId(R.id.navigation_short); break;
-			case FULL_VIEW:  navigation.setSelectedItemId(R.id.navigation_full ); break;
-			case MAP_VIEW:   navigation.setSelectedItemId(R.id.navigation_map  ); break;
+			case SHORT_VIEW:
+				navigation.setSelectedItemId(R.id.navigation_short);
+				break;
+			case FULL_VIEW:
+				navigation.setSelectedItemId(R.id.navigation_full);
+				break;
+			case MAP_VIEW:
+				navigation.setSelectedItemId(R.id.navigation_map);
+				break;
 		}
 	}
 
@@ -267,13 +266,16 @@ public class MainActivity extends AppCompatActivity {
 			= new BottomNavigationView.OnNavigationItemSelectedListener() {
 		@Override
 		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-			Log.i("listener", "bootomnavigation changed");
 			switch (item.getItemId()) {
-				case R.id.navigation_short: loadView(State.SHORT_VIEW); return true;
-				case R.id.navigation_full:  loadView(State.FULL_VIEW ); return true;
-				case R.id.navigation_map:   loadView(State.MAP_VIEW  ); return true;
-				default:
-					Log.e("Хьюстон!", "У нас проблемы!");
+				case R.id.navigation_short:
+					loadView(State.SHORT_VIEW);
+					return true;
+				case R.id.navigation_full:
+					loadView(State.FULL_VIEW);
+					return true;
+				case R.id.navigation_map:
+					loadView(State.MAP_VIEW);
+					return true;
 			}
 			return false;
 		}
@@ -282,9 +284,16 @@ public class MainActivity extends AppCompatActivity {
 	private void loadView(State state) {
 		settings.currentState = state;
 		switch (state) {
-			case SHORT_VIEW: setContent(shortView); break;
-			case FULL_VIEW:  setContent(fullView ); break;
-			case MAP_VIEW:   setContent(mapView  ); mapView.prepareView(); break;
+			case SHORT_VIEW:
+				setContent(shortView);
+				break;
+			case FULL_VIEW:
+				setContent(fullView);
+				break;
+			case MAP_VIEW:
+				setContent(mapView);
+				mapView.prepareView();
+				break;
 			default:
 				Log.e("Хьюстон!", "У нас проблемы!");
 		}

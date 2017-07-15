@@ -17,8 +17,6 @@ import java.util.List;
 
 import com.donutellko.technopolisshuttle.DataLoader.STime;
 
-import static android.view.View.TEXT_ALIGNMENT_CENTER;
-import static android.view.View.TEXT_ALIGNMENT_GRAVITY;
 import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 import static com.donutellko.technopolisshuttle.DataLoader.firstIsBefore;
 import static com.donutellko.technopolisshuttle.MainActivity.settings;
@@ -71,8 +69,8 @@ public class FullScheduleView extends SView {
 			if (timeTable.to.length > max) max = timeTable.to.length;
 			for (int i = 0; i < max; i++) {
 				table.addView(makeTwoColumnsRow(
-						(i < timeTable.from.length ? timeTable.from[i] : null),
-						(i < timeTable.to.length ? timeTable.to[i] : null), currentTime)); // суём инфу в таблицу
+						(i < timeTable.to.length ? timeTable.to[i] : null),
+						(i < timeTable.from.length ? timeTable.from[i] : null), currentTime)); // суём инфу в таблицу
 			}
 		} else {
 			for (TimeTable.ScheduleElement d : timeTable.from)
@@ -87,54 +85,35 @@ public class FullScheduleView extends SView {
 
 			for (int i = 0; i < Math.max(from.size(), to.size()); i++)
 				table.addView(makeTwoColumnsRow(
-						(i < from.size() ? from.get(i) : null),
-						(i < to.size() ? to.get(i) : null), currentTime)); // суём инфу в таблицу
+						(i < to.size() ? to.get(i) : null),
+						(i < from.size() ? from.get(i) : null), currentTime)); // суём инфу в таблицу
 		}
 		return result;
 	}
 
-	private String makeDays(int mask) {
-		if (mask == 31) return "";
-		if (mask == 127) return "ежедневно";
-		String[] weekdays = {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
-		String does = "только ", doesnt = "кроме ", result;
-		byte does_i = 0, doesnt_i = 0;
-		for (int j = 0; j < 5; j++) {
-			if (((1 << j) & mask) > 0) {
-				does += (does_i > 0 ? ", " : "") + weekdays[j];
-				does_i++;
-			} else {
-				doesnt += (doesnt_i > 0 ? ", " : "") + weekdays[j];
-				doesnt_i++;
-			}
-		}
-		boolean onSat = ((1 << 5) & mask) > 0, onSun = ((1 << 6) & mask) > 0;
+	private View makeTwoColumnsRow(TimeTable.ScheduleElement colToTech, TimeTable.ScheduleElement colFromTech, STime currentTime) {
+		View row = View.inflate(context, R.layout.full_2col_row, null);
 
-		if (onSat) does_i++;
-		else doesnt_i++;
+		modifyRow(row, colToTech, true, currentTime);    // левая колонка
+		modifyRow(row, colFromTech, false, currentTime); // правая колонка
 
-		if (onSun) does_i++;
-		else doesnt_i++;
-
-		if (onSat) {
-			does += ", " + weekdays[5];
-			doesnt += ", " + weekdays[5];
-		}
-		if (onSat) {
-			does += ", " + weekdays[6];
-			doesnt += ", " + weekdays[6];
-		}
-
-		if (does_i < doesnt_i) {
-			result = does;
-		} else {
-			result = doesnt;
-		}
-		return result;
+		return row;
 	}
 
-	private void setComments(String commentsDays, View row, int id){
-		if (commentsDays != ""){
+	private void modifyRow(View row, TimeTable.ScheduleElement cell, boolean toTech, STime currentTime) {
+		TextView text = row.findViewById(toTech ? R.id.to_tech : R.id.from_tech);
+		if (cell == null) text.setText("");
+		else {
+			String commentsDays = makeDays(cell.mask);
+			text.setText(cell.time.hour + ":" + (cell.time.min <= 9 ? "0" : "") + cell.time.min); //TODO: format
+			setComments(commentsDays, row, toTech ? R.id.layout_to_tech : R.id.layout_from_tech);
+			if (firstIsBefore(cell.time, currentTime) || !cell.worksAt(currentTime.weekday))
+				text.setTextColor(Color.LTGRAY);
+		}
+	}
+
+	private void setComments(String commentsDays, View row, int id) {
+		if (!commentsDays.equals("")){
 			TextView days = new TextView(context);
 			days.setGravity(Gravity.CENTER);
 			days.setTextColor(MainActivity.applicationContext.getResources().getColor(R.color.colorAccent));
@@ -145,34 +124,36 @@ public class FullScheduleView extends SView {
 		}
 	}
 
+	private String makeDays(int mask) {
+		if (mask == 31) return "";
+		if (mask == 127) return "ежедневно";
+		String[] weekdays = {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
+		String does = "только ", doesnt = "кроме ";
+		byte does_i = 0, doesnt_i = 0;
 
-	private View makeTwoColumnsRow(TimeTable.ScheduleElement colToTech, TimeTable.ScheduleElement colFromTech, STime currentTime) {
-		View row = View.inflate(context, R.layout.full_2col_row, null);
-
-		TextView tFrom = row.findViewById(R.id.from_tech);
-		TextView tTo = row.findViewById(R.id.to_tech);
-
-		// ЛЕВАЯ КОЛОНКА
-		if (colToTech == null) tFrom.setText("");
-		else {
-			String commentsDays = makeDays(colToTech.mask);
-			tFrom.setText(colToTech.time.hour + ":" + (colToTech.time.min <= 9 ? "0" : "") + colToTech.time.min); //TODO: format
-			setComments(commentsDays, row, R.id.layout_from_tech);
-			if (firstIsBefore(colToTech.time, currentTime))
-				tFrom.setTextColor(Color.LTGRAY);
+		for (int j = 0; j < 5; j++) {
+			boolean tmp = ((1 << j) & mask) > 0;
+			if (tmp) {
+				does += (does_i > 0 ? ", " : "") + weekdays[j];
+				does_i++;
+			} else {
+				doesnt += (doesnt_i > 0 ? ", " : "") + weekdays[j];
+				doesnt_i++;
+			}
 		}
+		boolean onSat = ((1 << 5) & mask) > 0, onSun = ((1 << 6) & mask) > 0;
 
-		//ПРАВАЯ КОЛОНКА
-		if (colFromTech == null) tTo.setText("");
-		else {
-			String commentsDays = makeDays(colFromTech.mask);
-			tTo.setText(colFromTech.time.hour + ":" + (colFromTech.time.min <= 9 ? "0" : "") + colFromTech.time.min); //TODO: format
-			setComments(commentsDays, row, R.id.layout_to_tech);
-			if (firstIsBefore(colFromTech.time, currentTime))
-				tTo.setTextColor(Color.LTGRAY);
-		}
-		return row;
+		does_i += (onSat ? 1 : 0) + (onSun ? 1 : 0);
+		doesnt_i += (!onSat ? 1 : 0) + (!onSun ? 1 : 0);
+
+		does += (onSat ? ", " + weekdays[5] : "") + (onSun ? ", " + weekdays[6] : "");
+		doesnt += (!onSat ? ", " + weekdays[5] : "") + (!onSun ? ", " + weekdays[6] : "");
+
+		return(does_i < doesnt_i) ? does : doesnt;
 	}
+
+
+
 
 	private CheckBox.OnCheckedChangeListener mOnShowPastChangedListener
 			= new CheckBox.OnCheckedChangeListener() {

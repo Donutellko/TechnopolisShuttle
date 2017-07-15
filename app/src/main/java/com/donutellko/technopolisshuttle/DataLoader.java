@@ -33,30 +33,30 @@ import javax.net.ssl.HttpsURLConnection;
  */
 
 // Получает данные из памяти, базы данных и сервера
-public class DataLoader {
-	public static DataLoader singleton = new DataLoader();
+class DataLoader {
+	static DataLoader singleton = new DataLoader();
 
-	public static class STime {
-		int hour, min;
+	static class STime {
+		int hour, min, weekday;
 
-		public STime(int hour, int min) {
+		STime(int hour, int min) {
 			this.hour = hour;
 			this.min = min;
 		}
 
 		@Deprecated
-		public STime(Date d) {
-			hour = d.getHours();
-			min = d.getMinutes();
+		STime(Date time) {
+			hour = time.getHours();
+			min = time.getMinutes();
 		}
 
-		@Deprecated
-		public STime(java.sql.Time t) {
-			hour = t.getHours();
-			min = t.getMinutes();
+		STime(Date time, int weekdayNumber) {
+			hour = time.getHours();
+			min = time.getMinutes();
+			weekday = weekdayNumber;
 		}
 
-		public STime(String s) { // исключительно вида "09:15:
+		STime(String s) { // исключительно вида "09:15:
 			if (s.length() == 5) {
 				hour = (s.charAt(0) - '0') * 10 + (s.charAt(1) - '0');
 				min = (s.charAt(3) - '0') * 10 + (s.charAt(4) - '0');
@@ -66,13 +66,13 @@ public class DataLoader {
 			} else Log.e("WRONG!", "Неправильный формат времени: " + s);
 		}
 
-		public boolean isBefore(STime t) {
+		boolean isBefore(STime t) {
 			if (hour < t.hour) return true;
 			if (hour == t.hour && min < t.min) return true;
 			return false;
 		}
 
-		public STime getDifference(STime t) {
+		STime getDifference(STime t) {
 			int dh = t.hour - hour;
 			int dm = t.min - min;
 			if (dm < 0 && dh > 0) {
@@ -102,28 +102,27 @@ public class DataLoader {
 			return hour + ":" + min;
 		}
 
-		public boolean isZero() {
+		boolean isZero() {
 			return hour == 0 && min == 0;
 		}
 	}
 
-	public TimeTable updateJsonInfo() {
+	TimeTable updateJsonInfo() {
 		updateJsonOnline();
 		return getJsonTimeTable(getJsonOffline());
 	}
 
-	public static TimeTable getJsonTimeTable(String s) {
+	static TimeTable getJsonTimeTable(String s) {
 		JsonObject jsonObject = new Gson().fromJson(s, JsonObject.class);
 
 		ScheduleElement[]
 				seFrom = jsonObject.toScheduleElementArray(jsonObject.fromOffice),
 				seTo = jsonObject.toScheduleElementArray(jsonObject.toOffice);
 
-		TimeTable t = new TimeTable(seFrom, seTo);
-		return t;
+		return new TimeTable(seFrom, seTo);
 	}
 
-	public String getJsonOffline() {
+	private String getJsonOffline() {
 		String s;
 		s = getJsonCached();
 		if (s == null)
@@ -134,37 +133,25 @@ public class DataLoader {
 		return s;
 	}
 
-	public void updateJsonOnline() {
-//		AsyncTask<String, Void, String> lol =
-//		new JsonGetter().execute(Settings.singleton.serverIpContainerAddress + "/schedule");
+	void updateJsonOnline() {
 		new JsonGetter().execute();
 	}
 
-	//@Deprecated
-	//public void getJsonOnline() {
-	//	Log.i("getJsonOnline()", "trying to load online");
-	//	AsyncTask<String, Void, Void> lol = new JsonGetter().execute(Settings.singleton.serverIpContainerAddress + "/schedule");
-	//}
-
 	private String getJsonCached() {
 		Log.i("getJsonCaches()", "trying to load from cache");
-		String s = null;
-		s = Settings.singleton.jsonCached;
-		return s;
+		return Settings.singleton.jsonCached;
 	}
 
 	private static String getJsonDefault() {
 		Log.i("getJsonDefault()", "getting default json");
-		String s =
-				"{\"fromOffice\"=[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":16},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":16},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}],"
-						+ "\"toOffice\"=[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]}";
-		return s;
+		return "{\"fromOffice\"=[{\"time\":\"09:30\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:50\",\"mask\":31},{\"time\":\"13:30\",\"mask\":31},{\"time\":\"14:10\",\"mask\":31},{\"time\":\"14:50\",\"mask\":31},{\"time\":\"15:10\",\"mask\":16},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"15:50\",\"mask\":31},{\"time\":\"16:00\",\"mask\":16},{\"time\":\"16:30\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:00\",\"mask\":31},{\"time\":\"17:10\",\"mask\":31},{\"time\":\"17:30\",\"mask\":31},{\"time\":\"17:40\",\"mask\":31},{\"time\":\"17:50\",\"mask\":31},{\"time\":\"18:00\",\"mask\":31},{\"time\":\"18:10\",\"mask\":31},{\"time\":\"18:20\",\"mask\":31},{\"time\":\"18:30\",\"mask\":31},{\"time\":\"18:40\",\"mask\":31},{\"time\":\"18:50\",\"mask\":31},{\"time\":\"19:10\",\"mask\":31},{\"time\":\"19:20\",\"mask\":31},{\"time\":\"19:30\",\"mask\":31},{\"time\":\"19:40\",\"mask\":31},{\"time\":\"19:50\",\"mask\":31},{\"time\":\"20:10\",\"mask\":31},{\"time\":\"20:45\",\"mask\":31},{\"time\":\"21:20\",\"mask\":31}],"
+				+ "\"toOffice\"=[{\"time\":\"07:45\",\"mask\":31},{\"time\":\"08:00\",\"mask\":31},{\"time\":\"08:10\",\"mask\":31},{\"time\":\"08:20\",\"mask\":31},{\"time\":\"08:30\",\"mask\":31},{\"time\":\"08:35\",\"mask\":31},{\"time\":\"08:40\",\"mask\":31},{\"time\":\"08:50\",\"mask\":31},{\"time\":\"09:00\",\"mask\":31},{\"time\":\"09:10\",\"mask\":31},{\"time\":\"09:15\",\"mask\":31},{\"time\":\"09:20\",\"mask\":31},{\"time\":\"09:30\",\"mask\":31},{\"time\":\"09:40\",\"mask\":31},{\"time\":\"09:50\",\"mask\":31},{\"time\":\"09:55\",\"mask\":31},{\"time\":\"10:00\",\"mask\":31},{\"time\":\"10:10\",\"mask\":31},{\"time\":\"10:20\",\"mask\":31},{\"time\":\"10:30\",\"mask\":31},{\"time\":\"10:35\",\"mask\":31},{\"time\":\"10:40\",\"mask\":31},{\"time\":\"10:50\",\"mask\":31},{\"time\":\"11:00\",\"mask\":31},{\"time\":\"11:10\",\"mask\":31},{\"time\":\"11:20\",\"mask\":31},{\"time\":\"11:30\",\"mask\":31},{\"time\":\"11:50\",\"mask\":31},{\"time\":\"12:10\",\"mask\":31},{\"time\":\"12:30\",\"mask\":31},{\"time\":\"13:10\",\"mask\":31},{\"time\":\"13:50\",\"mask\":31},{\"time\":\"14:30\",\"mask\":31},{\"time\":\"15:10\",\"mask\":31},{\"time\":\"15:30\",\"mask\":31},{\"time\":\"16:10\",\"mask\":31},{\"time\":\"16:50\",\"mask\":31},{\"time\":\"17:20\",\"mask\":31}]}";
 	}
 
 	private class JsonObject {
 		DataObject[] fromOffice, toOffice;
 
-		public ScheduleElement[] toScheduleElementArray(DataObject[] dataObjects) {
+		ScheduleElement[] toScheduleElementArray(DataObject[] dataObjects) {
 			ScheduleElement[] scheduleElements = new ScheduleElement[dataObjects.length];
 			for (int i = 0; i < dataObjects.length; i++)
 				scheduleElements[i] = dataObjects[i].toScheduleElement();
@@ -175,29 +162,26 @@ public class DataLoader {
 			String time;
 			int mask;
 
-			public ScheduleElement toScheduleElement() {
+			ScheduleElement toScheduleElement() {
 				return new ScheduleElement(new STime(time), mask);
 			}
 		}
 	}
 
-	public static STime getCurrentTime() {
+	static STime getCurrentTime() {
 		Calendar curtime = Calendar.getInstance();
-		return new STime(curtime.getTime());
+		return new STime(curtime.getTime(), getWeekdayNumber());
 	}
 
-	public static int getWeekdayNumber() {
-		Log.i("getWeekdayNumber", "Method called");
+	static int getWeekdayNumber() {
 		Calendar curtime = Calendar.getInstance();
-		return curtime.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY;
+		int tmp = curtime.get(Calendar.DAY_OF_WEEK);
+		if (tmp == Calendar.SUNDAY) return 6; // у аутистов неделя начинается в воскресенье
+		return tmp - Calendar.MONDAY;
 	}
 
-	public static boolean firstIsBefore(DataLoader.STime d1, DataLoader.STime d2) {
-		if (d1.hour < d2.hour)
-			return true;
-		if (d1.hour == d2.hour && d1.min < d2.min)
-			return true;
-		return false;
+	static boolean firstIsBefore(DataLoader.STime d1, DataLoader.STime d2) {
+		return d1.hour < d2.hour || d1.hour == d2.hour && d1.min < d2.min;
 	}
 
 
@@ -206,12 +190,12 @@ public class DataLoader {
 class TimeTable {
 	public ScheduleElement[] from, to;
 
-	public TimeTable(ScheduleElement[] from, ScheduleElement[] to) {
+	TimeTable(ScheduleElement[] from, ScheduleElement[] to) {
 		this.from = from;
 		this.to = to;
 	}
 
-	public List<ScheduleElement> getTimeAfter(STime now, boolean To, int weekday) {
+	List<ScheduleElement> getTimeAfter(STime now, boolean To, int weekday) {
 		List<ScheduleElement> result = new ArrayList<>();
 
 		for (ScheduleElement t : (To ? to : from))
@@ -223,20 +207,15 @@ class TimeTable {
 	}
 
 	static class ScheduleElement {
-		public STime time;
-		public int mask;
+		STime time;
+		int mask;
 
-		public ScheduleElement(STime time, int mask) {
+		ScheduleElement(STime time, int mask) {
 			this.time = time;
 			this.mask = mask;
 		}
 
-		public ScheduleElement(int hour, int min, int mask) {
-			this.time = new STime(hour, min);
-			this.mask = mask;
-		}
-
-		public boolean worksAt(int weekday) { // номер дня недели, начиная с нуля
+		boolean worksAt(int weekday) { // номер дня недели, начиная с нуля
 			int m = 1 << weekday;
 			return ((mask & m) != 0);
 		}
@@ -260,7 +239,7 @@ class JsonGetter extends AsyncTask<Void, Void, Void> {
 					1900 + date.getYear() + "." + date.getMonth() + "." + date.getDay() + " " +
 					date.getHours() + ":" + date.getMinutes();
 			MainActivity.viewNotifier("Расписание синхронизировано!");
-			MainActivity.updateTimeTable(DataLoader.singleton.getJsonTimeTable(s));
+			MainActivity.updateTimeTable(DataLoader.getJsonTimeTable(s));
 		} catch (Exception e) {
 			MainActivity.viewNotifier("Не синхронизировано с " + Settings.singleton.jsonLastSync);
 			e.printStackTrace();
@@ -268,7 +247,7 @@ class JsonGetter extends AsyncTask<Void, Void, Void> {
 		return null;
 	}
 
-	public static String getDataFromUrl(String url_s) throws Exception {
+	private static String getDataFromUrl(String url_s) throws Exception {
 		String result = null;
 
 		BufferedReader reader = null;
@@ -280,7 +259,7 @@ class JsonGetter extends AsyncTask<Void, Void, Void> {
 			uc.setConnectTimeout(Settings.singleton.connection_timeout);
 			uc.connect();
 			reader = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-			StringBuffer buffer = new StringBuffer();
+			StringBuilder buffer = new StringBuilder();
 			int read;
 			char[] chars = new char[1024];
 			while ((read = reader.read(chars)) != -1)
@@ -292,11 +271,12 @@ class JsonGetter extends AsyncTask<Void, Void, Void> {
 				reader.close();
 		}
 
-		Log.i("GOT ONLINE DATA!!!", result);
+		if (result.charAt(0) == '{')
+			Log.i("GOT ONLINE DATA!!!", result);
 		return result;
 	}
 
-	public static String getServerIp() {
+	private static String getServerIp() {
 		String url = Settings.singleton.serverIpContainerAddress;
 		try {
 			String page = getDataFromUrl(url);
