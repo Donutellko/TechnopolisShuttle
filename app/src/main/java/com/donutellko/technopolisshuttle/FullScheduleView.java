@@ -93,11 +93,13 @@ public class FullScheduleView extends SView {
 		return result;
 	}
 
-	private String makeDays(int mask){
-		String[] weekdays =  {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
+	private String makeDays(int mask) {
+		if (mask == 31) return "";
+		if (mask == 127) return "ежедневно";
+		String[] weekdays = {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
 		String does = "только ", doesnt = "кроме ", result;
 		byte does_i = 0, doesnt_i = 0;
-		for (int j = 0; j < 5; j++){
+		for (int j = 0; j < 5; j++) {
 			if (((1 << j) & mask) > 0) {
 				does += (does_i > 0 ? ", " : "") + weekdays[j];
 				does_i++;
@@ -114,17 +116,22 @@ public class FullScheduleView extends SView {
 		if (onSun) does_i++;
 		else doesnt_i++;
 
+		if (onSat) {
+			does += ", " + weekdays[5];
+			doesnt += ", " + weekdays[5];
+		}
+		if (onSat) {
+			does += ", " + weekdays[6];
+			doesnt += ", " + weekdays[6];
+		}
+
 		if (does_i < doesnt_i) {
 			result = does;
 		} else {
-			if (onSat) does += ", " + weekdays[5];
-			if (onSat) does += ", " + weekdays[6];
 			result = doesnt;
 		}
 		return result;
 	}
-
-
 
 	private View makeTwoColumnsRow(TimeTable.ScheduleElement colToTech, TimeTable.ScheduleElement colFromTech, STime currentTime) {
 		View row = View.inflate(context, R.layout.full_2col_row, null);
@@ -132,15 +139,19 @@ public class FullScheduleView extends SView {
 		TextView tFrom = row.findViewById(R.id.from_tech);
 		TextView tTo = row.findViewById(R.id.to_tech);
 
+		// ЛЕВАЯ КОЛОНКА
 		if (colToTech == null) tFrom.setText("");
 		else {
 			String commentsDays = makeDays(colToTech.mask);
 			tFrom.setText(colToTech.time.hour + ":" + (colToTech.time.min <= 9 ? "0" : "") + colToTech.time.min); //TODO: format
-			if (commentsDays != ""){
+			if (commentsDays != "") {
+				//tFrom.setPadding(tFrom.getPaddingLeft(), tFrom.getPaddingTop(), tFrom.getPaddingRight(), 15);
+				//tTo.setPadding(tFrom.getPaddingLeft(), tFrom.getPaddingTop(), tFrom.getPaddingRight(), 15); // не ошибка копипасты
 				TextView days = new TextView(context);
 				days.setGravity(Gravity.CENTER);
 				days.setTextColor(MainActivity.applicationContext.getResources().getColor(R.color.colorAccent));
 				days.setText(commentsDays);
+				days.setTextSize(9);
 				LinearLayout linearLayout = row.findViewById(R.id.layout_from_tech);
 				linearLayout.addView(days);
 			}
@@ -148,14 +159,17 @@ public class FullScheduleView extends SView {
 				tFrom.setTextColor(Color.LTGRAY);
 		}
 
+		//ПРАВАЯ КОЛОНКА
 		if (colFromTech == null) tTo.setText("");
 		else {
 			String commentsDays = makeDays(colFromTech.mask);
 			tTo.setText(colFromTech.time.hour + ":" + (colFromTech.time.min <= 9 ? "0" : "") + colFromTech.time.min); //TODO: format
-			if (commentsDays != ""){
+			if (commentsDays != "") {
 				TextView days = new TextView(context);
 				days.setGravity(Gravity.CENTER);
+				days.setTextColor(MainActivity.applicationContext.getResources().getColor(R.color.colorAccent));
 				days.setText(commentsDays);
+				days.setTextSize(9);
 				LinearLayout linearLayout = row.findViewById(R.id.layout_to_tech);
 				linearLayout.addView(days);
 			}
