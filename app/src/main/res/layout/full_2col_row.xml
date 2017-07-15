@@ -5,6 +5,7 @@
     android:orientation="horizontal">
 
     <LinearLayout
+        android:id="@+id/layout_to_tech"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -16,10 +17,12 @@
             android:layout_height="wrap_content"
             android:text="14:35"
             android:textAlignment="center"
-            android:textSize="24sp"/>
+            android:textSize="24sp" />
+
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_from_tech"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -31,7 +34,7 @@
             android:layout_height="wrap_content"
             android:text="15:20"
             android:textAlignment="center"
-            android:textSize="24sp"/>
+            android:textSize="24sp" />
 
     </LinearLayout>
 </LinearLayout>

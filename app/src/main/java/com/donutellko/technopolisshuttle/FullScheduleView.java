@@ -1,5 +1,6 @@
 package com.donutellko.technopolisshuttle;
 
+import android.view.Gravity;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -16,6 +17,8 @@ import java.util.List;
 
 import com.donutellko.technopolisshuttle.DataLoader.STime;
 
+import static android.view.View.TEXT_ALIGNMENT_CENTER;
+import static android.view.View.TEXT_ALIGNMENT_GRAVITY;
 import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 import static com.donutellko.technopolisshuttle.DataLoader.firstIsBefore;
 import static com.donutellko.technopolisshuttle.MainActivity.settings;
@@ -78,8 +81,10 @@ public class FullScheduleView extends SView {
 			}
 		} else {
 			for (TimeTable.ScheduleElement d : timeTable.from)
-				if (d.time.hour > currentTime.hour || (d.time.hour == currentTime.hour && d.time.min > currentTime.min))
+				if (d.time.hour > currentTime.hour || (d.time.hour == currentTime.hour && d.time.min > currentTime.min)) {
 					from.add(d);
+
+				}
 
 			for (TimeTable.ScheduleElement d : timeTable.to)
 				if (d.time.hour > currentTime.hour || (d.time.hour == currentTime.hour && d.time.min > currentTime.min))
@@ -93,23 +98,73 @@ public class FullScheduleView extends SView {
 		return result;
 	}
 
-	private View makeTwoColumnsRow(TimeTable.ScheduleElement t1, TimeTable.ScheduleElement t2, STime currentTime) {
+	private String makeDays(int mask){
+		String[] weekdays =  {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
+		String does = "только ", doesnt = "кроме ", result;
+		byte does_i = 0, doesnt_i = 0;
+		for (int j = 0; j < 5; j++){
+			if (((1 << j) & mask) > 0) {
+				does += (does_i > 0 ? ", " : "") + weekdays[j];
+				does_i++;
+			} else {
+				doesnt += (doesnt_i > 0 ? ", " : "") + weekdays[j];
+				doesnt_i++;
+			}
+		}
+		boolean onSat = ((1 << 5) & mask) > 0, onSun = ((1 << 6) & mask) > 0;
+
+		if (onSat) does_i++;
+		else doesnt_i++;
+
+		if (onSun) does_i++;
+		else doesnt_i++;
+
+		if (does_i < doesnt_i) {
+			result = does;
+		} else {
+			if (onSat) does += ", " + weekdays[5];
+			if (onSat) does += ", " + weekdays[6];
+			result = doesnt;
+		}
+		return result;
+	}
+
+
+
+	private View makeTwoColumnsRow(TimeTable.ScheduleElement colToTech, TimeTable.ScheduleElement colFromTech, STime currentTime) {
 		View row = View.inflate(context, R.layout.full_2col_row, null);
 
 		TextView tFrom = row.findViewById(R.id.from_tech);
 		TextView tTo = row.findViewById(R.id.to_tech);
 
-		if (t1 == null) tFrom.setText("");
+		if (colToTech == null) tFrom.setText("");
 		else {
-			tFrom.setText(t1.time.hour + ":" + (t1.time.min <= 9 ? "0" : "") + t1.time.min); //TODO: format
-			if (firstIsBefore(t1.time, currentTime))
+			String commentsDays = makeDays(colToTech.mask);
+			tFrom.setText(colToTech.time.hour + ":" + (colToTech.time.min <= 9 ? "0" : "") + colToTech.time.min); //TODO: format
+			if (commentsDays != ""){
+				TextView days = new TextView(context);
+				days.setGravity(Gravity.CENTER);
+				days.setTextColor(MainActivity.applicationContext.getResources().getColor(R.color.colorAccent));
+				days.setText(commentsDays);
+				LinearLayout linearLayout = row.findViewById(R.id.layout_from_tech);
+				linearLayout.addView(days);
+			}
+			if (firstIsBefore(colToTech.time, currentTime))
 				tFrom.setTextColor(Color.LTGRAY);
 		}
 
-		if (t2 == null) tTo.setText("");
+		if (colFromTech == null) tTo.setText("");
 		else {
-			tTo.setText(t2.time.hour + ":" + (t2.time.min <= 9 ? "0" : "") + t2.time.min); //TODO: format
-			if (firstIsBefore(t2.time, currentTime))
+			String commentsDays = makeDays(colFromTech.mask);
+			tTo.setText(colFromTech.time.hour + ":" + (colFromTech.time.min <= 9 ? "0" : "") + colFromTech.time.min); //TODO: format
+			if (commentsDays != ""){
+				TextView days = new TextView(context);
+				days.setGravity(Gravity.CENTER);
+				days.setText(commentsDays);
+				LinearLayout linearLayout = row.findViewById(R.id.layout_to_tech);
+				linearLayout.addView(days);
+			}
+			if (firstIsBefore(colFromTech.time, currentTime))
 				tTo.setTextColor(Color.LTGRAY);
 		}
 
