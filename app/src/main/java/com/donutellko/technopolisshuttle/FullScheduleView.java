@@ -133,6 +133,19 @@ public class FullScheduleView extends SView {
 		return result;
 	}
 
+	private void setComments(String commentsDays, View row, int id){
+		if (commentsDays != ""){
+			TextView days = new TextView(context);
+			days.setGravity(Gravity.CENTER);
+			days.setTextColor(MainActivity.applicationContext.getResources().getColor(R.color.colorAccent));
+			days.setText(commentsDays);
+			days.setTextSize(9);
+			LinearLayout linearLayout = row.findViewById(id);
+			linearLayout.addView(days);
+		}
+	}
+
+
 	private View makeTwoColumnsRow(TimeTable.ScheduleElement colToTech, TimeTable.ScheduleElement colFromTech, STime currentTime) {
 		View row = View.inflate(context, R.layout.full_2col_row, null);
 
@@ -144,17 +157,7 @@ public class FullScheduleView extends SView {
 		else {
 			String commentsDays = makeDays(colToTech.mask);
 			tFrom.setText(colToTech.time.hour + ":" + (colToTech.time.min <= 9 ? "0" : "") + colToTech.time.min); //TODO: format
-			if (commentsDays != "") {
-				//tFrom.setPadding(tFrom.getPaddingLeft(), tFrom.getPaddingTop(), tFrom.getPaddingRight(), 15);
-				//tTo.setPadding(tFrom.getPaddingLeft(), tFrom.getPaddingTop(), tFrom.getPaddingRight(), 15); // не ошибка копипасты
-				TextView days = new TextView(context);
-				days.setGravity(Gravity.CENTER);
-				days.setTextColor(MainActivity.applicationContext.getResources().getColor(R.color.colorAccent));
-				days.setText(commentsDays);
-				days.setTextSize(9);
-				LinearLayout linearLayout = row.findViewById(R.id.layout_from_tech);
-				linearLayout.addView(days);
-			}
+			setComments(commentsDays, row, R.id.layout_from_tech);
 			if (firstIsBefore(colToTech.time, currentTime))
 				tFrom.setTextColor(Color.LTGRAY);
 		}
@@ -164,19 +167,10 @@ public class FullScheduleView extends SView {
 		else {
 			String commentsDays = makeDays(colFromTech.mask);
 			tTo.setText(colFromTech.time.hour + ":" + (colFromTech.time.min <= 9 ? "0" : "") + colFromTech.time.min); //TODO: format
-			if (commentsDays != "") {
-				TextView days = new TextView(context);
-				days.setGravity(Gravity.CENTER);
-				days.setTextColor(MainActivity.applicationContext.getResources().getColor(R.color.colorAccent));
-				days.setText(commentsDays);
-				days.setTextSize(9);
-				LinearLayout linearLayout = row.findViewById(R.id.layout_to_tech);
-				linearLayout.addView(days);
-			}
+			setComments(commentsDays, row, R.id.layout_to_tech);
 			if (firstIsBefore(colFromTech.time, currentTime))
 				tTo.setTextColor(Color.LTGRAY);
 		}
-
 		return row;
 	}
 
