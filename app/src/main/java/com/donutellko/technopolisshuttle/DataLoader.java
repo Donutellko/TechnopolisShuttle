@@ -129,21 +129,22 @@ public class DataLoader {
 		if (s == null)
 			s = getJsonDefault();
 
-		Log.i("JSON!", s);
+		Log.i("Got offline JSON: ", s);
 
 		return s;
 	}
 
 	public void updateJsonOnline() {
 //		AsyncTask<String, Void, String> lol =
-		new JsonGetter().execute(Settings.singleton.serverIp + "/schedule");
+//		new JsonGetter().execute(Settings.singleton.serverIpContainerAddress + "/schedule");
+		new JsonGetter().execute();
 	}
 
-	@Deprecated
-	public void getJsonOnline() {
-		Log.i("getJsonOnline()", "trying to load online");
-		AsyncTask<String, Void, Void> lol = new JsonGetter().execute(Settings.singleton.serverIp + "/schedule");
-	}
+	//@Deprecated
+	//public void getJsonOnline() {
+	//	Log.i("getJsonOnline()", "trying to load online");
+	//	AsyncTask<String, Void, Void> lol = new JsonGetter().execute(Settings.singleton.serverIpContainerAddress + "/schedule");
+	//}
 
 	private String getJsonCached() {
 		Log.i("getJsonCaches()", "trying to load from cache");
@@ -244,18 +245,19 @@ class TimeTable {
 }
 
 
-class JsonGetter extends AsyncTask<String, Void, Void> {
+class JsonGetter extends AsyncTask<Void, Void, Void> {
 	@Override
-	protected Void doInBackground(String... strings) {
+	protected Void doInBackground(Void... voids) {
 		try {
-			String s = (getJson(strings[0]));
-			if (s == null) throw new Exception("ара!");
+			String s = (getDataFromUrl(getServerIp() + "/schedule"));
+			if (s.equals("") || s.equals("{\"fromOffice\":[],\"toOffice\":[]}"))
+				throw new Exception("Пришёл такой се ответ!!!");
 
 			Settings.singleton.jsonCached = s;
 			Settings.singleton.savePreferences(MainActivity.applicationContext);
 			Date date = Calendar.getInstance().getTime();
 			Settings.singleton.jsonLastSync =
-					date.getYear() + "." + date.getMonth() + "." + date.getDay() + " " +
+					1900 + date.getYear() + "." + date.getMonth() + "." + date.getDay() + " " +
 					date.getHours() + ":" + date.getMinutes();
 			MainActivity.viewNotifier("Расписание синхронизировано!");
 			MainActivity.updateTimeTable(DataLoader.singleton.getJsonTimeTable(s));
@@ -266,7 +268,7 @@ class JsonGetter extends AsyncTask<String, Void, Void> {
 		return null;
 	}
 
-	public static String getJson(String url_s) throws Exception {
+	public static String getDataFromUrl(String url_s) throws Exception {
 		String result = null;
 
 		BufferedReader reader = null;
@@ -290,8 +292,23 @@ class JsonGetter extends AsyncTask<String, Void, Void> {
 				reader.close();
 		}
 
-		Log.i("JSOOOOOOON STATHAM!", result);
+		Log.i("GOT ONLINE DATA!!!", result);
 		return result;
+	}
+
+	public static String getServerIp() {
+		String url = Settings.singleton.serverIpContainerAddress;
+		try {
+			String page = getDataFromUrl(url);
+			int begin = page.indexOf("URL=");
+			int end = page.indexOf("=URL");
+			String result = page.substring(begin + 4, end);
+			Log.e("FOUND URL", result);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
