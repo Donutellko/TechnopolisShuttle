@@ -9,7 +9,9 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.webkit.WebViewFragment;
 import android.widget.LinearLayout;
 import android.os.CountDownTimer;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 //	LocationManager locationManager;
 //	static SLocationListener locationListener;
 
-	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW, HELP_VIEW, ABOUT_VIEW}
+	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW, HELP_VIEW, ACTION_WEB, ABOUT_VIEW}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		final WebView webView;
+		Intent browserIntent;
 		switch (item.getItemId()) {
 			case R.id.action_reload:
 //				timeTable = dataLoader.updateJsonInfo();
@@ -142,16 +146,23 @@ public class MainActivity extends AppCompatActivity {
 				settings.currentState = State.SETTINGS_VIEW;
 				setContent(settingsView);
 				return true;
+			case R.id.action_web:
+				settings.currentState = State.ACTION_WEB;
+				browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((settings.serverIp != null ? settings.serverIp : "http://188.134.12.107:8081") + "/index.html"));
+				startActivity(browserIntent);
+				return true;
 			case R.id.action_change:
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/spreadsheets/d/1yajaDHYL4pWad_cYUAab1C2ZypiYTDg2Vqxe3zmWDiI"));
+				browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/spreadsheets/d/1yajaDHYL4pWad_cYUAab1C2ZypiYTDg2Vqxe3zmWDiI"));
 				startActivity(browserIntent);
 //				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_help:
 				settings.currentState = State.HELP_VIEW;
-				final WebView webView = new WebView(this);
+				webView = new WebView(this);
 				webView.getSettings().setSupportZoom(true);
 				webView.getSettings().setBuiltInZoomControls(true);
+				webView.setWebViewClient(new WebViewClient());
+				webView.setWebChromeClient(new WebChromeClient());
 				new Runnable() {
 					public void run() {
 						webView.getSettings().setDisplayZoomControls(false);

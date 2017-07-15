@@ -24,6 +24,7 @@ public class Settings {
 	public String serverIpContainerAddress = "http://freetexthost.com/ppk46tkyqd"; //"http://192.168.0.100:8081"; // "http://188.134.12.107:8081";
 	public String jsonCached = null;
 	public String jsonLastSync = "2017.07.14 14:54";
+	public String serverIp = null;
 	public int connection_timeout = 500;
 
 	// названия, под которыми сохраняется
@@ -36,6 +37,7 @@ public class Settings {
 			showToast_s = "showToast",
 			noSnackbar_s = "noSnackbar",
 			serverIpContainerAddress_s = "serverIpContainerAddress",
+			serverIp_s = "serverIp",
 			connection_timeout_s = "connection_timeout",
 			jsonLastSync_s = "jsonLastSync";
 
@@ -53,6 +55,7 @@ public class Settings {
 		noSnackbar = sp.getBoolean(noSnackbar_s, noSnackbar);
 		serverIpContainerAddress = sp.getString(serverIpContainerAddress_s, serverIpContainerAddress);
 		jsonLastSync = sp.getString(jsonLastSync_s, jsonLastSync);
+		serverIp = sp.getString(serverIp_s, serverIp);
 		connection_timeout = sp.getInt(connection_timeout_s, connection_timeout);
 
 		Log.i("loadPreferences()", "loaded " + currentState.name() + ":" + currentState.ordinal());
@@ -61,6 +64,7 @@ public class Settings {
 
 	public void savePreferences(Context context) {
 		SharedPreferences.Editor sp = context.getSharedPreferences("settings", Context.MODE_PRIVATE).edit();
+
 		sp.putInt(countToShowOnShort_s, countToShowOnShort);
 		if (currentState.ordinal() < 3)
 			sp.putInt(currentState_s, currentState.ordinal());
@@ -72,6 +76,8 @@ public class Settings {
 		sp.putString(serverIpContainerAddress_s, serverIpContainerAddress);
 		sp.putString(jsonLastSync_s, jsonLastSync);
 		sp.putInt(connection_timeout_s, connection_timeout);
+		if (serverIp != null)
+			sp.putString(serverIp_s, serverIp);
 
 		sp.apply();
 		Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal());
