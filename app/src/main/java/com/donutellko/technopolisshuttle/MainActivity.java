@@ -1,7 +1,10 @@
 package com.donutellko.technopolisshuttle;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.net.Uri;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.Snackbar;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 	DataLoader dataLoader;
 
 	static LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
+	static ConstraintLayout parentBlock;
 	static BottomNavigationView navigation;
 
 	static ShortScheduleView shortView;
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
 		layoutInflater = getLayoutInflater();
 		curtime = Calendar.getInstance();
 		contentBlock = (LinearLayout) findViewById(R.id.content);
+		parentBlock = (ConstraintLayout) findViewById(R.id.parent);
 
 		navigation = (BottomNavigationView) findViewById(R.id.navigation);
 		defaultColors = navigation.getItemTextColor();
@@ -113,7 +118,9 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public static void viewSnackbar(String s) {
-		Snackbar.make(contentBlock, s, Snackbar.LENGTH_SHORT)
+		/*Snackbar.make(contentBlock, s, Snackbar.LENGTH_SHORT)
+				.setAction("Action", null).show();*/
+		Snackbar.make(parentBlock, s, Snackbar.LENGTH_SHORT)
 				.setAction("Action", null).show();
 	}
 
@@ -171,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
 //				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_help:
+				viewNotifier("Загрузка...");
 				navigation.setVisibility(View.VISIBLE);
 				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
 				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));

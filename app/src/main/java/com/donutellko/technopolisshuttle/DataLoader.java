@@ -238,7 +238,7 @@ class JsonGetter extends AsyncTask<Void, Void, Void> {
 			Settings.singleton.jsonLastSync =
 					1900 + date.getYear() + "." + date.getMonth() + "." + date.getDay() + " " +
 					date.getHours() + ":" + date.getMinutes();
-			MainActivity.viewNotifier("Расписание синхронизировано!");
+			MainActivity.viewNotifier("Расписание синхронизировано");
 			MainActivity.updateTimeTable(DataLoader.getJsonTimeTable(s));
 		} catch (Exception e) {
 			MainActivity.viewNotifier("Не синхронизировано с " + Settings.singleton.jsonLastSync);
