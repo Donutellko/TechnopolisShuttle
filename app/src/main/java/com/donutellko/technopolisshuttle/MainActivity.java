@@ -12,6 +12,7 @@ import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebViewFragment;
 import android.widget.LinearLayout;
 import android.os.CountDownTimer;
 import android.content.Context;
@@ -52,6 +53,13 @@ public class MainActivity extends AppCompatActivity {
 	public static LayoutInflater layoutInflater;
 	public static Settings settings = Settings.singleton;
 
+
+	static ColorStateList defaultColors;
+
+
+//	LocationManager locationManager;
+//	static SLocationListener locationListener;
+
 	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW, HELP_VIEW, ACTION_WEB, ABOUT_VIEW}
 
 	@Override
@@ -67,16 +75,12 @@ public class MainActivity extends AppCompatActivity {
 		else
 			Log.i("Preferences", "not found");
 
-		if (settings.loadPreferences(getApplicationContext()))
-			Log.i("Preferences", "loaded");
-		else
-			Log.i("Preferences", "not found");
-
 		layoutInflater = getLayoutInflater();
 		curtime = Calendar.getInstance();
 		contentBlock = (LinearLayout) findViewById(R.id.content);
 
 		navigation = (BottomNavigationView) findViewById(R.id.navigation);
+		defaultColors = navigation.getItemTextColor();
 		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 		dataLoader = new DataLoader();
@@ -146,18 +150,31 @@ public class MainActivity extends AppCompatActivity {
 			case R.id.action_settings:
 				settings.currentState = State.SETTINGS_VIEW;
 				setContent(settingsView);
+				navigation.setVisibility(View.INVISIBLE);
 				return true;
 			case R.id.action_web:
+				navigation.setVisibility(View.VISIBLE);
+				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
+				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
+
 				settings.currentState = State.ACTION_WEB;
 				browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((settings.serverIp != null ? settings.serverIp : "http://188.134.12.107:8081") + "/index.html"));
 				startActivity(browserIntent);
 				return true;
 			case R.id.action_change:
+				navigation.setVisibility(View.VISIBLE);
+				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
+				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
+
 				browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/spreadsheets/d/1yajaDHYL4pWad_cYUAab1C2ZypiYTDg2Vqxe3zmWDiI"));
 				startActivity(browserIntent);
 //				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_help:
+				navigation.setVisibility(View.VISIBLE);
+				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
+				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
+
 				settings.currentState = State.HELP_VIEW;
 				webView = new WebView(this);
 				webView.getSettings().setSupportZoom(true);
@@ -173,6 +190,10 @@ public class MainActivity extends AppCompatActivity {
 				setContent(webView);
 				return true;
 			case R.id.action_about:
+				navigation.setVisibility(View.VISIBLE);
+				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
+				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
+
 				settings.currentState = State.ABOUT_VIEW;
 				viewNotifier("Not available yet");
 				return true;
@@ -230,16 +251,23 @@ public class MainActivity extends AppCompatActivity {
 				checkUpdatedTimeTable();
 				switch (MainActivity.settings.currentState) {
 					case SHORT_VIEW:
+						navigation.setItemTextColor(defaultColors);
+						navigation.setItemIconTintList(defaultColors);
 						shortView.updateView();
 						break;
 					case FULL_VIEW:
+						navigation.setItemTextColor(defaultColors);
+						navigation.setItemIconTintList(defaultColors);
 //						fullView.updateView();
 						break;
 					case MAP_VIEW:
+						navigation.setItemTextColor(defaultColors);
+						navigation.setItemIconTintList(defaultColors);
 //						mapView.updateView();
 						break;
 					case SETTINGS_VIEW:
 //						settingsView.updateView();
+//						navigation.setVisibility(View.INVISIBLE);
 						break;
 					default:
 						Log.e("Хьюстон!", "У нас проблемы!");
