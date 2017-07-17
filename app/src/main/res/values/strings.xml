@@ -3,6 +3,15 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="reload_shedule">Обновить расписание</string>
+    <string name="settings">Настройки</string>
+    <string name="open_resource">Открыть сайт</string>
+    <string name="change_shedule">Изменить расписание</string>
+    <string name="help">Помощь</string>
+    <string name="about_us">О нас</string>
+    <string name="short_shedule">Краткий</string>
+    <string name="full_shedule">Полный</string>
+    <string name="map">Место</string>
     <string-array name="weekdays">
         <item>Понедельник</item>
         <item>Вторник</item>
@@ -11,5 +20,14 @@
         <item>Пятница</item>
         <item>Суббота</item>
         <item>Воскресенье</item>
+    </string-array>
+    <string-array name="weekdays_short">
+        <item>пн</item>
+        <item>вт</item>
+        <item>ср</item>
+        <item>чт</item>
+        <item>пт</item>
+        <item>сб</item>
+        <item>вс</item>
     </string-array>
 </resources>

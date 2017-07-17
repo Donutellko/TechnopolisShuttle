@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 	public static Window getWindow;
 	private static boolean needtoUpdateTimeTable = false;
 
+
 	private LatLng
 			coordsTechnopolis = new LatLng(59.818026, 30.327783),
 			coordsUnderground = new LatLng(59.854728, 30.320958);
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 	public static Settings settings = Settings.singleton;
 
 	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW, HELP_VIEW, ACTION_WEB, ABOUT_VIEW}
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -298,4 +300,8 @@ public class MainActivity extends AppCompatActivity {
 				Log.e("Хьюстон!", "У нас проблемы!");
 		}
 	}
+	public String[] getWeekdays(){
+		return getResources().getStringArray(R.array.weekdays_short);
+	}
+
 }

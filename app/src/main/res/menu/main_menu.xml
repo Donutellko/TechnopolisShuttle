@@ -6,31 +6,31 @@
     <item
         android:id="@+id/action_reload"
         android:orderInCategory="100"
-        android:title="Обновить расписание"
+        android:title="@string/reload_shedule"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:title="Настройки"
+        android:title="@string/settings"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_web"
         android:orderInCategory="100"
-        android:title="Открыть сайт"
+        android:title="@string/open_resource"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_change"
         android:orderInCategory="100"
-        android:title="Изменить расписание"
+        android:title="@string/change_shedule"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_help"
         android:orderInCategory="100"
-        android:title="Помощь"
+        android:title="@string/help"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_about"
         android:orderInCategory="100"
-        android:title="О нас"
+        android:title="@string/about_us"
         app:showAsAction="never"/>
 </menu>
