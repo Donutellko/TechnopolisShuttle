@@ -1,6 +1,8 @@
 package com.donutellko.technopolisshuttle;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +32,22 @@ import static android.widget.Toast.LENGTH_SHORT;
 
 public class MainActivity extends AppCompatActivity {
 
+//	int[][] states = new int[][] {
+//			new int[] { android.R.attr.state_focused}, // enabled
+//			new int[] { android.R.attr.state_enabled}, // disabled
+//			new int[] { android.R.attr.state_checked}, // unchecked
+//			new int[] { android.R.attr.state_pressed}  // pressed
+//	};
+//
+//	int[] colors = new int[] {
+//			Color.GRAY,
+//			Color.RED,
+//			Color.GREEN,
+//			Color.BLUE
+//	};
+
+//	ColorStateList myList = new ColorStateList(states, colors);
+
 	public static Context applicationContext;
 	public static Window getWindow;
 	private static boolean needtoUpdateTimeTable = false;
@@ -44,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
 	static LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
 	static BottomNavigationView navigation;
-
 	static ShortScheduleView shortView;
 	static FullScheduleView fullView;
 	static MapView mapView;
@@ -52,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
 
 	public static LayoutInflater layoutInflater;
 	public static Settings settings = Settings.singleton;
+
+
+	static ColorStateList defaultColors;
+
 
 //	LocationManager locationManager;
 //	static SLocationListener locationListener;
@@ -76,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 		contentBlock = (LinearLayout) findViewById(R.id.content);
 
 		navigation = (BottomNavigationView) findViewById(R.id.navigation);
+		defaultColors = navigation.getItemTextColor();
 		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 		dataLoader = new DataLoader();
@@ -145,18 +167,29 @@ public class MainActivity extends AppCompatActivity {
 			case R.id.action_settings:
 				settings.currentState = State.SETTINGS_VIEW;
 				setContent(settingsView);
+				navigation.setVisibility(View.INVISIBLE);
 				return true;
 			case R.id.action_web:
+				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
+				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
+
 				settings.currentState = State.ACTION_WEB;
 				browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((settings.serverIp != null ? settings.serverIp : "http://188.134.12.107:8081") + "/index.html"));
 				startActivity(browserIntent);
 				return true;
 			case R.id.action_change:
+				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
+				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
+
 				browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/spreadsheets/d/1yajaDHYL4pWad_cYUAab1C2ZypiYTDg2Vqxe3zmWDiI"));
 				startActivity(browserIntent);
 //				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_help:
+
+				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
+				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
+
 				settings.currentState = State.HELP_VIEW;
 				webView = new WebView(this);
 				webView.getSettings().setSupportZoom(true);
@@ -172,6 +205,9 @@ public class MainActivity extends AppCompatActivity {
 				setContent(webView);
 				return true;
 			case R.id.action_about:
+				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
+				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
+
 				settings.currentState = State.ABOUT_VIEW;
 				viewNotifier("Not available yet");
 				return true;
@@ -231,16 +267,23 @@ public class MainActivity extends AppCompatActivity {
 				checkUpdatedTimeTable();
 				switch (MainActivity.settings.currentState) {
 					case SHORT_VIEW:
+						navigation.setItemTextColor(defaultColors);
+						navigation.setItemIconTintList(defaultColors);
 						shortView.updateView();
 						break;
 					case FULL_VIEW:
+						navigation.setItemTextColor(defaultColors);
+						navigation.setItemIconTintList(defaultColors);
 //						fullView.updateView();
 						break;
 					case MAP_VIEW:
+						navigation.setItemTextColor(defaultColors);
+						navigation.setItemIconTintList(defaultColors);
 //						mapView.updateView();
 						break;
 					case SETTINGS_VIEW:
 //						settingsView.updateView();
+//						navigation.setVisibility(View.INVISIBLE);
 						break;
 					default:
 						Log.e("Хьюстон!", "У нас проблемы!");

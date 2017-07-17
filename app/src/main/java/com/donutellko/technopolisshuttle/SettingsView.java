@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.view.View;
+import android.widget.LinearLayout;
 
 /**
  * Created by donat on 7/13/17.
@@ -18,6 +19,7 @@ public class SettingsView extends SView {
 	Button resetButton, saveButton, closeButton;
 	CheckBox noSnackbar, useToast;
 
+	LinearLayout mainLayout;
 
 	public SettingsView(Context context) {
 		super(context);
@@ -59,6 +61,10 @@ public class SettingsView extends SView {
 		closeButton = view.findViewById(R.id.close);
 		closeButton.setText("Закрыть");
 		closeButton.setOnClickListener(closeListener);
+
+//		mainLayout = view.findViewById(R.id.main_layout);
+//		mainLayout.removeViewAt(R.id.navigation);
+
 	}
 
 	@Override
@@ -102,6 +108,7 @@ public class SettingsView extends SView {
 	private Button.OnClickListener closeListener = new Button.OnClickListener() { //TODO: нормальная проверка
 		@Override
 		public void onClick(View view) {
+			MainActivity.navigation.setVisibility(View.VISIBLE);
 			MainActivity.navigation.setSelectedItemId(MainActivity.navigation.getSelectedItemId());
 		}
 	};
