@@ -70,7 +70,7 @@ public class MapView extends SView implements OnMapReadyCallback {
 		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
 //		map.moveCamera(cameraUpdate);
 
-		try {
+		try { // В случае вылета из-за карты открывается ShortView, чтобы работать при следующем запуске
 			map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 		} catch (Exception e) {
 			Settings.singleton.currentState = MainActivity.State.SHORT_VIEW;

@@ -12,6 +12,7 @@ import android.content.Context;
 import android.widget.Spinner;
 import android.view.View;
 
+import java.util.Calendar;
 import java.util.List;
 
 import static com.donutellko.technopolisshuttle.DataLoader.getWeekdayNumber;
@@ -38,9 +39,9 @@ public class ShortScheduleView extends SView {
 
 	@Override
 	public void prepareView() {
-		int weekday = getWeekdayNumber();
+		weekdaySelected = getWeekdayNumber();
 
-		LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
+		LinearLayout container = view.findViewById(R.id.container);
 		container.addView(View.inflate(context, R.layout.short_head, null));
 		ScrollView scrollView = new ScrollView(context);
 		table = new TableLayout(context);
@@ -61,11 +62,7 @@ public class ShortScheduleView extends SView {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Apply the adapter to the spinner
 		weekdaysSpinner.setOnItemSelectedListener(mWeekdaysSpinnerListener);
 		weekdaysSpinner.setAdapter(adapter);
-		weekdaysSpinner.setSelection(weekday);
-
-//		double dist = MainActivity.locationListener.getDistanceToTechnopolis();
-//		settings.showTo = dist > settings.distanceToShowFrom;
-//		Log.i("lsnd", dist + " > " + settings.distanceToShowFrom + " = " + settings.showTo);
+		weekdaysSpinner.setSelection(weekdaySelected);
 
 		updateView();
 	}
@@ -77,7 +74,8 @@ public class ShortScheduleView extends SView {
 		settings.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
-		List<TimeTable.ScheduleElement> after = MainActivity.timeTable.getTimeAfter(now, settings.showTo, weekdaySelected);
+		List<TimeTable.ScheduleElement> after =
+				MainActivity.timeTable.getTimeAfter(now, settings.showTo, weekdaySelected);
 
 		for (int i = 0; i < Math.min(after.size(), settings.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
