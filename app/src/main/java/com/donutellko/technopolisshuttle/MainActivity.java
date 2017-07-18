@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 	DataLoader dataLoader;
 
 	static LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
-	static ConstraintLayout parentBlock;
+//	static ConstraintLayout parentBlock;
 	static BottomNavigationView navigation;
 
 	static ShortScheduleView shortView;
@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
 	static ColorStateList defaultColors;
 
 	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW, HELP_VIEW, ACTION_WEB, ABOUT_VIEW}
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 		layoutInflater = getLayoutInflater();
 		curtime = Calendar.getInstance();
 		contentBlock = (LinearLayout) findViewById(R.id.content);
-		parentBlock = (ConstraintLayout) findViewById(R.id.parent);
+		// parentBlock = (ConstraintLayout) findViewById(R.id.parent);
 
 		navigation = (BottomNavigationView) findViewById(R.id.navigation);
 		defaultColors = navigation.getItemTextColor();
@@ -115,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public static void viewSnackbar(String s) {
-		/*Snackbar.make(contentBlock, s, Snackbar.LENGTH_SHORT)
-				.setAction("Action", null).show();*/
-		Snackbar.make(parentBlock, s, Snackbar.LENGTH_SHORT)
+		Snackbar.make(contentBlock, s, Snackbar.LENGTH_SHORT)
 				.setAction("Action", null).show();
+		/*Snackbar.make(parentBlock, s, Snackbar.LENGTH_SHORT)
+				.setAction("Action", null).show();*/
 	}
 
 	public static void viewToast(String s) {
