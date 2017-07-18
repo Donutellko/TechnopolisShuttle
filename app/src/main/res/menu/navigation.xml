@@ -4,16 +4,16 @@
     <item
         android:id="@+id/navigation_short"
         android:icon="@android:drawable/ic_menu_recent_history"
-        android:title="Краткий"/>
+        android:title="@string/short_shedule"/>
 
     <item
         android:id="@+id/navigation_full"
         android:icon="@android:drawable/ic_dialog_dialer"
-        android:title="Полный"/>
+        android:title="@string/full_shedule"/>
 
     <item
         android:id="@+id/navigation_map"
         android:icon="@android:drawable/ic_dialog_map"
-        android:title="Место"/>
+        android:title="@string/map"/>
 
 </menu>

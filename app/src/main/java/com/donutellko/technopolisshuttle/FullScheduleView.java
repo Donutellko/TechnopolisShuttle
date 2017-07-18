@@ -1,5 +1,6 @@
 package com.donutellko.technopolisshuttle;
 
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -25,13 +26,14 @@ import static com.donutellko.technopolisshuttle.MainActivity.timeTable;
 public class FullScheduleView extends SView {
 	private final int LAYOUT_RESOURCE = R.layout.full_layout;
 	private CheckBox showPastCheckBox;
+	private String[] weekdays;
 	LinearLayout content;
 
 	public FullScheduleView(Context context) {
 		super(context);
 
 		view = View.inflate(context, LAYOUT_RESOURCE, null);
-
+		weekdays = context.getResources().getStringArray(R.array.weekdays_short);
 		prepareView();
 	}
 
@@ -124,10 +126,15 @@ public class FullScheduleView extends SView {
 		}
 	}
 
+
 	private String makeDays(int mask) {
 		if (mask == 31) return "";
 		if (mask == 127) return "ежедневно";
-		String[] weekdays = {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
+
+//		String[] weekdays = {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
+
+
+
 		String does = "только ", doesnt = "кроме ";
 		byte does_i = 0, doesnt_i = 0;
 
