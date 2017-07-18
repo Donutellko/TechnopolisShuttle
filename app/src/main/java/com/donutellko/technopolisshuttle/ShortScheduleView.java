@@ -25,7 +25,6 @@ public class ShortScheduleView extends SView {
 			TOGGLE_FROM = R.id.toggle_from;
 	private int weekdaySelected;
 	private TableLayout table;
-	private Settings settings = Settings.singleton;
 
 	ToggleButton toggleTo, toggleFrom;
 
@@ -50,11 +49,11 @@ public class ShortScheduleView extends SView {
 
 		toggleTo = view.findViewById(TOGGLE_TO);
 		toggleTo.setOnClickListener(toggleToListener);
-		toggleTo.setChecked(settings.showTo);
+		toggleTo.setChecked(Settings.singleton.showTo);
 
 		toggleFrom = view.findViewById(TOGGLE_FROM);
 		toggleFrom.setOnClickListener(toggleFromListener);
-		toggleFrom.setChecked(!settings.showTo);
+		toggleFrom.setChecked(!Settings.singleton.showTo);
 
 		Spinner weekdaysSpinner = view.findViewById(R.id.spinner_weekdays);
 		ArrayAdapter<CharSequence> adapter =
@@ -71,13 +70,13 @@ public class ShortScheduleView extends SView {
 	public void updateView() {
 		DataLoader.STime now = getCurrentTime();
 
-		settings.showTo = toggleTo.isChecked();
+		Settings.singleton.showTo = toggleTo.isChecked();
 		table.removeAllViews();
 
 		List<TimeTable.ScheduleElement> after =
-				MainActivity.timeTable.getTimeAfter(now, settings.showTo, weekdaySelected);
+				MainActivity.timeTable.getTimeAfter(now, Settings.singleton.showTo, weekdaySelected);
 
-		for (int i = 0; i < Math.min(after.size(), settings.countToShowOnShort); i++)
+		for (int i = 0; i < Math.min(after.size(), Settings.singleton.countToShowOnShort); i++)
 			table.addView(getTimeLeftRow(after.get(i), now));
 
 		TableRow ending = new TableRow(context);
@@ -91,8 +90,8 @@ public class ShortScheduleView extends SView {
 		if (after.size() == 0) {
 			ending_text.setText("Cегодня автобусов в этом направлении больше нет.");
 			table.removeAllViews();
-		} else if (after.size() >= settings.countToShowOnShort - 1)
-			ending_text.setText("Показаны " + settings.countToShowOnShort + " ближайших рейсов.");
+		} else if (after.size() >= Settings.singleton.countToShowOnShort - 1)
+			ending_text.setText("Показаны " + Settings.singleton.countToShowOnShort + " ближайших рейсов.");
 		else {
 			ending_text.setText("Больше нет рейсов на сегодня.");
 		}
@@ -111,7 +110,9 @@ public class ShortScheduleView extends SView {
 		}
 
 		View row = View.inflate(context, R.layout.short_row, null);
-		((TextView) row.findViewById(R.id.time)).setText(t.time.hour + ":" + (t.time.min <= 9 ? "0" : "") + t.time.min);
+		TextView textView = row.findViewById(R.id.time);
+		textView.setText(t.time.hour + ":" + (t.time.min <= 9 ? "0" : "") + t.time.min);
+		textView.setTextSize(Settings.singleton.textSize);
 		((TextView) row.findViewById(R.id.timeleft)).setText(timeLeft);
 
 		return row;

@@ -19,7 +19,6 @@ import com.donutellko.technopolisshuttle.DataLoader.STime;
 
 import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 import static com.donutellko.technopolisshuttle.DataLoader.firstIsBefore;
-import static com.donutellko.technopolisshuttle.MainActivity.settings;
 import static com.donutellko.technopolisshuttle.MainActivity.timeTable;
 
 public class FullScheduleView extends SView {
@@ -39,7 +38,7 @@ public class FullScheduleView extends SView {
 	@Override
 	public void prepareView() {
 		showPastCheckBox = view.findViewById(R.id.view_past);
-		showPastCheckBox.setChecked(settings.showPast);
+		showPastCheckBox.setChecked(Settings.singleton.showPast);
 		showPastCheckBox.setOnCheckedChangeListener(mOnShowPastChangedListener);
 
 		content = view.findViewById(R.id.content);
@@ -65,7 +64,7 @@ public class FullScheduleView extends SView {
 				from = new ArrayList<>(),
 				to = new ArrayList<>();
 
-		if (settings.showPast) {
+		if (Settings.singleton.showPast) {
 			int max = timeTable.from.length;
 			if (timeTable.to.length > max) max = timeTable.to.length;
 			for (int i = 0; i < max; i++) {
@@ -105,6 +104,7 @@ public class FullScheduleView extends SView {
 		if (cell == null) text.setText("");
 		else {
 			String commentsDays = makeDays(cell.mask);
+			text.setTextSize(Settings.singleton.textSize);
 			text.setText(cell.time.hour + ":" + (cell.time.min <= 9 ? "0" : "") + cell.time.min); //TODO: format
 			setComments(commentsDays, row, toTech ? R.id.layout_to_tech : R.id.layout_from_tech);
 			if (firstIsBefore(cell.time, currentTime) || !cell.worksAt(currentTime.weekday))
@@ -165,7 +165,7 @@ public class FullScheduleView extends SView {
 		@Override
 		public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 			Log.i("listener", "showPast changed");
-			settings.showPast = compoundButton.isChecked();
+			Settings.singleton.showPast = compoundButton.isChecked();
 			updateView();
 		}
 	};

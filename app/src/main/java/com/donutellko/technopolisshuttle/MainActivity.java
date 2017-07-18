@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
 	static SettingsView settingsView;
 
 	public static LayoutInflater layoutInflater;
-	public static Settings settings = Settings.singleton;
 
 	static ColorStateList defaultColors;
 
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 		applicationContext = getApplicationContext();
 		getWindow = getWindow();
 
-		if (settings.loadPreferences(applicationContext))
+		if (Settings.singleton.loadPreferences(applicationContext))
 			Log.i("Preferences", "loaded");
 		else
 			Log.i("Preferences", "not found");
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
 		getUpdateTimer(500).start(); // запускаем автообновление значений каждые (параметр) миллисекунд
 
-		changeView(settings.currentState);
+		changeView(Settings.singleton.currentState);
 	}
 
 	@Override
@@ -105,9 +104,9 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public static void viewNotifier(String s) {
-		if (settings.noSnackbar)
+		if (Settings.singleton.noSnackbar)
 			return;
-		if (settings.showToast)
+		if (Settings.singleton.showToast)
 			viewToast(s);
 		else
 			viewSnackbar(s);
@@ -134,9 +133,9 @@ public class MainActivity extends AppCompatActivity {
 	private void checkUpdatedTimeTable() {
 		if (needtoUpdateTimeTable) {
 			needtoUpdateTimeTable = false;
-			if (settings.currentState == MainActivity.State.FULL_VIEW)
+			if (Settings.singleton.currentState == MainActivity.State.FULL_VIEW)
 				fullView.updateView();
-			else if (settings.currentState == State.SHORT_VIEW)
+			else if (Settings.singleton.currentState == State.SHORT_VIEW)
 				shortView.updateView();
 		}
 	}
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 				dataLoader.updateJsonOnline();
 				return true;
 			case R.id.action_settings:
-				settings.currentState = State.SETTINGS_VIEW;
+				Settings.singleton.currentState = State.SETTINGS_VIEW;
 				setContent(settingsView);
 				navigation.setVisibility(View.INVISIBLE);
 				return true;
@@ -160,8 +159,8 @@ public class MainActivity extends AppCompatActivity {
 				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
 				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
 
-				settings.currentState = State.ACTION_WEB;
-				browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((settings.serverIp != null ? settings.serverIp : "http://188.134.12.107:8081") + "/index.html"));
+				Settings.singleton.currentState = State.ACTION_WEB;
+				browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((Settings.singleton.serverIp != null ? Settings.singleton.serverIp : "http://188.134.12.107:8081") + "/index.html"));
 				startActivity(browserIntent);
 				return true;
 			case R.id.action_change:
@@ -179,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
 				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
 				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
 
-				settings.currentState = State.HELP_VIEW;
+				Settings.singleton.currentState = State.HELP_VIEW;
 				webView = new WebView(this);
 				webView.getSettings().setSupportZoom(true);
 				webView.getSettings().setBuiltInZoomControls(true);
@@ -198,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
 				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
 				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
 
-				settings.currentState = State.ABOUT_VIEW;
+				Settings.singleton.currentState = State.ABOUT_VIEW;
 				viewNotifier("Not available yet");
 				return true;
 			default:
@@ -215,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public void onPause() {
-		settings.savePreferences(getApplicationContext());
+		Settings.singleton.savePreferences(getApplicationContext());
 		super.onPause();
 	}
 
@@ -225,7 +224,10 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (settings.currentState == State.FULL_VIEW || settings.currentState == State.SHORT_VIEW || settings.currentState == State.MAP_VIEW) {
+		if (
+				Settings.singleton.currentState == State.FULL_VIEW
+						|| Settings.singleton.currentState == State.SHORT_VIEW
+						|| Settings.singleton.currentState == State.MAP_VIEW) {
 			long time = Calendar.getInstance().getTimeInMillis();
 			if (time - backPressedTime < LENGTH_SHORT)
 				super.onBackPressed();
@@ -253,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onTick(long millisUntilFinished) {
 				checkUpdatedTimeTable();
-				switch (MainActivity.settings.currentState) {
+				switch (Settings.singleton.currentState) {
 					case SHORT_VIEW:
 						navigation.setItemTextColor(defaultColors);
 						navigation.setItemIconTintList(defaultColors);
@@ -319,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
 	};
 
 	private void loadView(State state) {
-		settings.currentState = state;
+		Settings.singleton.currentState = state;
 		switch (state) {
 			case SHORT_VIEW:
 				setContent(shortView);

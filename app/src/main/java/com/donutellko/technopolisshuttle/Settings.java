@@ -18,7 +18,7 @@ public class Settings {
 	public MainActivity.State currentState = MainActivity.State.SHORT_VIEW;
 	public boolean showPast = true;
 	public boolean showTo = true; // не сохранять!
-	public float distanceToShowFrom = 2;
+	//public float distanceToShowFrom = 2;
 	public boolean showToast = false;
 	public boolean noSnackbar = false;
 	public String serverIpContainerAddress = "http://freetexthost.com/ppk46tkyqd"; //"http://192.168.0.100:8081"; // "http://188.134.12.107:8081";
@@ -26,20 +26,22 @@ public class Settings {
 	public String jsonLastSync = "2017.07.14 14:54";
 	public String serverIp = null;
 	public int connection_timeout = 500;
+	public float textSize = 22;
 
 	// названия, под которыми сохраняется
 	private String
 			countToShowOnShort_s = "countToShowOnShort_s",
 			currentState_s = "currentState",
 			showPast_s = "showPast",
-			distanceToShowFrom_s = "distanceToShowFrom",
+			//distanceToShowFrom_s = "distanceToShowFrom",
 			jsonCached_s = "jsonCached",
 			showToast_s = "showToast",
 			noSnackbar_s = "noSnackbar",
 			serverIpContainerAddress_s = "serverIpContainerAddress",
 			serverIp_s = "serverIp",
 			connection_timeout_s = "connection_timeout",
-			jsonLastSync_s = "jsonLastSync";
+			jsonLastSync_s = "jsonLastSync",
+			textSize_s = "textSize";
 
 
 	public boolean loadPreferences(Context context) {
@@ -49,7 +51,7 @@ public class Settings {
 				sp.getInt(currentState_s, currentState.ordinal())];
 		countToShowOnShort = sp.getInt(countToShowOnShort_s, countToShowOnShort);
 		showPast = sp.getBoolean(showPast_s, showPast);
-		distanceToShowFrom = sp.getFloat(distanceToShowFrom_s, distanceToShowFrom);
+		//distanceToShowFrom = sp.getFloat(distanceToShowFrom_s, distanceToShowFrom);
 		jsonCached = sp.getString(jsonCached_s, jsonCached);
 		showToast = sp.getBoolean(showToast_s, showToast);
 		noSnackbar = sp.getBoolean(noSnackbar_s, noSnackbar);
@@ -57,6 +59,7 @@ public class Settings {
 		jsonLastSync = sp.getString(jsonLastSync_s, jsonLastSync);
 		serverIp = sp.getString(serverIp_s, serverIp);
 		connection_timeout = sp.getInt(connection_timeout_s, connection_timeout);
+		textSize = sp.getFloat(textSize_s, textSize);
 
 		Log.i("loadPreferences()", "loaded " + currentState.name() + ":" + currentState.ordinal());
 		return true;
@@ -76,6 +79,7 @@ public class Settings {
 		sp.putString(serverIpContainerAddress_s, serverIpContainerAddress);
 		sp.putString(jsonLastSync_s, jsonLastSync);
 		sp.putInt(connection_timeout_s, connection_timeout);
+		sp.putFloat(textSize_s, textSize);
 		if (serverIp != null)
 			sp.putString(serverIp_s, serverIp);
 

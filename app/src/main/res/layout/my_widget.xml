@@ -3,94 +3,87 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:padding="@dimen/widget_margin"
-              android:orientation="vertical"
-              android:layout_weight="1">
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="В Технополис"
-        android:background="#7a006FBD"
-        android:textAlignment="center"/>
+              android:layout_weight="1"
+              android:weightSum="2"
+              android:background="#CCFFFFFF"
+    >
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#9aFFFFFF"
-        >
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/time1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:textAlignment="center"
-            android:textSize="24sp"
-            android:textColor="#DE000000"
-            />
+            android:layout_weight="1"
+            android:text="В Технополис"
+            android:background="#006FBD"
+            android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/timeleft1"
+            android:id="@+id/to1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:paddingLeft="10dp"
-            android:textColor="#DE000000"
-            />
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/to2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/to3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="center"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#9aFFFFFF"
-        >
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/time2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:textAlignment="center"
-            android:textSize="24sp"
-            android:textColor="#DE000000"
-            />
+            android:layout_weight="1"
+            android:text="В метро"
+            android:background="#006FBD"
+            android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/timeleft2"
+            android:id="@+id/fr1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:paddingLeft="10dp"
-            android:textColor="#DE000000"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#9aFFFFFF"
-        >
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/time3"
+            android:id="@+id/fr2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:textAlignment="center"
-            android:textSize="24sp"
-            android:textColor="#DE000000"
-            />
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/timeleft3"
+            android:id="@+id/fr3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:paddingLeft="10dp"
-            android:textColor="#DE000000"
-            />
-
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="center"/>
     </LinearLayout>
 
 </LinearLayout>

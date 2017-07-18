@@ -21,13 +21,16 @@ import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 public class MyWidget extends AppWidgetProvider {
 
 	private WidgetView widgetView;
+	Context context;
+	AppWidgetManager appWidgetManager;
+	int[] appWidgetIds;
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		// There may be multiple widgets active, so update all of them
-		//for (int appWidgetId : appWidgetIds) {
-		//	updateAppWidget(context, appWidgetManager, appWidgetId);
-		//}=
+		this.context = context;
+		this.appWidgetManager = appWidgetManager;
+		this.appWidgetIds = appWidgetIds;
+
 		widgetView = new WidgetView(context, context.getApplicationContext());
 		RemoteViews rv = widgetView.getView();
 
@@ -35,12 +38,19 @@ public class MyWidget extends AppWidgetProvider {
 		Log.i("MyWidget", "onUpdate()");
 	}
 
+	public void onMyButtonClick() {
+		this.onUpdate(context, appWidgetManager, appWidgetIds);
+	}
 
 	class WidgetView {
-		//int
 		//		TOGGLE_TO = R.id.to_tech,
 		//		TOGGLE_FROM = R.id.from_tech;
 		boolean showTo = true;
+		final int[][] tvs = {
+				{R.id.to1, R.id.fr1},
+				{R.id.to2, R.id.fr2},
+				{R.id.to3, R.id.fr3}
+		};
 
 
 		Context context, appcontext;
@@ -51,6 +61,7 @@ public class MyWidget extends AppWidgetProvider {
 		private TimeTable timeTable;
 
 		public WidgetView(Context context, Context appcontext) {
+			//int
 			this.context = context;
 			this.appcontext = appcontext;
 			prepareView();
@@ -77,32 +88,36 @@ public class MyWidget extends AppWidgetProvider {
 			DataLoader.STime now = getCurrentTime();
 
 
-			List<TimeTable.ScheduleElement> after =
-					timeTable.getTimeAfter(now, showTo, now.weekday);
+			List<TimeTable.ScheduleElement> afterTo = timeTable.getTimeAfter(now, true, now.weekday);
+			List<TimeTable.ScheduleElement> afterFr = timeTable.getTimeAfter(now, false, now.weekday);
 
-			TimeTable.ScheduleElement[] afterarray = new TimeTable.ScheduleElement[after.size()];
-			int i = 0;
-			for (TimeTable.ScheduleElement element : after) {
-				afterarray[i] = element;
-				i++;
+			TimeTable.ScheduleElement[] afterArrayTo = new TimeTable.ScheduleElement[afterTo.size()];
+			TimeTable.ScheduleElement[] afterArrayFr = new TimeTable.ScheduleElement[afterFr.size()];
+
+			int m = 0;
+			for (TimeTable.ScheduleElement element : afterTo) {
+				afterArrayTo[m] = element;
+				m++;
+			}
+			for (TimeTable.ScheduleElement element : afterFr) {
+				afterArrayFr[m] = element;
+				m++;
 			}
 
 			Log.i("MyWidget", Settings.singleton.jsonCached);
-			Log.i("MyWidget", "afterarray.length = " + afterarray.length);
 
-			if (afterarray.length == 0)
-				remoteViews.setTextViewText(R.id.time1, "пусто");
-			if (afterarray.length > 0) {
-				remoteViews.setTextViewText(R.id.time1, afterarray[0].time.toString());
-				remoteViews.setTextViewText(R.id.timeleft1, now.getDifference(afterarray[0].time).toTextString());
+			for (int i = 0; i < afterArrayTo.length; i++) {
+				remoteViews.setTextViewText(tvs[i][0], afterArrayTo[i].toString());
 			}
-			if (afterarray.length > 1) {
-				remoteViews.setTextViewText(R.id.time2, afterarray[1].time.toString());
-				remoteViews.setTextViewText(R.id.timeleft2, now.getDifference(afterarray[1].time).toTextString());
-			}
-			if (afterarray.length > 2) {
-				remoteViews.setTextViewText(R.id.time3, afterarray[2].time.toString());
-				remoteViews.setTextViewText(R.id.timeleft3, now.getDifference(afterarray[2].time).toTextString());
+
+			if (afterArrayTo.length + afterArrayFr.length == 0) {
+				remoteViews.setTextViewText(R.id.to1, "-");
+				remoteViews.setTextViewText(R.id.fr1, "-");
+			} else {
+				for (int i = 0; i < Math.max(afterArrayTo.length, 3); i++)
+					remoteViews.setTextViewText(tvs[i][0], afterArrayTo[i].time.toString());
+				for (int i = 0; i < Math.max(afterArrayTo.length, 3); i++)
+					remoteViews.setTextViewText(tvs[i][1], afterArrayFr[i].time.toString());
 			}
 
 			/*toggleTo = view.findViewById(TOGGLE_TO);
@@ -121,4 +136,3 @@ public class MyWidget extends AppWidgetProvider {
 
 	}
 }
-

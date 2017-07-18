@@ -91,10 +91,10 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Радиус окрестностей бизнес-центра в километрах"/>
+            android:text="Размер текста"/>
 
         <EditText
-            android:id="@+id/techno_radius"
+            android:id="@+id/text_size"
             android:layout_width="102dp"
             android:layout_height="wrap_content"
             android:ems="10"
