@@ -22,6 +22,10 @@ public class MyWidget extends AppWidgetProvider {
 
 	private WidgetView widgetView;
 
+	Context context;
+	AppWidgetManager appWidgetManager;
+	int[] appWidgetIds;
+
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		// There may be multiple widgets active, so update all of them
@@ -32,7 +36,12 @@ public class MyWidget extends AppWidgetProvider {
 		RemoteViews rv = widgetView.getView();
 
 		appWidgetManager.updateAppWidget(appWidgetIds[0], rv);
+
+//
+// 	this.appWidgetIds = appWidgetIds;
+
 		Log.i("MyWidget", "onUpdate()");
+
 	}
 
 
@@ -120,5 +129,7 @@ public class MyWidget extends AppWidgetProvider {
 		}
 
 	}
+	public void onUpdateButtonClick() {
+		this.onUpdate(context, appWidgetManager, appWidgetIds);
+	}
 }
-

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:checked="true"
-        android:text="Отображать прошедшие"
+        android:text="@string/show_past"
         android:textAlignment="viewStart"
         android:textSize="14sp"/>
 

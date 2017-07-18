@@ -12,6 +12,24 @@
     <string name="short_shedule">Краткий</string>
     <string name="full_shedule">Полный</string>
     <string name="map">Место</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="to_technopolis">В Технополис</string>
+    <string name="to_underground">К метро</string>
+    <string name="show_past">Отображать прошедшие</string>
+    <string name="address_of_bus_station">Автобусная ост., м.Московская  Московский проспект, 189</string>
+    <string name="address_of_technopolis">Б.Ц. TECHNOPOLIS Пулковское шоссе, 40к4</string>
+    <string name="address_of_server">Адрес сервера включая протокол</string>
+    <string name="sync_timeout">Таймаут синхронизации в миллисекундах</string>
+    <string name="num_of_elements_in_short">Количество элементов на кратком отображении</string>
+    <string name="eps_radius_technopolis">Радиус окрестностей бизнес-центра в километрах</string>
+    <string name="show_toast_snackbar">Показывать Toast вместо Snackbar</string>
+    <string name="not_show_toast_snackbar">Не показывать Snackbar и Toast</string>
+    <string name="reset_settings_and_cash">Сбросить настройки и кэш</string>
+    <string name="save">Сохранить</string>
+    <string name="close">Закрыть</string>
+    <string name="departure">Отбытие</string>
+    <string name="time_left">Осталось времени</string>
     <string-array name="weekdays">
         <item>Понедельник</item>
         <item>Вторник</item>
@@ -30,6 +48,4 @@
         <item>сб</item>
         <item>вс</item>
     </string-array>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
 </resources>

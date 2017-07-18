@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Адрес сервера включая протокол"/>
+            android:text="@string/address_of_server"/>
 
         <EditText
             android:id="@+id/server_ip"
@@ -44,7 +44,7 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Таймаут синхронизации в миллисекундах"/>
+            android:text="@string/sync_timeout"/>
 
         <EditText
             android:id="@+id/timeout"
@@ -67,7 +67,7 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Количество элементов на кратком отображении"/>
+            android:text="@string/num_of_elements_in_short"/>
 
         <EditText
             android:id="@+id/count_to_show_on_short"
@@ -91,7 +91,7 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Радиус окрестностей бизнес-центра в километрах"/>
+            android:text="@string/eps_radius_technopolis"/>
 
         <EditText
             android:id="@+id/techno_radius"
@@ -113,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Показывать Toast вместо Snackbar"/>
+            android:text="@string/show_toast_snackbar"/>
     </LinearLayout>
 
     <LinearLayout
@@ -126,7 +126,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Не показывать Snackbar и Toast"/>
+            android:text="@string/not_show_toast_snackbar"/>
     </LinearLayout>
 
     <LinearLayout
@@ -143,7 +143,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:text="Сбросить настройки и кэш"/>
+            android:text="@string/reset_settings_and_cash"/>
     </LinearLayout>
 
     <LinearLayout
@@ -160,7 +160,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:text="Сохранить"/>
+            android:text="@string/save"/>
 
         <Button
             android:id="@+id/close"
@@ -171,7 +171,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:text="Закрыть"/>
+            android:text="@string/close"/>
 
     </LinearLayout>
 </LinearLayout>
