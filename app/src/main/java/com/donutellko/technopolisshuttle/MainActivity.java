@@ -58,12 +58,7 @@ public class MainActivity extends AppCompatActivity {
 	public static LayoutInflater layoutInflater;
 	public static Settings settings = Settings.singleton;
 
-
 	static ColorStateList defaultColors;
-
-
-//	LocationManager locationManager;
-//	static SLocationListener locationListener;
 
 	enum State {SHORT_VIEW, FULL_VIEW, MAP_VIEW, SETTINGS_VIEW, HELP_VIEW, ACTION_WEB, ABOUT_VIEW}
 
@@ -212,12 +207,12 @@ public class MainActivity extends AppCompatActivity {
 				return false;
 		}
 	}
-
 	//@Override
 	//public void onPause() {
 	//	settings.savePreferences(getApplicationContext());
 	//	super.onPause();
 	//}
+
 
 	@Override
 	public void onPause() {

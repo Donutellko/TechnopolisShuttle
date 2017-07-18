@@ -1,6 +1,5 @@
 package com.donutellko.technopolisshuttle;
 
-import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -75,13 +74,12 @@ public class FullScheduleView extends SView {
 						(i < timeTable.from.length ? timeTable.from[i] : null), currentTime)); // суём инфу в таблицу
 			}
 		} else {
-			for (TimeTable.ScheduleElement d : timeTable.from)
+			for (TimeTable.ScheduleElement d : timeTable.from) //TODO: поменять на getTimeAfter
 				if (d.time.hour > currentTime.hour || (d.time.hour == currentTime.hour && d.time.min > currentTime.min)) {
 					from.add(d);
-
 				}
 
-			for (TimeTable.ScheduleElement d : timeTable.to)
+			for (TimeTable.ScheduleElement d : timeTable.to)   //TODO: поменять на getTimeAfter
 				if (d.time.hour > currentTime.hour || (d.time.hour == currentTime.hour && d.time.min > currentTime.min))
 					to.add(d);
 
