@@ -1,35 +1,50 @@
 <resources>
     <string name="app_name">Technopolis Shuttle</string>
-    <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="reload_shedule">Обновить расписание</string>
-    <string name="settings">Настройки</string>
-    <string name="open_resource">Открыть сайт</string>
-    <string name="change_shedule">Изменить расписание</string>
-    <string name="help">Помощь</string>
-    <string name="about_us">О нас</string>
-    <string name="short_shedule">Краткий</string>
-    <string name="full_shedule">Полный</string>
-    <string name="map">Место</string>
+    <string name="reload_shedule">Update schedule</string>
+    <string name="settings">Settings</string>
+    <string name="open_resource">Open in browser</string>
+    <string name="change_shedule">Edit schedule</string>
+    <string name="help">Help</string>
+    <string name="about_us">About</string>
+    <string name="short_shedule">Short</string>
+    <string name="full_shedule">Full</string>
+    <string name="map">Map</string>
+    <string name="appwidget_text">Shuttle</string>
+    <string name="add_widget">Add widget</string>
+    <string name="to_technopolis">To Technopolis</string>
+    <string name="to_underground">To Underground</string>
+    <string name="show_past">View all</string>
+    <string name="address_of_bus_station">Bus st., Moskovskaya, \nMoskovskii prospect, 189</string>
+    <string name="address_of_technopolis">TECHNOPOLIS bus st.\nPulkovskoye roadway, 40/4</string>
+    <string name="address_of_server">Server address, including protocol</string>
+    <string name="sync_timeout">Synchronisation timeout, milliseconds</string>
+    <string name="num_of_elements_in_short">Number of elements on short view</string>
+    <string name="text_size">Size of text of time</string>
+    <string name="show_toast_snackbar">Show Toast, not Snackbar</string>
+    <string name="not_show_toast_snackbar">Don\'t show Snackbar or Toast</string>
+    <string name="reset_settings_and_cash">Reset settings and cache</string>
+    <string name="save">Save</string>
+    <string name="close">Close</string>
+    <string name="departure">Departure</string>
+    <string name="time_left">Time left</string>
     <string-array name="weekdays">
-        <item>Понедельник</item>
-        <item>Вторник</item>
-        <item>Среда</item>
-        <item>Четверг</item>
-        <item>Пятница</item>
-        <item>Суббота</item>
-        <item>Воскресенье</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
     </string-array>
     <string-array name="weekdays_short">
-        <item>пн</item>
-        <item>вт</item>
-        <item>ср</item>
-        <item>чт</item>
-        <item>пт</item>
-        <item>сб</item>
-        <item>вс</item>
+        <item>mo</item>
+        <item>tu</item>
+        <item>we</item>
+        <item>th</item>
+        <item>fr</item>
+        <item>sa</item>
+        <item>su</item>
     </string-array>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
 </resources>

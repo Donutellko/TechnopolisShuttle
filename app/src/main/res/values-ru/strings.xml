@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Technopolis Shuttle</string>
+    <string name="reload_shedule">Обновить расписание</string>
+    <string name="settings">Настройки</string>
+    <string name="open_resource">Открыть в браузере</string>
+    <string name="change_shedule">Править расписание</string>
+    <string name="help">Помощь</string>
+    <string name="about_us">О нас</string>
+    <string name="short_shedule">Кратко</string>
+    <string name="map">Карта</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="full_shedule">Полный</string>
+    <string name="appwidget_text">Shuttle</string>
+    <string name="add_widget">Add widget</string>
+    <string name="to_technopolis">В Технополис</string>
+    <string name="to_underground">К метро</string>
+    <string name="show_past">Отображать прошедшие</string>
+    <string name="address_of_bus_station">Автобусная ост., м.Московская  \nМосковский проспект, 189</string>
+    <string name="address_of_technopolis">Б.Ц. TECHNOPOLIS \nПулковское шоссе, 40к4</string>
+    <string name="address_of_server">Адрес сервера включая протокол</string>
+    <string name="sync_timeout">Таймаут синхронизации в миллисекундах</string>
+    <string name="num_of_elements_in_short">Количество элементов на кратком отображении</string>
+    <string name="text_size">Размер текста времени</string>
+    <string name="show_toast_snackbar">Показывать Toast вместо Snackbar</string>
+    <string name="not_show_toast_snackbar">Не показывать Snackbar и Toast</string>
+    <string name="reset_settings_and_cash">Сбросить настройки и кэш</string>
+    <string name="save">Сохранить</string>
+    <string name="close">Закрыть</string>
+    <string name="departure">Отбытие</string>
+    <string name="time_left">Осталось времени</string>
+<string-array name="weekdays">
+    <item>Понедельник</item>
+    <item>Вторник</item>
+    <item>Среда</item>
+    <item>Четверг</item>
+    <item>Пятница</item>
+    <item>Суббота</item>
+    <item>Воскресенье</item>
+</string-array>
+<string-array name="weekdays_short">
+    <item>пн</item>
+    <item>вт</item>
+    <item>ср</item>
+    <item>чт</item>
+    <item>пт</item>
+    <item>сб</item>
+    <item>вс</item>
+</string-array>
+</resources>

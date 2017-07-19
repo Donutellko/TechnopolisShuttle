@@ -20,7 +20,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Отбытие"
+                android:text="@string/departure"
                 android:textAlignment="center"
                 android:textSize="20sp"
                 />
@@ -37,7 +37,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:gravity="center_vertical|center_horizontal"
-                android:text="Осталось времени"
+                android:text="@string/time_left"
                 android:textSize="20sp"/>
         </LinearLayout>
     </LinearLayout>

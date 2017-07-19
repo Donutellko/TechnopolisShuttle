@@ -21,6 +21,7 @@ import static com.donutellko.technopolisshuttle.DataLoader.getCurrentTime;
 public class MyWidget extends AppWidgetProvider {
 
 	private WidgetView widgetView;
+
 	Context context;
 	AppWidgetManager appWidgetManager;
 	int[] appWidgetIds;
@@ -35,7 +36,12 @@ public class MyWidget extends AppWidgetProvider {
 		RemoteViews rv = widgetView.getView();
 
 		appWidgetManager.updateAppWidget(appWidgetIds[0], rv);
+
+//
+// 	this.appWidgetIds = appWidgetIds;
+
 		Log.i("MyWidget", "onUpdate()");
+
 	}
 
 	public void onMyButtonClick() {
@@ -69,6 +75,7 @@ public class MyWidget extends AppWidgetProvider {
 
 		public void prepareView() {
 			Log.i("MyWidget", "prepareView()");
+			int count = 3;
 
 			if (dataLoader == null) {
 				dataLoader = new DataLoader();
@@ -99,6 +106,7 @@ public class MyWidget extends AppWidgetProvider {
 				afterArrayTo[m] = element;
 				m++;
 			}
+			m = 0;
 			for (TimeTable.ScheduleElement element : afterFr) {
 				afterArrayFr[m] = element;
 				m++;
@@ -106,27 +114,15 @@ public class MyWidget extends AppWidgetProvider {
 
 			Log.i("MyWidget", Settings.singleton.jsonCached);
 
-			for (int i = 0; i < afterArrayTo.length; i++) {
-				remoteViews.setTextViewText(tvs[i][0], afterArrayTo[i].toString());
-			}
-
 			if (afterArrayTo.length + afterArrayFr.length == 0) {
 				remoteViews.setTextViewText(R.id.to1, "-");
 				remoteViews.setTextViewText(R.id.fr1, "-");
 			} else {
-				for (int i = 0; i < Math.max(afterArrayTo.length, 3); i++)
+				for (int i = 0; i < Math.min(afterArrayTo.length, count); i++)
 					remoteViews.setTextViewText(tvs[i][0], afterArrayTo[i].time.toString());
-				for (int i = 0; i < Math.max(afterArrayTo.length, 3); i++)
+				for (int i = 0; i < Math.min(afterArrayTo.length, count); i++)
 					remoteViews.setTextViewText(tvs[i][1], afterArrayFr[i].time.toString());
 			}
-
-			/*toggleTo = view.findViewById(TOGGLE_TO);
-			toggleTo.setOnClickListener(toggleToListener);
-			toggleTo.setChecked(showTo);
-
-			toggleFrom = view.findViewById(TOGGLE_FROM);
-			toggleFrom.setOnClickListener(toggleFromListener);
-			toggleFrom.setChecked(!showTo);*/
 		}
 
 		public RemoteViews getView() {
@@ -134,5 +130,8 @@ public class MyWidget extends AppWidgetProvider {
 			return remoteViews;
 		}
 
+	}
+	public void onUpdateButtonClick() {
+		this.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 }

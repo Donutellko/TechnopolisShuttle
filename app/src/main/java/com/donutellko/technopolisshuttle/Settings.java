@@ -14,7 +14,7 @@ public class Settings {
 	}
 
 	// fields with !!!!default!!! values
-	public int countToShowOnShort = 5;
+	public int countToShowOnShort = 8;
 	public MainActivity.State currentState = MainActivity.State.SHORT_VIEW;
 	public boolean showPast = true;
 	public boolean showTo = true; // не сохранять!

@@ -18,11 +18,11 @@
             android:layout_height="match_parent"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Адрес сервера включая протокол"/>
+            android:text="@string/address_of_server"/>
 
         <EditText
             android:id="@+id/server_ip"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="4.02"
             android:ems="10"
@@ -39,12 +39,12 @@
 
         <TextView
             android:id="@+id/textView5"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Таймаут синхронизации в миллисекундах"/>
+            android:text="@string/sync_timeout"/>
 
         <EditText
             android:id="@+id/timeout"
@@ -62,12 +62,12 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Количество элементов на кратком отображении"/>
+            android:text="@string/num_of_elements_in_short"/>
 
         <EditText
             android:id="@+id/count_to_show_on_short"
@@ -86,12 +86,12 @@
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:padding="5dp"
             android:paddingLeft="10dp"
-            android:text="Размер текста"/>
+            android:text="@string/text_size"/>
 
         <EditText
             android:id="@+id/text_size"
@@ -110,10 +110,10 @@
 
         <CheckBox
             android:id="@+id/use_toast"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Показывать Toast вместо Snackbar"/>
+            android:text="@string/show_toast_snackbar"/>
     </LinearLayout>
 
     <LinearLayout
@@ -123,10 +123,10 @@
 
         <CheckBox
             android:id="@+id/no_snackbar"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Не показывать Snackbar и Toast"/>
+            android:text="@string/not_show_toast_snackbar"/>
     </LinearLayout>
 
     <LinearLayout
@@ -136,14 +136,14 @@
 
         <Button
             android:id="@+id/reset"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:text="Сбросить настройки и кэш"/>
+            android:text="@string/reset_settings_and_cash"/>
     </LinearLayout>
 
     <LinearLayout
@@ -160,7 +160,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:text="Сохранить"/>
+            android:text="@string/save"/>
 
         <Button
             android:id="@+id/close"
@@ -171,7 +171,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:text="Закрыть"/>
+            android:text="@string/close"/>
 
     </LinearLayout>
 </LinearLayout>
