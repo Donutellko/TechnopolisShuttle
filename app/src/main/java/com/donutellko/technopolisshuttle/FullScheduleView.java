@@ -127,13 +127,13 @@ public class FullScheduleView extends SView {
 
 	private String makeDays(int mask) {
 		if (mask == 31) return "";
-		if (mask == 127) return "ежедневно";
+		if (mask == 127) return context.getString(R.string.daily);
 
 //		String[] weekdays = {"пн", "вт", "ср", "чт", "пт", "сб", "вс"};
 
 
 
-		String does = "только ", doesnt = "кроме ";
+		String does = context.getString(R.string.only), doesnt = context.getString(R.string.except);
 		byte does_i = 0, doesnt_i = 0;
 
 		for (int j = 0; j < 5; j++) {

@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 		defaultColors = navigation.getItemTextColor();
 		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-		dataLoader = new DataLoader();
+		dataLoader = new DataLoader(this);
 		timeTable = dataLoader.updateJsonInfo();
 
 		shortView = new ShortScheduleView(this);
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
 //				viewNotifier("Not available yet");
 				return true;
 			case R.id.action_help:
-				viewNotifier("Загрузка...");
+				viewNotifier(getString(R.string.loading));
 				navigation.setVisibility(View.VISIBLE);
 				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
 				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
 			if (time - backPressedTime < LENGTH_SHORT)
 				super.onBackPressed();
 			else {
-				viewSnackbar("Нажмите повторно для выхода");
+				viewSnackbar(getString(R.string.click_again));
 				backPressedTime = time;
 			}
 		} else {

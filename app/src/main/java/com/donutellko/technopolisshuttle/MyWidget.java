@@ -69,7 +69,7 @@ public class MyWidget extends AppWidgetProvider {
 			Log.i("MyWidget", "prepareView()");
 
 			if (dataLoader == null) {
-				dataLoader = new DataLoader();
+				dataLoader = new DataLoader(context);
 
 				if (Settings.singleton.jsonCached == null) {
 					Settings.singleton = new Settings();
@@ -100,7 +100,7 @@ public class MyWidget extends AppWidgetProvider {
 			Log.i("MyWidget", "afterarray.length = " + afterarray.length);
 
 			if (afterarray.length == 0)
-				remoteViews.setTextViewText(R.id.time1, "пусто");
+				remoteViews.setTextViewText(R.id.time1, context.getString(R.string.empty));
 			if (afterarray.length > 0) {
 				remoteViews.setTextViewText(R.id.time1, afterarray[0].time.toString());
 				remoteViews.setTextViewText(R.id.timeleft1, now.getDifference(afterarray[0].time).toTextString());

@@ -94,14 +94,14 @@ public class MapView extends SView implements OnMapReadyCallback {
 //        map.moveCamera(CameraUpdateFactory.newLatLngZoom(technopolis, 13));
 
 		map.addMarker(new MarkerOptions()
-				.title("м. Московская")
-				.snippet("Московский проспект, 189")
+				.title(context.getString(R.string.metro))
+				.snippet(context.getString(R.string.address_metro))
 				.position(coordsUnderground));
 
 
 		map.addMarker(new MarkerOptions()
 				.title("TECHNOPOLIS")
-				.snippet("Пулковское шоссе, 40к4")
+				.snippet(context.getString(R.string.address_technopolis))
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 				.position(coordsTechnopolis));
 

@@ -30,6 +30,26 @@
     <string name="close">Закрыть</string>
     <string name="departure">Отбытие</string>
     <string name="time_left">Осталось времени</string>
+    <string name="daily">ежедневно</string>
+    <string name="except">кроме</string>
+    <string name="only">только</string>
+    <string name="right_now">прямо сейчас</string>
+    <string name="showed">Показаны</string>
+    <string name="no_more_buses">Cегодня автобусов в этом направлении больше нет.</string>
+    <string name="no_more_buses_today">Больше нет рейсов на сегодня.</string>
+    <string name="nearests_buses">ближайших рейсов.</string>
+    <string name="hour">час</string>
+    <string name="min">мин</string>
+    <string name="empty">пусто</string>
+    <string name="settings_reset">Настройки сброшены!</string>
+    <string name="incorrect_values">Введены некорректные значения</string>
+    <string name="saved">Сохранено!</string>
+    <string name="reset_settings_and_cache">Сбросить настройки и кэш</string>
+    <string name="metro">м. Московская</string>
+    <string name="address_metro">Московский проспект, 189</string>
+    <string name="address_technopolis">Пулковское шоссе, 40к4</string>
+    <string name="loading">Загрузка...</string>
+    <string name="click_again">Нажмите повторно для выхода</string>
     <string-array name="weekdays">
         <item>Понедельник</item>
         <item>Вторник</item>

@@ -34,7 +34,14 @@ import javax.net.ssl.HttpsURLConnection;
 
 // Получает данные из памяти, базы данных и сервера
 class DataLoader {
-	static DataLoader singleton = new DataLoader();
+
+	static Context context;
+
+	DataLoader(Context context){
+		this.context = context;
+	}
+
+//	static DataLoader singleton = new DataLoader();
 
 	static class STime {
 		int hour, min, weekday;
@@ -104,8 +111,8 @@ class DataLoader {
 
 		public String toTextString() {
 			String s = "";
-			if (hour > 0) s += hour + " час ";
-			if (min > 0) s += /*(min < 10 ? "0" : "") + */min + " мин";
+			if (hour > 0) s += hour + context.getString(R.string.hour);
+			if (min > 0) s += /*(min < 10 ? "0" : "") + */min + context.getString(R.string.min);
 			return s;
 		}
 
