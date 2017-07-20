@@ -50,15 +50,15 @@ public class SettingsView extends SView {
 
 
 		resetButton = view.findViewById(R.id.reset);
-		resetButton.setText("Сбросить настройки и кэш");
+		resetButton.setText(R.string.reset_settings_and_cache);
 		resetButton.setOnClickListener(resetListener);
 
 		saveButton = view.findViewById(R.id.save);
-		saveButton.setText("Сохранить");
+		saveButton.setText(context.getString(R.string.save));
 		saveButton.setOnClickListener(saveListener);
 
 		closeButton = view.findViewById(R.id.close);
-		closeButton.setText("Закрыть");
+		closeButton.setText(context.getString(R.string.close));
 		closeButton.setOnClickListener(closeListener);
 
 //		mainLayout = view.findViewById(R.id.main_layout);
@@ -76,7 +76,7 @@ public class SettingsView extends SView {
 		@Override
 		public void onClick(View view) {
 			Settings.singleton.reset();
-			MainActivity.viewNotifier("Настройки сброшены!");
+			MainActivity.viewNotifier(context.getString(R.string.settings_reset));
 			prepareView();
 			MainActivity.setContent(MainActivity.settingsView);
 		}
@@ -86,7 +86,7 @@ public class SettingsView extends SView {
 		@Override
 		public void onClick(View view) {
 			if (textSize.getText().toString().equals("") || textSize.getText().toString().equals(""))
-				MainActivity.viewNotifier("Введены некорректные значения");
+				MainActivity.viewNotifier(context.getString(R.string.incorrect_values));
 			else {
 				MainActivity.getWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 				Settings settings = Settings.singleton;
@@ -99,7 +99,7 @@ public class SettingsView extends SView {
 				settings.showToast = useToast.isChecked();
 
 				settings.savePreferences(MainActivity.applicationContext);
-				MainActivity.viewNotifier("Сохранено!");
+				MainActivity.viewNotifier(context.getString(R.string.saved));
 //				MainActivity.navigation.setSelectedItemId(MainActivity.navigation.getSelectedItemId());
 			}
 		}

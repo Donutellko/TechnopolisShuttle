@@ -28,6 +28,11 @@ public class MyWidget extends AppWidgetProvider {
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+		// There may be multiple widgets active, so update all of them
+		//for (int appWidgetId : appWidgetIds) {
+		//	updateAppWidget(context, appWidgetManager, appWidgetId);
+		//}=
+
 		this.context = context;
 		this.appWidgetManager = appWidgetManager;
 		this.appWidgetIds = appWidgetIds;
@@ -36,12 +41,7 @@ public class MyWidget extends AppWidgetProvider {
 		RemoteViews rv = widgetView.getView();
 
 		appWidgetManager.updateAppWidget(appWidgetIds[0], rv);
-
-//
-// 	this.appWidgetIds = appWidgetIds;
-
 		Log.i("MyWidget", "onUpdate()");
-
 	}
 
 	public void onMyButtonClick() {
@@ -49,6 +49,7 @@ public class MyWidget extends AppWidgetProvider {
 	}
 
 	class WidgetView {
+		//int
 		//		TOGGLE_TO = R.id.to_tech,
 		//		TOGGLE_FROM = R.id.from_tech;
 		boolean showTo = true;
@@ -67,7 +68,6 @@ public class MyWidget extends AppWidgetProvider {
 		private TimeTable timeTable;
 
 		public WidgetView(Context context, Context appcontext) {
-			//int
 			this.context = context;
 			this.appcontext = appcontext;
 			prepareView();
@@ -78,7 +78,7 @@ public class MyWidget extends AppWidgetProvider {
 			int count = 3;
 
 			if (dataLoader == null) {
-				dataLoader = new DataLoader();
+				dataLoader = new DataLoader(context);
 
 				if (Settings.singleton.jsonCached == null) {
 					Settings.singleton = new Settings();
@@ -135,3 +135,4 @@ public class MyWidget extends AppWidgetProvider {
 		this.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 }
+

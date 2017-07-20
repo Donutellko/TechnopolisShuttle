@@ -88,12 +88,12 @@ public class ShortScheduleView extends SView {
 
 		ending.addView(ending_text);
 		if (after.size() == 0) {
-			ending_text.setText("Cегодня автобусов в этом направлении больше нет.");
+			ending_text.setText(R.string.no_more_buses);
 			table.removeAllViews();
 		} else if (after.size() >= Settings.singleton.countToShowOnShort - 1)
-			ending_text.setText("Показаны " + Settings.singleton.countToShowOnShort + " ближайших рейсов.");
+			ending_text.setText(context.getString(R.string.showed) + Settings.singleton.countToShowOnShort + context.getString(R.string.nearests_buses));
 		else {
-			ending_text.setText("Больше нет рейсов на сегодня.");
+			ending_text.setText(R.string.no_more_buses_today);
 		}
 		table.addView(ending);
 	}
@@ -103,10 +103,11 @@ public class ShortScheduleView extends SView {
 
 		String timeLeft = "";
 		if (left.isZero())
-			timeLeft = "прямо сейчас";
+			timeLeft = context.getString(R.string.right_now);
 		else {
-			if (left.hour != 0) timeLeft += " " + left.hour + " час";
-			if (left.min != 0) timeLeft += " " + left.min + " мин";
+			timeLeft = left.toTextString();
+//			if (left.hour != 0) timeLeft += " " + left.hour + " час";
+//			if (left.min != 0) timeLeft += " " + left.min + " мин";
 		}
 
 		View row = View.inflate(context, R.layout.short_row, null);
