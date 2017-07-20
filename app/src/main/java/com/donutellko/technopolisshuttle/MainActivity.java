@@ -175,7 +175,18 @@ public class MainActivity extends AppCompatActivity {
 				return true;
 			case R.id.action_about:
 				settings.currentState = State.ABOUT_VIEW;
-				viewNotifier("Not available yet");
+				webView = new WebView(this);
+				webView.getSettings().setSupportZoom(true);
+				webView.getSettings().setBuiltInZoomControls(true);
+				webView.setWebViewClient(new WebViewClient());
+				webView.setWebChromeClient(new WebChromeClient());
+				new Runnable() {
+					public void run() {
+						webView.getSettings().setDisplayZoomControls(false);
+					}
+				}.run();
+				webView.loadUrl("https://github.com/Donutellko/TechnopolisShuttle/wiki");
+				setContent(webView);
 				return true;
 			default:
 				Log.e("Хьюстон!", "У нас проблемы!");
