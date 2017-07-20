@@ -17,6 +17,7 @@
 
             <ToggleButton
                 android:id="@+id/toggle_to"
+                android:background="@drawable/oval"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -30,6 +31,7 @@
 
             <ToggleButton
                 android:id="@+id/toggle_from"
+                android:background="@drawable/oval"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
