@@ -85,6 +85,7 @@ public class SettingsView extends SView {
 	private Button.OnClickListener saveListener = new Button.OnClickListener() { //TODO: нормальная проверка
 		@Override
 		public void onClick(View view) {
+			MainActivity.settingsUpdated = true;
 			if (textSize.getText().toString().equals("") || textSize.getText().toString().equals(""))
 				MainActivity.viewNotifier(context.getString(R.string.incorrect_values));
 			else {
@@ -108,6 +109,7 @@ public class SettingsView extends SView {
 	private Button.OnClickListener closeListener = new Button.OnClickListener() { //TODO: нормальная проверка
 		@Override
 		public void onClick(View view) {
+			MainActivity.settingsUpdated = true;
 			MainActivity.navigation.setVisibility(View.VISIBLE);
 			MainActivity.navigation.setSelectedItemId(MainActivity.navigation.getSelectedItemId());
 		}

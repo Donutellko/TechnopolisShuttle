@@ -133,7 +133,7 @@ public class FullScheduleView extends SView {
 
 
 
-		String does = context.getString(R.string.only), doesnt = context.getString(R.string.except);
+		String does = context.getString(R.string.only) + " ", doesnt = context.getString(R.string.except) + " ";
 		byte does_i = 0, doesnt_i = 0;
 
 		for (int j = 0; j < 5; j++) {

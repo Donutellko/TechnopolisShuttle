@@ -91,7 +91,7 @@ public class ShortScheduleView extends SView {
 			ending_text.setText(R.string.no_more_buses);
 			table.removeAllViews();
 		} else if (after.size() >= Settings.singleton.countToShowOnShort - 1)
-			ending_text.setText(context.getString(R.string.showed) + Settings.singleton.countToShowOnShort + context.getString(R.string.nearests_buses));
+			ending_text.setText(context.getString(R.string.showed) + " " + Settings.singleton.countToShowOnShort + " " +context.getString(R.string.nearests_buses));
 		else {
 			ending_text.setText(R.string.no_more_buses_today);
 		}

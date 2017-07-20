@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.donutellko.technopolisshuttle.TimeTable.ScheduleElement;
 import com.donutellko.technopolisshuttle.DataLoader.STime;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -111,8 +112,8 @@ class DataLoader {
 
 		public String toTextString() {
 			String s = "";
-			if (hour > 0) s += hour + context.getString(R.string.hour);
-			if (min > 0) s += /*(min < 10 ? "0" : "") + */min + context.getString(R.string.min);
+			if (hour > 0) s += hour + " " + context.getString(R.string.hour) + " ";
+			if (min > 0) s += /*(min < 10 ? "0" : "") + */ min + " " + context.getString(R.string.min);
 			return s;
 		}
 
@@ -132,8 +133,10 @@ class DataLoader {
 		ScheduleElement[]
 				seFrom = jsonObject.toScheduleElementArray(jsonObject.fromOffice),
 				seTo = jsonObject.toScheduleElementArray(jsonObject.toOffice);
+		LatLng coordsTo = new LatLng(jsonObject.toLat, jsonObject.toLon);
+		LatLng coordsFr = new LatLng(jsonObject.frLat, jsonObject.frLon);
 
-		return new TimeTable(seFrom, seTo);
+		return new TimeTable(seFrom, seTo, coordsTo, coordsFr);
 	}
 
 	public String getJsonOffline() {
@@ -166,6 +169,8 @@ class DataLoader {
 
 	private class JsonObject {
 		DataObject[] fromOffice, toOffice;
+		String name = "Technopolis";
+		double toLat = 59.818026, toLon = 30.327783, frLat = 59.854728, frLon = 30.320958;
 
 		ScheduleElement[] toScheduleElementArray(DataObject[] dataObjects) {
 			ScheduleElement[] scheduleElements = new ScheduleElement[dataObjects.length];
@@ -205,10 +210,18 @@ class DataLoader {
 
 class TimeTable {
 	public ScheduleElement[] from, to;
+	LatLng coordsTo, coordsFr;
 
 	TimeTable(ScheduleElement[] from, ScheduleElement[] to) {
 		this.from = from;
 		this.to = to;
+	}
+
+	public TimeTable(ScheduleElement[] from, ScheduleElement[] to, LatLng coordsTo, LatLng coordsFr) {
+		this.from = from;
+		this.to = to;
+		this.coordsFr = coordsFr;
+		this.coordsTo = coordsTo;
 	}
 
 	List<ScheduleElement> getTimeAfter(STime now, boolean To, int weekday) {

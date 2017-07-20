@@ -18,7 +18,7 @@
     <string name="to_underground">To Underground</string>
     <string name="show_past">View all</string>
     <string name="address_of_bus_station">Bus st., Moskovskaya, \nMoskovskii prospect, 189</string>
-    <string name="address_of_technopolis">TECHNOPOLIS bus st.\nPulkovskoye roadway, 40/4</string>
+    <string name="address_of_technopolis">TECHNOPOLIS bus st.\nPulkovo roadway, 40/4</string>
     <string name="address_of_server">Server address, including protocol</string>
     <string name="sync_timeout">Synchronisation timeout, milliseconds</string>
     <string name="num_of_elements_in_short">Number of elements on short view</string>
@@ -31,26 +31,26 @@
     <string name="departure">Departure</string>
     <string name="time_left">Time left</string>
 
-    <string name="daily">ежедневно</string>
-    <string name="except">кроме</string>
-    <string name="only">только</string>
-    <string name="right_now">прямо сейчас</string>
-    <string name="showed">Показаны</string>
-    <string name="no_more_buses">Cегодня автобусов в этом направлении больше нет.</string>
-    <string name="no_more_buses_today">Больше нет рейсов на сегодня.</string>
-    <string name="nearests_buses">ближайших рейсов.</string>
-    <string name="hour">час</string>
-    <string name="min">мин</string>
-    <string name="empty">пусто</string>
-    <string name="settings_reset">Настройки сброшены!</string>
-    <string name="incorrect_values">Введены некорректные значения</string>
-    <string name="saved">Сохранено!</string>
-    <string name="reset_settings_and_cache">Сбросить настройки и кэш</string>
-    <string name="metro">м. Московская</string>
-    <string name="address_metro">Московский проспект, 189</string>
-    <string name="address_technopolis">Пулковское шоссе, 40к4</string>
-    <string name="loading">Загрузка...</string>
-    <string name="click_again">Нажмите повторно для выхода</string>
+    <string name="daily">daily</string>
+    <string name="except">except</string>
+    <string name="only">only</string>
+    <string name="right_now">right now</string>
+    <string name="showed">Showing</string>
+    <string name="no_more_buses">No more buses in this direction today.</string>
+    <string name="no_more_buses_today">No more buses today.</string>
+    <string name="nearests_buses">next shuttles</string>
+    <string name="hour">hours</string>
+    <string name="min">min</string>
+    <string name="empty">nothing</string>
+    <string name="settings_reset">Settings reseted</string>
+    <string name="incorrect_values">Input is incorrect</string>
+    <string name="saved">Saved</string>
+    <string name="reset_settings_and_cache">Reset settings and cache</string>
+    <string name="metro">Moskovskaya UG</string>
+    <string name="address_metro">Moskovskii prospect, 189</string>
+    <string name="address_technopolis">Pulkovo roadway, 40/4</string>
+    <string name="loading">Loading...</string>
+    <string name="click_again">Tap again to exit</string>
 
     <string-array name="weekdays">
         <item>Monday</item>

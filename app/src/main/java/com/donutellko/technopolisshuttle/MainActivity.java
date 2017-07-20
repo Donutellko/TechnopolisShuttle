@@ -36,11 +36,8 @@ public class MainActivity extends AppCompatActivity {
 	public static Context applicationContext;
 	public static Window getWindow;
 	private static boolean needtoUpdateTimeTable = false;
+	public static boolean settingsUpdated = false;
 
-
-	private LatLng
-			coordsTechnopolis = new LatLng(59.818026, 30.327783),
-			coordsUnderground = new LatLng(59.854728, 30.320958);
 
 	Calendar curtime;
 	static TimeTable timeTable;
@@ -88,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
 		shortView = new ShortScheduleView(this);
 		fullView = new FullScheduleView(this);
-		mapView = new MapView(this, getFragmentManager(), coordsTechnopolis, coordsUnderground);
+		mapView = new MapView(this, getFragmentManager(), timeTable.coordsTo, timeTable.coordsFr);
 
 		settingsView = new SettingsView(this);
 
@@ -229,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 						|| Settings.singleton.currentState == State.SHORT_VIEW
 						|| Settings.singleton.currentState == State.MAP_VIEW) {
 			long time = Calendar.getInstance().getTimeInMillis();
-			if (time - backPressedTime < LENGTH_SHORT)
+			if (time - backPressedTime < 1000)
 				super.onBackPressed();
 			else {
 				viewSnackbar(getString(R.string.click_again));
@@ -264,7 +261,10 @@ public class MainActivity extends AppCompatActivity {
 					case FULL_VIEW:
 						navigation.setItemTextColor(defaultColors);
 						navigation.setItemIconTintList(defaultColors);
-//						fullView.updateView();
+						if (settingsUpdated) {
+							settingsUpdated = false;
+							fullView.updateView();
+						}
 						break;
 					case MAP_VIEW:
 						navigation.setItemTextColor(defaultColors);
