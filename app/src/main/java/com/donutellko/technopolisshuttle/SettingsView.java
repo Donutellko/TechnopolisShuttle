@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 
 public class SettingsView extends SView {
 	int LAYOUT_RESOURCE = R.layout.settings_layout;
-	EditText countOnShort, textSize, serverIpContainerAddress, timeout;
+	EditText countOnShort, textSize, serverIp, timeout;
 	Button resetButton, saveButton, closeButton;
 	CheckBox noSnackbar, useToast;
 
@@ -29,8 +29,8 @@ public class SettingsView extends SView {
 	@Override
 	public void prepareView() {
 
-		serverIpContainerAddress = view.findViewById(R.id.server_ip);
-		serverIpContainerAddress.setText(Settings.singleton.serverIpContainerAddress + "");
+		serverIp = view.findViewById(R.id.server_ip);
+		serverIp.setText(Settings.singleton.serverIp + "");
 
 		timeout = view.findViewById(R.id.timeout);
 		timeout.setText(Settings.singleton.connection_timeout + "");
@@ -94,7 +94,7 @@ public class SettingsView extends SView {
 				settings.textSize = Float.parseFloat(textSize.getText() + "");
 				settings.connection_timeout = Integer.parseInt(timeout.getText() + "");
 				settings.countToShowOnShort = Integer.parseInt(countOnShort.getText() + "");
-				settings.serverIpContainerAddress = serverIpContainerAddress.getText().toString();
+				settings.serverIp = serverIp.getText().toString();
 
 				settings.noSnackbar = noSnackbar.isChecked();
 				settings.showToast = useToast.isChecked();

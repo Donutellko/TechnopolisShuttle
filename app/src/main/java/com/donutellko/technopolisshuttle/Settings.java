@@ -26,7 +26,7 @@ public class Settings {
 	public String jsonLastSync = "2017.07.14 14:54";
 	public String serverIp = null;
 	public int connection_timeout = 500;
-	public float textSize = 22;
+	public float textSize = 24;
 
 	// названия, под которыми сохраняется
 	private String
