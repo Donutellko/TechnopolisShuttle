@@ -70,6 +70,11 @@ public class MapView extends SView implements OnMapReadyCallback {
 		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
 //		map.moveCamera(cameraUpdate);
 
+		if (coordsTechnopolis.latitude == 0) {
+			coordsTechnopolis = new LatLng(59.818026, 30.327783);
+			coordsUnderground = new LatLng(59.854728, 30.320958);
+		}
+
 		try { // В случае вылета из-за карты открывается ShortView, чтобы работать при следующем запуске
 			map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 		} catch (Exception e) {

@@ -10,22 +10,21 @@ public class Settings {
 	public static Settings singleton = new Settings();
 	private SharedPreferences sp;
 
-	public Settings() {
-	}
+	Settings() { }
 
 	// fields with !!!!default!!! values
-	public int countToShowOnShort = 8;
-	public MainActivity.State currentState = MainActivity.State.SHORT_VIEW;
-	public boolean showPast = true;
-	public boolean showTo = true; // не сохранять!
+	int countToShowOnShort = 8;
+	MainActivity.State currentState = MainActivity.State.SHORT_VIEW;
+	boolean showPast = true;
+	boolean showTo = true; // не сохранять!
 	//public float distanceToShowFrom = 2;
-	public boolean showToast = false;
-	public boolean noSnackbar = false;
-	public String serverIpContainerAddress = "http://freetexthost.com/ppk46tkyqd"; //"http://192.168.0.100:8081"; // "http://188.134.12.107:8081";
-	public String jsonCached = null;
-	public String jsonLastSync = "2017.07.14 14:54";
-	public String serverIp = null;
-	public int connection_timeout = 500;
+	boolean showToast = false;
+	boolean noSnackbar = false;
+	String serverIpContainerAddress = "http://freetexthost.com/ppk46tkyqd"; //"http://192.168.0.100:8081"; // "http://188.134.12.107:8081";
+	String jsonCached = null;
+	String jsonLastSync = "2017.07.14 14:54";
+	String serverIp = null;
+	int connection_timeout = 500;
 	public float textSize = 24;
 
 	// названия, под которыми сохраняется
@@ -44,7 +43,7 @@ public class Settings {
 			textSize_s = "textSize";
 
 
-	public boolean loadPreferences(Context context) {
+	boolean loadPreferences(Context context) {
 		sp = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
 
 		currentState = MainActivity.State.values()[
@@ -65,7 +64,7 @@ public class Settings {
 		return true;
 	}
 
-	public void savePreferences(Context context) {
+	void savePreferences(Context context) {
 		SharedPreferences.Editor sp = context.getSharedPreferences("settings", Context.MODE_PRIVATE).edit();
 
 		sp.putInt(countToShowOnShort_s, countToShowOnShort);
@@ -87,9 +86,9 @@ public class Settings {
 		Log.i("savePreferences()", "saved " + currentState.name() + ":" + currentState.ordinal());
 	}
 
-	public void reset() {
+	void reset() {
 
-		sp.edit().clear().commit();
+		sp.edit().clear().apply();
 		singleton = new Settings();
 		Log.i("reset", "настройки сброшены... должны быть");
 		//singleton.savePreferences(MainActivity.applicationContext);

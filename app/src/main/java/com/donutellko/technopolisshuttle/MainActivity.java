@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
 						webView.getSettings().setDisplayZoomControls(false);
 					}
 				}.run();
-				webView.loadUrl("https://github.com/Donutellko/TechnopolisShuttle/wiki");
+				webView.loadUrl("//http://www.technopolis.fi/russia/arenduemye-ofisnye-ploshhadi/sankt-peterburg/");
 				setContent(webView);
 				return true;
 			default:
@@ -228,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
+		navigation.setVisibility(View.VISIBLE);
 		if (
 				Settings.singleton.currentState == State.FULL_VIEW
 						|| Settings.singleton.currentState == State.SHORT_VIEW

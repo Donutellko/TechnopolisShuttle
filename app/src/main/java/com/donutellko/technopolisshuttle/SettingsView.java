@@ -28,9 +28,8 @@ public class SettingsView extends SView {
 
 	@Override
 	public void prepareView() {
-
 		serverIp = view.findViewById(R.id.server_ip);
-		serverIp.setText(Settings.singleton.serverIp + "");
+		serverIp.setText(Settings.singleton.serverIp);
 
 		timeout = view.findViewById(R.id.timeout);
 		timeout.setText(Settings.singleton.connection_timeout + "");
@@ -118,14 +117,14 @@ public class SettingsView extends SView {
 	private View.OnClickListener noSnackbarListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			Settings.singleton.singleton.noSnackbar = noSnackbar.isChecked();
+			Settings.singleton.noSnackbar = noSnackbar.isChecked();
 		}
 	};
 
 	private View.OnClickListener useToastListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			Settings.singleton.singleton.showToast = useToast.isChecked();
+			Settings.singleton.showToast = useToast.isChecked();
 		}
 	};
 }
