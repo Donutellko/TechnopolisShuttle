@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.Snackbar;
 import android.support.annotation.NonNull;
@@ -15,7 +15,6 @@ import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebViewFragment;
 import android.widget.LinearLayout;
 import android.os.CountDownTimer;
 import android.content.Context;
@@ -44,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 	DataLoader dataLoader;
 
 	static LinearLayout contentBlock; // Область контента (всё кроме нав. панели)
-//	static ConstraintLayout parentBlock;
 	static BottomNavigationView navigation;
 
 	static ShortScheduleView shortView;
@@ -63,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setTitle("");
+		actionBar.setDisplayShowHomeEnabled(true);
+		actionBar.setIcon(R.mipmap.ic_tech);
 		applicationContext = getApplicationContext();
 		getWindow = getWindow();
 
@@ -74,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
 		layoutInflater = getLayoutInflater();
 		curtime = Calendar.getInstance();
 		contentBlock = (LinearLayout) findViewById(R.id.content);
-		// parentBlock = (ConstraintLayout) findViewById(R.id.parent);
 
 		navigation = (BottomNavigationView) findViewById(R.id.navigation);
 		defaultColors = navigation.getItemTextColor();
@@ -112,8 +114,6 @@ public class MainActivity extends AppCompatActivity {
 	public static void viewSnackbar(String s) {
 		Snackbar.make(contentBlock, s, Snackbar.LENGTH_SHORT)
 				.setAction("Action", null).show();
-		/*Snackbar.make(parentBlock, s, Snackbar.LENGTH_SHORT)
-				.setAction("Action", null).show();*/
 	}
 
 	public static void viewToast(String s) {
@@ -190,24 +190,31 @@ public class MainActivity extends AppCompatActivity {
 				setContent(webView);
 				return true;
 			case R.id.action_about:
-				navigation.setVisibility(View.VISIBLE);
-				navigation.setItemTextColor(ColorStateList.valueOf(Color.GRAY));
-				navigation.setItemIconTintList(ColorStateList.valueOf(Color.GRAY));
-
 				Settings.singleton.currentState = State.ABOUT_VIEW;
-				viewNotifier("Not available yet");
+				webView = new WebView(this);
+				webView.getSettings().setSupportZoom(true);
+				webView.getSettings().setBuiltInZoomControls(true);
+				webView.setWebViewClient(new WebViewClient());
+				webView.setWebChromeClient(new WebChromeClient());
+				new Runnable() {
+					public void run() {
+						webView.getSettings().setDisplayZoomControls(false);
+					}
+				}.run();
+				webView.loadUrl("https://github.com/Donutellko/TechnopolisShuttle/wiki");
+				setContent(webView);
 				return true;
 			default:
 				Log.e("Хьюстон!", "У нас проблемы!");
 				return false;
 		}
 	}
+
 	//@Override
 	//public void onPause() {
 	//	settings.savePreferences(getApplicationContext());
 	//	super.onPause();
 	//}
-
 
 	@Override
 	public void onPause() {
